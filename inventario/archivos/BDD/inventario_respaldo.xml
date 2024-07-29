@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<django-objects version="1.0">
+    <object model="inventario.usuario" pk="1">
+        <field name="last_login" type="DateTimeField">2020-06-09T18:59:58.342067+00:00</field>
+        <field name="is_superuser" type="BooleanField">True</field>
+        <field name="is_staff" type="BooleanField">True</field>
+        <field name="is_active" type="BooleanField">True</field>
+        <field name="date_joined" type="DateTimeField">2019-03-14T15:29:13.133871+00:00</field>
+        <field name="username" type="CharField">superadmin</field>
+        <field name="password" type="CharField">pbkdf2_sha256$120000$9mjuMUsIvrio$lJNJ4AP1AqLGh9z4lTV+NsIaXAuEt5A4Pjc48DUsXa8=</field>
+        <field name="email" type="CharField">correo@correo.com</field>
+        <field name="first_name" type="CharField">Nombre-Aleatorio</field>
+        <field name="last_name" type="CharField">Apellido-Aleatorio</field>
+        <field name="nivel" type="IntegerField">2</field>
+        <field name="groups" rel="ManyToManyRel" to="auth.group"></field>
+        <field name="user_permissions" rel="ManyToManyRel" to="auth.permission"></field>
+    </object>
+    <object model="inventario.usuario" pk="8">
+        <field name="last_login" type="DateTimeField">2024-07-22T21:42:09.256368+00:00</field>
+        <field name="is_superuser" type="BooleanField">True</field>
+        <field name="is_staff" type="BooleanField">True</field>
+        <field name="is_active" type="BooleanField">True</field>
+        <field name="date_joined" type="DateTimeField">2020-06-09T21:07:40.495657+00:00</field>
+        <field name="username" type="CharField">admin</field>
+        <field name="password" type="CharField">pbkdf2_sha256$720000$BHgpvi8nhZSSJODKzfUq6F$jSNujzl9444xe+cw4YcjNAAi8FJCuISpGf2g6l7zVh0=</field>
+        <field name="email" type="CharField">correocualquiera@correo.com</field>
+        <field name="first_name" type="CharField">nombre</field>
+        <field name="last_name" type="CharField">apellido</field>
+        <field name="nivel" type="IntegerField">1</field>
+        <field name="groups" rel="ManyToManyRel" to="auth.group"></field>
+        <field name="user_permissions" rel="ManyToManyRel" to="auth.permission"></field>
+    </object>
+    <object model="inventario.usuario" pk="9">
+        <field name="last_login" type="DateTimeField">2024-06-18T14:42:10.637418+00:00</field>
+        <field name="is_superuser" type="BooleanField">False</field>
+        <field name="is_staff" type="BooleanField">False</field>
+        <field name="is_active" type="BooleanField">True</field>
+        <field name="date_joined" type="DateTimeField">2024-06-18T14:41:51.058805+00:00</field>
+        <field name="username" type="CharField">test</field>
+        <field name="password" type="CharField">pbkdf2_sha256$120000$aSOzQYsawi1I$LbG5rVHSGWrtiWoghc0YylndG9kP2t3sfs+ucU+3Kmg=</field>
+        <field name="email" type="CharField">test@gmail.com</field>
+        <field name="first_name" type="CharField">test</field>
+        <field name="last_name" type="CharField">test</field>
+        <field name="nivel" type="IntegerField">0</field>
+        <field name="groups" rel="ManyToManyRel" to="auth.group"></field>
+        <field name="user_permissions" rel="ManyToManyRel" to="auth.permission"></field>
+    </object>
+    <object model="inventario.opciones" pk="1">
+        <field name="moneda" type="CharField">$</field>
+        <field name="valor_iva" type="IntegerField">15</field>
+        <field name="nombre_negocio" type="CharField">Mi Negocio</field>
+        <field name="mensaje_factura" type="TextField">Gracias por preferirnos!</field>
+    </object>
+    <object model="inventario.producto" pk="34">
+        <field name="descripcion" type="CharField">Arroz viejo marca X</field>
+        <field name="precio" type="DecimalField">10.00</field>
+        <field name="disponible" type="IntegerField">2</field>
+        <field name="categoria" type="CharField">2</field>
+        <field name="tiene_iva" type="BooleanField">True</field>
+    </object>
+    <object model="inventario.cliente" pk="10">
+        <field name="cedula" type="CharField">0250179272</field>
+        <field name="nombre" type="CharField">cliente</field>
+        <field name="apellido" type="CharField">1</field>
+        <field name="direccion" type="CharField">test dirección</field>
+        <field name="nacimiento" type="DateField">1977-12-12</field>
+        <field name="telefono" type="CharField">0999999999</field>
+        <field name="telefono2" type="CharField"></field>
+        <field name="correo" type="CharField">cliente@example.com</field>
+        <field name="correo2" type="CharField"></field>
+    </object>
+    <object model="inventario.factura" pk="19">
+        <field name="cliente" rel="ManyToOneRel" to="inventario.cliente">0250179272</field>
+        <field name="fecha" type="DateField">2024-06-18</field>
+        <field name="sub_monto" type="DecimalField">10.00</field>
+        <field name="monto_general" type="DecimalField">11.50</field>
+        <field name="iva" rel="ManyToOneRel" to="inventario.opciones">15</field>
+    </object>
+    <object model="inventario.detallefactura" pk="28">
+        <field name="id_factura" rel="ManyToOneRel" to="inventario.factura">19</field>
+        <field name="id_producto" rel="ManyToOneRel" to="inventario.producto">34</field>
+        <field name="cantidad" type="IntegerField">1</field>
+        <field name="sub_total" type="DecimalField">10.00</field>
+        <field name="total" type="DecimalField">11.50</field>
+    </object>
+    <object model="inventario.proveedor" pk="8">
+        <field name="cedula" type="CharField">0200000000</field>
+        <field name="nombre" type="CharField">Provedor</field>
+        <field name="apellido" type="CharField">1</field>
+        <field name="direccion" type="CharField">direccion</field>
+        <field name="nacimiento" type="DateField">2024-06-18</field>
+        <field name="telefono" type="CharField">0999999999</field>
+        <field name="telefono2" type="CharField"></field>
+        <field name="correo" type="CharField">provedor@example.com</field>
+        <field name="correo2" type="CharField"></field>
+    </object>
+    <object model="inventario.pedido" pk="14">
+        <field name="proveedor" rel="ManyToOneRel" to="inventario.proveedor">0200000000</field>
+        <field name="fecha" type="DateField">2024-06-18</field>
+        <field name="sub_monto" type="DecimalField">30.00</field>
+        <field name="monto_general" type="DecimalField">34.50</field>
+        <field name="iva" rel="ManyToOneRel" to="inventario.opciones">15</field>
+        <field name="presente" type="BooleanField">True</field>
+    </object>
+    <object model="inventario.detallepedido" pk="17">
+        <field name="id_pedido" rel="ManyToOneRel" to="inventario.pedido">14</field>
+        <field name="id_producto" rel="ManyToOneRel" to="inventario.producto">34</field>
+        <field name="cantidad" type="IntegerField">3</field>
+        <field name="sub_total" type="DecimalField">30.00</field>
+        <field name="total" type="DecimalField">34.50</field>
+    </object>
+</django-objects>

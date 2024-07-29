@@ -1,0 +1,5 @@
+.venv/
+.env
+*__pycache__/
+BDD.sqlite3
+inventario/archivos/tmp
