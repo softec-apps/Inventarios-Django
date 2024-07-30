@@ -10,6 +10,12 @@ path('salir', views.Salir.as_view(), name='salir'),
 path('perfil/<str:modo>/<int:p>', views.Perfil.as_view(), name='perfil'),
 path('eliminar/<str:modo>/<int:p>', views.Eliminar.as_view(), name='eliminar'),
 
+path('listarCategorias', views.ListarCategorias.as_view(), name='listarCategorias'),
+path('agregarCategoria', views.AgregarCategoria.as_view(), name='agregarCategoria'),
+path('importarCategorias', views.ImportarCategorias.as_view(), name='importarCategorias'),
+path('exportarCategorias', views.ExportarCategorias.as_view(), name='exportarCategorias'),
+path('editarCategoria/<int:p>', views.EditarCategoria.as_view(), name='editarCategoria'),
+
 path('listarProductos', views.ListarProductos.as_view(), name='listarProductos'),
 path('agregarProducto', views.AgregarProducto.as_view(), name='agregarProducto'),
 path('importarProductos', views.ImportarProductos.as_view(), name='importarProductos'),
