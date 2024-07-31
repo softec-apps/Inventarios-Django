@@ -19,17 +19,17 @@
                         <div class="row">
                             <div class="col-md-12">
                             {% if messages %}
-                            {% for message in messages %}
-         <div class="card card-primary">
-            <div class="card-header"> 
-                <div class="header-block">
-                    <em class="fa fa-check"></em>
-                        <p class="title">{{ message }}</p>
-                    </div>
-                </div>
-         </div>
-         {% endfor %}
-        {%endif%}
+                                {% for message in messages %}
+                                <div class="card card-primary">
+                                    <div class="card-header">
+                                        <div class="header-block">
+                                            <em class="fa fa-check"></em>
+                                                <p class="title">{{ message }}</p>
+                                            </div>
+                                        </div>
+                                </div>
+                                {% endfor %}
+                            {%endif%}
                                 <div class="card">
                                     <div class="card-block">
                                         <div class="card-title-block">
@@ -44,7 +44,8 @@
                                                             <th>Nombre</th>
                                                             <th>Precio</th>
                                                             <th>Disponible</th>
-                                                            <th>Categoria</th>
+                                                            <th>Categoría</th>
+                                                            <th>Medida</th>
                                                             <th>IVA</th>
                                                             <th>Opciones</th>
                                                         </tr>
@@ -56,17 +57,17 @@
                                                             <td>{{ fila.descripcion }}</td>
                                                             <td>{{ fila.precio }}</td>
                                                             <td>{{ fila.disponible }}</td>
+                                                            <td>{{ fila.categoria }}</td>
                                                             <td>
-                                                    {% if fila.categoria == '1' %}
-                                                            Unidad
-                                                    {% elif fila.categoria == '2' %}
-                                                            Kilo
-                                                    {% elif fila.categoria == '3' %}
-                                                            Litro
-                                                    {% elif fila.categoria == '4' %}
-                                                            Otros
-                                                        {%endif%}
-
+                                                                {% if fila.medida == '1' %}
+                                                                        Unidad
+                                                                {% elif fila.medida == '2' %}
+                                                                        Kilo
+                                                                {% elif fila.medida == '3' %}
+                                                                        Litro
+                                                                {% elif fila.medida == '4' %}
+                                                                    Otros
+                                                                {%endif%}
                                                             </td>
                                                             <td>
                                                                 {% if fila.tiene_iva == True %}
@@ -78,16 +79,15 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td>
-
-                                                <div class="btn-group">
-                                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-wrench"></i></button>
-                                                <!-- <span class="sr-only">Abrir menu</span> -->
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="/inventario/editarProducto/{{ fila.id}}">Editar/Ver producto</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" onclick="eliminarEntrada( {{fila.id}},'producto' )">Eliminar producto</a>
-                                                    </div>
-                                                     </div>
+                                                                <div class="btn-group">
+                                                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-wrench"></i></button>
+                                                                <!-- <span class="sr-only">Abrir menu</span> -->
+                                                                <div class="dropdown-menu">
+                                                                    <a class="dropdown-item" href="/inventario/editarProducto/{{ fila.id}}">Editar/Ver producto</a>
+                                                                    <div class="dropdown-divider"></div>
+                                                                    <a class="dropdown-item" onclick="eliminarEntrada( {{fila.id}},'producto' )">Eliminar producto</a>
+                                                                    </div>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         {% endfor %}

@@ -12,11 +12,11 @@ class Usuario(AbstractUser):
     email = models.EmailField(max_length=100, unique=True)
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=60)
-    nivel = models.IntegerField(null=True) 
+    nivel = models.IntegerField(null=True)
 
     @classmethod
     def numeroRegistrados(self):
-        return int(self.objects.all().count() )   
+        return int(self.objects.all().count() )
 
     @classmethod
     def numeroUsuarios(self,tipo):
@@ -29,21 +29,36 @@ class Usuario(AbstractUser):
 class Opciones(models.Model):
     #id
     moneda = models.CharField(max_length=20, null=True)
-    valor_iva = models.IntegerField(unique=True)   
+    valor_iva = models.IntegerField(unique=True)
     nombre_negocio = models.CharField(max_length=25,null=True)
     mensaje_factura = models.TextField(null=True)
 
 #---------------------------------------------------------------------------------------
 
- 
+
+#-------------------------------CATEGORIA------------------------------------------------
+class Categoria(models.Model):
+    #id
+    nombre = models.CharField(max_length=50, unique=True)
+
+    @classmethod
+    def numeroRegistrados(self):
+        return int(self.objects.all().count())
+
+    def __str__(self):
+        return self.nombre
+
+
 #-------------------------------PRODUCTO------------------------------------------------
 class Producto(models.Model):
     #id
+    # ruc_proveedor = models.CharField(max_length=13, unique=True)
     decisiones =  [('1','Unidad'),('2','Kilo'),('3','Litro'),('4','Otros')]
     descripcion = models.CharField(max_length=40)
     precio = models.DecimalField(max_digits=9,decimal_places=2)
     disponible = models.IntegerField(null=True)
-    categoria = models.CharField(max_length=20,choices=decisiones)
+    medida = models.CharField(max_length=20, choices=decisiones, default='1')
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     tiene_iva = models.BooleanField(null=True)
 
     @classmethod
@@ -74,9 +89,9 @@ class Producto(models.Model):
 
             arreglo[indice + extra].append(objeto.id)
             precio_producto = objeto.precio
-            arreglo[indice + extra].append("%d" % (precio_producto) )  
+            arreglo[indice + extra].append("%d" % (precio_producto) )
 
-        return arreglo 
+        return arreglo
 
     @classmethod
     def productosDisponibles(self):
@@ -95,9 +110,9 @@ class Producto(models.Model):
 
             arreglo[indice + extra].append(objeto.id)
             productos_disponibles = objeto.disponible
-            arreglo[indice + extra].append("%d" % (productos_disponibles) )  
+            arreglo[indice + extra].append("%d" % (productos_disponibles) )
 
-        return arreglo 
+        return arreglo
 #---------------------------------------------------------------------------------------
 
 
@@ -105,14 +120,17 @@ class Producto(models.Model):
 class Cliente(models.Model):
     #id
     cedula = models.CharField(max_length=12, unique=True)
+    generoChoices =  [('1','Masculino'),('2','Femenino'),('3','Otro')]
+    genero = models.CharField(max_length=20, choices=generoChoices, default='1')
     nombre = models.CharField(max_length=40)
     apellido = models.CharField(max_length=40)
+    ciudad = models.CharField(max_length=100, null=True)
     direccion = models.CharField(max_length=200)
-    nacimiento = models.DateField()
+    nacimiento = models.DateField(null=True)
     telefono = models.CharField(max_length=20)
-    telefono2 = models.CharField(max_length=20,null=True)
+    telefono2 = models.CharField(max_length=20, null=True)
     correo = models.CharField(max_length=100)
-    correo2 = models.CharField(max_length=100,null=True)
+    correo2 = models.CharField(max_length=100, null=True)
 
     @classmethod
     def numeroRegistrados(self):
@@ -127,14 +145,14 @@ class Cliente(models.Model):
             arreglo[indice].append(objeto.cedula)
             nombre_cliente = objeto.nombre + " " + objeto.apellido
             arreglo[indice].append("%s. C.I: %s" % (nombre_cliente,self.formatearCedula(objeto.cedula)) )
- 
-        return arreglo   
+
+        return arreglo
 
 
     @staticmethod
     def formatearCedula(cedula):
-        return format(int(cedula), ',d')        
-#-----------------------------------------------------------------------------------------        
+        return format(int(cedula), ',d')
+#-----------------------------------------------------------------------------------------
 
 
 
@@ -179,7 +197,7 @@ class DetalleFactura(models.Model):
         for producto in vendidos:
             totalVendidos += producto.cantidad
 
-        return totalVendidos  
+        return totalVendidos
 
     @classmethod
     def ultimasVentas(self):
@@ -192,15 +210,15 @@ class DetalleFactura(models.Model):
 #------------------------------------------PROVEEDOR-----------------------------------
 class Proveedor(models.Model):
     #id
+    ruc = models.CharField(max_length=13, unique=True, default='0000000000000')
     cedula = models.CharField(max_length=12, unique=True)
-    nombre = models.CharField(max_length=40)
-    apellido = models.CharField(max_length=40)
+    nombre = models.CharField(max_length=100)
+    ciudad = models.CharField(max_length=100, null=True)
     direccion = models.CharField(max_length=200)
-    nacimiento = models.DateField()
     telefono = models.CharField(max_length=20)
-    telefono2 = models.CharField(max_length=20,null=True)
+    telefono2 = models.CharField(max_length=20, null=True)
     correo = models.CharField(max_length=100)
-    correo2 = models.CharField(max_length=100,null=True)
+    correo2 = models.CharField(max_length=100, null=True)
 
     @classmethod
     def cedulasRegistradas(self):
@@ -211,19 +229,18 @@ class Proveedor(models.Model):
             arreglo[indice].append(objeto.cedula)
             nombre_cliente = objeto.nombre + " " + objeto.apellido
             arreglo[indice].append("%s. C.I: %s" % (nombre_cliente,self.formatearCedula(objeto.cedula)) )
- 
-        return arreglo 
+        return arreglo
 
     @staticmethod
     def formatearCedula(cedula):
-        return format(int(cedula), ',d')  
-#---------------------------------------------------------------------------------------    
+        return format(int(cedula), ',d')
+#---------------------------------------------------------------------------------------
 
 
 #----------------------------------------PEDIDO-----------------------------------------
 class Pedido(models.Model):
     #id
-    proveedor = models.ForeignKey(Proveedor,to_field='cedula', on_delete=models.CASCADE)    
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
     fecha = models.DateField()
     sub_monto = models.DecimalField(max_digits=20,decimal_places=2)
     monto_general = models.DecimalField(max_digits=20,decimal_places=2)
@@ -231,10 +248,10 @@ class Pedido(models.Model):
     presente = models.BooleanField(null=True)
 
     @classmethod
-    def recibido(self,pedido):
+    def recibido(self, pedido):
         return self.objects.get(id=pedido).presente
 
-#---------------------------------------------------------------------------------------    
+#---------------------------------------------------------------------------------------
 
 
 #-------------------------------------DETALLES DE PEDIDO-------------------------------
@@ -253,4 +270,4 @@ class Notificaciones(models.Model):
     #id
     autor = models.ForeignKey(Usuario,to_field='username', on_delete=models.CASCADE)
     mensaje = models.TextField()
-#---------------------------------------------------------------------------------------    
+#---------------------------------------------------------------------------------------
