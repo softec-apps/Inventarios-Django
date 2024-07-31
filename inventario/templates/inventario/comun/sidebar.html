@@ -10,6 +10,13 @@
             </div>
         </div>
 
+                <div class="logo-nuevo">
+                    {% load static %}
+                    <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo.png' %}">
+                </div> Administrador
+            </div>
+        </div>
+
         <nav class="menu">
             <ul class="sidebar-menu metismenu" id="sidebar-menu">
                 <li>
@@ -71,6 +78,61 @@
                 <li>
                     <a href="">
                         <i class="fa fa-gift"></i>Pedido
+
+
+
+                <!-- Sub-menu de categoría -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-list"></i> Categorías
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i>Listar categorías</a>
+                        </li>
+                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i>Agregar categoría</a></li>
+                    </ul>
+                </li>
+                <!--Fin de sub-menu de producto -->
+
+
+
+                <!-- Sub-menu de producto -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-shopping-basket"></i> Producto
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarProductos"><i class="fa fa-ellipsis-h"></i>Listar productos</a>
+                        </li>
+                        <li><a href="/inventario/agregarProducto"><i class="fa fa-plus"></i>Agregar producto</a></li>
+                    </ul>
+                </li>
+                <!--Fin de sub-menu de producto -->
+
+
+
+                <!-- Sub-menu de proveedor -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-book"></i> Proveedor
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarProveedores"><i class="fa fa-ellipsis-h"></i>Listar
+                                proveedores</a></li>
+                        <li><a href="/inventario/agregarProveedor"><i class="fa fa-plus"></i>Agregar proveedor</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de proveedor -->
+
+
+
+                <!-- Sub-menu de pedido -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-gift"></i> Pedido
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -90,6 +152,15 @@
                     </a>
                     <ul class="sidebar-nav">
 
+
+                <!-- Sub-menu de clientes-->
+                <li>
+                    <a href="">
+                        <i class="fa fa-handshake-o"></i> Clientes
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+
                         <li><a href="/inventario/listarClientes"><i class="fa fa-ellipsis-h"></i>Listar clientes</a>
                         </li>
                         <li><a href="/inventario/agregarCliente"><i class="fa fa-plus"></i>Agregar cliente</a></li>
@@ -102,6 +173,12 @@
                 <li>
                     <a href="">
                         <i class="fa fa-ticket"></i>Factura
+
+
+                <!-- Sub-menu de factura-->
+                <li>
+                    <a href="">
+                        <i class="fa fa-ticket"></i> Factura
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -112,6 +189,7 @@
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de factura -->
+
 
 
                 <!-- Sub-menu de usuarios -->
@@ -148,6 +226,8 @@
 
                 <!-- Sub-menu de manual de usuario-->
 
+
+                <!-- Sub-menu de manual de usuario-->
                 <li>
                     <a href="">
                         <i class="fa fa-book"></i> Manual de usuario
@@ -174,6 +254,7 @@
                 <!--Fin de sub-menu de manual de usuario -->
 
                 <!-- -->
+                <!--Fin de sub-menu de manual de usuario -->
             </ul>
         </nav>
     </div>

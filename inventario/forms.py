@@ -1,5 +1,5 @@
 from django import forms
-from .models import Producto,Cliente, Proveedor, Usuario, Opciones
+from .models import Categoria, Producto, Cliente, Proveedor, Usuario, Opciones
 
 #Para el uso en el Kardex
 from .models import Kardex
@@ -26,6 +26,40 @@ class LoginFormulario(forms.Form):
     password = forms.CharField(label="Contraseña",widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña',
         'class': 'form-control underlined', 'type':'password','id':'password'}))
 
+
+class CategoriaFormulario(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ['nombre']
+        labels = {
+        'nombre': 'Nombre'
+        }
+        widgets = {
+        'nombre': forms.TextInput(attrs={'placeholder': 'Nombre de la categoria',
+        'id':'nombre','class':'form-control'} ),
+        }
+
+class ImportarCategoriasFormulario(forms.Form):
+    importar = forms.FileField(
+        max_length = 100000000000,
+        label = 'Escoger archivo',
+        widget = forms.ClearableFileInput(
+        attrs={'id':'importar','class':'form-control'}),
+        )
+
+class ExportarCategoriasFormulario(forms.Form):
+    desde = forms.DateField(
+        label = 'Desde',
+        widget = forms.DateInput(format=('%d-%m-%Y'),
+        attrs={'id':'desde','class':'form-control','type':'date'}),
+        )
+
+    hasta = forms.DateField(
+        label = 'Hasta',
+        widget = forms.DateInput(format=('%d-%m-%Y'),
+        attrs={'id':'hasta','class':'form-control','type':'date'}),
+        )
+
 class ProductoFormulario(forms.ModelForm):
     precio = forms.DecimalField(
         min_value = 0,
@@ -36,16 +70,19 @@ class ProductoFormulario(forms.ModelForm):
         )
     class Meta:
         model = Producto
-        fields = ['descripcion','precio','categoria','tiene_iva']
+        fields = ['descripcion','precio','categoria','medida','tiene_iva']
         labels = {
         'descripcion': 'Nombre',
-        'tiene_iva': 'Incluye IVA?'
+        'tiene_iva': 'Incluye IVA?',
+        'medida': 'Unidad de medida'
         }
         widgets = {
         'descripcion': forms.TextInput(attrs={'placeholder': 'Nombre del producto',
-        'id':'descripcion','class':'form-control'} ),
-        'categoria': forms.Select(attrs={'class':'form-control','id':'categoria'}),
-        'tiene_iva': forms.CheckboxInput(attrs={'class':'checkbox rounded','id':'tiene_iva'}) 
+            'id':'descripcion','class':'form-control'} ),
+        'categoria': forms.Select(attrs={'id':'categoria','class':'form-control'} ),
+        'medida': forms.Select(attrs={'class':'form-control','id':'medida'}),
+        'tiene_iva': forms.CheckboxInput(attrs={'class':'checkbox rounded','id':'tiene_iva'}),
+        'medida': forms.Select(attrs={'class':'form-control','id':'medida'}),
         }
 
 class ImportarProductosFormulario(forms.Form):
@@ -62,20 +99,20 @@ class ImportarClientesFormulario(forms.Form):
         label = 'Escoger archivo',
         widget = forms.ClearableFileInput(
         attrs={'id':'importar','class':'form-control'}),
-        )   
+        )
 
 class ExportarProductosFormulario(forms.Form):
     desde = forms.DateField(
         label = 'Desde',
         widget = forms.DateInput(format=('%d-%m-%Y'),
         attrs={'id':'desde','class':'form-control','type':'date'}),
-        )   
+        )
 
     hasta = forms.DateField(
         label = 'Hasta',
         widget = forms.DateInput(format=('%d-%m-%Y'),
         attrs={'id':'hasta','class':'form-control','type':'date'}),
-        )   
+        )
 
 class ExportarClientesFormulario(forms.Form):
     desde = forms.DateField(

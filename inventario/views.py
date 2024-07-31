@@ -84,28 +84,26 @@ class Panel(LoginRequiredMixin, View):
     def get(self, request):
         from datetime import date
         #Recupera los datos del usuario despues del login
-        contexto = {'usuario': request.user.username,
-                    'id_usuario':request.user.id,
-                   'nombre': request.user.first_name,
-                   'apellido': request.user.last_name,
-                   'correo': request.user.email,
-                   'fecha':  date.today(),
-                   'productosRegistrados' : Producto.numeroRegistrados(),
-                   'productosVendidos' :  DetalleFactura.productosVendidos(),
-                   'clientesRegistrados' : Cliente.numeroRegistrados(),
-                   'usuariosRegistrados' : Usuario.numeroRegistrados(),
-                   'facturasEmitidas' : Factura.numeroRegistrados(),
-                   'ingresoTotal' : Factura.ingresoTotal(),
-                   'ultimasVentas': DetalleFactura.ultimasVentas(),
-                   'administradores': Usuario.numeroUsuarios('administrador'),
-                   'usuarios': Usuario.numeroUsuarios('usuario')
-
+        contexto = {
+            'usuario': request.user.username,
+            'id_usuario':request.user.id,
+            'nombre': request.user.first_name,
+            'apellido': request.user.last_name,
+            'correo': request.user.email,
+            'fecha':  date.today(),
+            'productosRegistrados' : Producto.numeroRegistrados(),
+            'productosVendidos' :  DetalleFactura.productosVendidos(),
+            'clientesRegistrados' : Cliente.numeroRegistrados(),
+            'usuariosRegistrados' : Usuario.numeroRegistrados(),
+            'facturasEmitidas' : Factura.numeroRegistrados(),
+            'ingresoTotal' : Factura.ingresoTotal(),
+            'ultimasVentas': DetalleFactura.ultimasVentas(),
+            'administradores': Usuario.numeroUsuarios('administrador'),
+            'usuarios': Usuario.numeroUsuarios('usuario')
         }
-
 
         return render(request, 'inventario/panel.html',contexto)
 #Fin de vista----------------------------------------------------------------------#
-
 
 
 
@@ -175,17 +173,16 @@ class Perfil(LoginRequiredMixin, View):
             return render(request,'inventario/perfil/perfil.html', contexto)
 
 
-        elif modo == 'clave':  
+        elif modo == 'clave':
             perf = Usuario.objects.get(id=p)
             if p == 1:
                 if request.user.nivel != 2:
-                   
                     messages.error(request, 'No puede cambiar la clave del administrador por no tener los permisos suficientes')
-                    return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)  
+                    return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)
             else:
-                if request.user.is_superuser != True: 
+                if request.user.is_superuser != True:
                     messages.error(request, 'No puede cambiar la clave de este perfil por no tener los permisos suficientes')
-                    return HttpResponseRedirect('/inventario/perfil/ver/%s' % p) 
+                    return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)
 
                 else:
                     if perf.is_superuser == True:
@@ -194,21 +191,20 @@ class Perfil(LoginRequiredMixin, View):
 
                         elif perf.id != request.user.id:
                             messages.error(request, 'No puedes cambiar la clave de un usuario de tu mismo nivel')
-                            return HttpResponseRedirect('/inventario/perfil/ver/%s' % p) 
-
+                            return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)
 
             form = ClaveFormulario(request.POST)
             contexto = { 'form':form, 'modo':request.session.get('perfilProcesado'),
-            'editar':'clave','nombreUsuario':perf.username }            
+            'editar':'clave','nombreUsuario':perf.username }
 
             contexto = complementarContexto(contexto,request.user)
             return render(request, 'inventario/perfil/perfil.html', contexto)
 
         elif modo == 'ver':
             perf = Usuario.objects.get(id=p)
-            contexto = { 'perfil':perf }      
+            contexto = { 'perfil':perf }
             contexto = complementarContexto(contexto,request.user)
-          
+
             return render(request,'inventario/perfil/verPerfil.html', contexto)
 
 
@@ -218,12 +214,12 @@ class Perfil(LoginRequiredMixin, View):
             # Crea una instancia del formulario y la llena con los datos:
             form = UsuarioFormulario(request.POST)
             # Revisa si es valido:
-            
+
             if form.is_valid():
                 perf = Usuario.objects.get(id=p)
                 # Procesa y asigna los datos con form.cleaned_data como se requiere
                 if p != 1:
-                    level = form.cleaned_data['level']        
+                    level = form.cleaned_data['level']
                     perf.nivel = level
                     perf.is_superuser = level
 
@@ -238,10 +234,10 @@ class Perfil(LoginRequiredMixin, View):
                 perf.email = email
 
                 perf.save()
-                
+
                 form = UsuarioFormulario()
                 messages.success(request, 'Actualizado exitosamente el perfil de ID %s.' % p)
-                request.session['perfilProcesado'] = True           
+                request.session['perfilProcesado'] = True
                 return HttpResponseRedirect("/inventario/perfil/ver/%s" % perf.id)
             else:
                 #De lo contrario lanzara el mismo formulario
@@ -266,9 +262,9 @@ class Perfil(LoginRequiredMixin, View):
                         #pass
                     #else:
                         #error = 1
-                        #messages.error(request,"La clave nueva no puede ser identica a la actual") 
+                        #messages.error(request,"La clave nueva no puede ser identica a la actual")
 
-                usuario = Usuario.objects.get(id=p) 
+                usuario = Usuario.objects.get(id=p)
 
                 if clave_nueva == repetir_clave:
                     pass
@@ -288,12 +284,7 @@ class Perfil(LoginRequiredMixin, View):
 
                 else:
                     return HttpResponseRedirect("/inventario/perfil/clave/%s" % p)
-    
-
-
-
-  
-#----------------------------------------------------------------------------------#   
+#----------------------------------------------------------------------------------#
 
 
 #Elimina usuarios, productos, clientes o proveedores----------------------------
@@ -307,13 +298,19 @@ class Eliminar(LoginRequiredMixin, View):
             prod = Producto.objects.get(id=p)
             prod.delete()
             messages.success(request, 'Producto de ID %s borrado exitosamente.' % p)
-            return HttpResponseRedirect("/inventario/listarProductos")         
-           
+            return HttpResponseRedirect("/inventario/listarProductos")
+
+        if modo == 'categoria':
+            categoria = Categoria.objects.get(id=p)
+            categoria.delete()
+            messages.success(request, 'Categoría de ID %s borrado exitosamente.' % p)
+            return HttpResponseRedirect("/inventario/listarCategorias")
+
         elif modo == 'cliente':
             cliente = Cliente.objects.get(id=p)
             cliente.delete()
             messages.success(request, 'Cliente de ID %s borrado exitosamente.' % p)
-            return HttpResponseRedirect("/inventario/listarClientes")            
+            return HttpResponseRedirect("/inventario/listarClientes")
 
 
         elif modo == 'proveedor':
@@ -324,25 +321,178 @@ class Eliminar(LoginRequiredMixin, View):
 
         elif modo == 'usuario':
             if request.user.is_superuser == False:
-                messages.error(request, 'No tienes permisos suficientes para borrar usuarios')  
+                messages.error(request, 'No tienes permisos suficientes para borrar usuarios')
                 return HttpResponseRedirect('/inventario/listarUsuarios')
 
             elif p == 1:
                 messages.error(request, 'No puedes eliminar al super-administrador.')
-                return HttpResponseRedirect('/inventario/listarUsuarios')  
+                return HttpResponseRedirect('/inventario/listarUsuarios')
 
             elif request.user.id == p:
                 messages.error(request, 'No puedes eliminar tu propio usuario.')
-                return HttpResponseRedirect('/inventario/listarUsuarios')                 
+                return HttpResponseRedirect('/inventario/listarUsuarios')
 
             else:
                 usuario = Usuario.objects.get(id=p)
                 usuario.delete()
                 messages.success(request, 'Usuario de ID %s borrado exitosamente.' % p)
-                return HttpResponseRedirect("/inventario/listarUsuarios")        
+                return HttpResponseRedirect("/inventario/listarUsuarios")
+#Fin de vista-------------------------------------------------------------------
 
 
-#Fin de vista-------------------------------------------------------------------   
+#Crea una lista de las categorías, 10 por pagina----------------------------------------#
+class ListarCategorias(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def get(self, request):
+        #Saca una lista de todos los clientes de la BDD
+        categorias = Categoria.objects.all()
+        contexto = {'tabla': categorias}
+        contexto = complementarContexto(contexto,request.user)
+
+        return render(request, 'inventario/categoria/listarCategorias.html',contexto)
+#Fin de vista--------------------------------------------------------------------------#
+
+
+
+#Maneja y visualiza un formulario--------------------------------------------------#
+class AgregarCategoria(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def post(self, request):
+        # Crea una instancia del formulario y la llena con los datos:
+        form = CategoriaFormulario(request.POST)
+        # Revisa si es valido:
+        if form.is_valid():
+            # Procesa y asigna los datos con form.cleaned_data como se requiere
+            nombre = form.cleaned_data['nombre']
+
+            prod = Categoria(nombre=nombre)
+            prod.save()
+
+            form = CategoriaFormulario()
+            messages.success(request, 'Ingresado exitosamente bajo la ID %s.' % prod.id)
+            request.session['categoriaProcesado'] = 'agregado'
+            return HttpResponseRedirect("/inventario/agregarCategoria")
+        else:
+            #De lo contrario lanzara el mismo formulario
+            return render(request, 'inventario/categoria/agregarCategoria.html', {'form': form})
+
+    # Si se llega por GET crearemos un formulario en blanco
+    def get(self,request):
+        form = CategoriaFormulario()
+        #Envia al usuario el formulario para que lo llene
+        contexto = {'form':form , 'modo':request.session.get('categoriaProcesado')}
+        contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/categoria/agregarCategoria.html', contexto)
+#Fin de vista------------------------------------------------------------------------#
+
+
+
+#Formulario simple que procesa un script para importar las categorías-----------------#
+class ImportarCategorias(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def post(self,request):
+        form = ImportaCategoriasFormulario(request.POST)
+        if form.is_valid():
+            request.session['categoriasImportados'] = True
+            return HttpResponseRedirect("/inventario/importarCategorias")
+
+    def get(self,request):
+        form = ImportarCategoriasFormulario()
+
+        if request.session.get('categoriasImportados') == True:
+            importado = request.session.get('categoriaImportados')
+            contexto = { 'form':form,'categoriasImportados': importado  }
+            request.session['categoriasImportados'] = False
+
+        else:
+            contexto = {'form':form}
+            contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/categoria/importarCategorias.html',contexto)
+
+#Fin de vista-------------------------------------------------------------------------#
+
+
+
+#Formulario simple que crea un archivo y respalda las categorías-----------------------#
+class ExportarCategorias(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def post(self,request):
+        form = ExportarCategoriasFormulario(request.POST)
+        if form.is_valid():
+            request.session['categoriasExportados'] = True
+
+            #Se obtienen las entradas de producto en formato JSON
+            data = serializers.serialize("json", Categoria.objects.all())
+            fs = FileSystemStorage('inventario/tmp/')
+
+            #Se utiliza la variable fs para acceder a la carpeta con mas facilidad
+            with fs.open("categorias.json", "w") as out:
+                out.write(data)
+                out.close()
+
+            with fs.open("categorias.json", "r") as out:
+                response = HttpResponse(out.read(), content_type="application/force-download")
+                response['Content-Disposition'] = 'attachment; filename="categorias.json"'
+                out.close()
+            #------------------------------------------------------------
+            return response
+
+    def get(self,request):
+        form = ExportarCategoriasFormulario()
+
+        if request.session.get('categoriasExportados') == True:
+            exportado = request.session.get('categoriaExportados')
+            contexto = { 'form':form,'categoriasExportados': exportado  }
+            request.session['categoriasExportados'] = False
+
+        else:
+            contexto = {'form':form}
+            contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/categoria/exportarCategoria.html',contexto)
+#Fin de vista-------------------------------------------------------------------------#
+
+
+
+#Muestra el formulario especifico para editarlo----------------------------------#
+class EditarCategoria(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def post(self,request,p):
+        # Crea una instancia del formulario y la llena con los datos:
+        form = CategoriaFormulario(request.POST)
+        # Revisa si es valido:
+        if form.is_valid():
+            # Procesa y asigna los datos con form.cleaned_data como se requiere
+            nombre = form.cleaned_data['nombre']
+
+            categoria = Categoria.objects.get(id=p)
+            categoria.nombre = nombre
+            categoria.save()
+            form = CategoriaFormulario(instance=categoria)
+            messages.success(request, 'Actualizado exitosamente la categoría de ID %s.' % p)
+            request.session['categoriaProcesado'] = 'editado'
+            return HttpResponseRedirect("/inventario/editarCategoria/%s" % categoria.id)
+        else:
+            #De lo contrario lanzara el mismo formulario
+            return render(request, 'inventario/categoria/agregarCategoria.html', {'form': form})
+
+    def get(self, request,p):
+        prod = Categoria.objects.get(id=p)
+        form = CategoriaFormulario(instance=prod)
+        #Envia al usuario el formulario para que lo llene
+        contexto = {'form':form , 'modo':request.session.get('categoriaProcesado'),'editar':True}
+        contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/categoria/agregarCategoria.html', contexto)
+#Fin de vista------------------------------------------------------------------------------------#
 
 
 
@@ -356,14 +506,13 @@ class ListarProductos(LoginRequiredMixin, View):
 
         #Lista de productos de la BDD
         productos = Producto.objects.all()
-                               
+
         contexto = {'tabla':productos}
 
-        contexto = complementarContexto(contexto,request.user)  
+        contexto = complementarContexto(contexto,request.user)
 
         return render(request, 'inventario/producto/listarProductos.html',contexto)
 #Fin de vista-------------------------------------------------------------------------#
-
 
 
 
@@ -386,7 +535,7 @@ class AgregarProducto(LoginRequiredMixin, View):
 
             prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,tiene_iva=tiene_iva,disponible=disponible)
             prod.save()
-            
+
             form = ProductoFormulario()
             messages.success(request, 'Ingresado exitosamente bajo la ID %s.' % prod.id)
             request.session['productoProcesado'] = 'agregado'
@@ -399,11 +548,10 @@ class AgregarProducto(LoginRequiredMixin, View):
     def get(self,request):
         form = ProductoFormulario()
         #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('productoProcesado')}   
-        contexto = complementarContexto(contexto,request.user)  
+        contexto = {'form':form , 'modo':request.session.get('productoProcesado')}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/producto/agregarProducto.html', contexto)
-#Fin de vista------------------------------------------------------------------------# 
-
+#Fin de vista------------------------------------------------------------------------#
 
 
 
@@ -435,7 +583,6 @@ class ImportarProductos(LoginRequiredMixin, View):
 
 
 
-
 #Formulario simple que crea un archivo y respalda los productos-----------------------#
 class ExportarProductos(LoginRequiredMixin, View):
     login_url = '/inventario/login'
@@ -453,12 +600,12 @@ class ExportarProductos(LoginRequiredMixin, View):
             #Se utiliza la variable fs para acceder a la carpeta con mas facilidad
             with fs.open("productos.json", "w") as out:
                 out.write(data)
-                out.close()  
+                out.close()
 
-            with fs.open("productos.json", "r") as out:                 
+            with fs.open("productos.json", "r") as out:
                 response = HttpResponse(out.read(), content_type="application/force-download")
                 response['Content-Disposition'] = 'attachment; filename="productos.json"'
-                out.close() 
+                out.close()
             #------------------------------------------------------------
             return response
 
@@ -475,7 +622,6 @@ class ExportarProductos(LoginRequiredMixin, View):
             contexto = complementarContexto(contexto,request.user) 
         return render(request, 'inventario/producto/exportarProductos.html',contexto)
 #Fin de vista-------------------------------------------------------------------------#
-
 
 
 
@@ -503,20 +649,20 @@ class EditarProducto(LoginRequiredMixin, View):
             prod.save()
             form = ProductoFormulario(instance=prod)
             messages.success(request, 'Actualizado exitosamente el producto de ID %s.' % p)
-            request.session['productoProcesado'] = 'editado'            
+            request.session['productoProcesado'] = 'editado'
             return HttpResponseRedirect("/inventario/editarProducto/%s" % prod.id)
         else:
             #De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/producto/agregarProducto.html', {'form': form})
 
-    def get(self, request,p): 
+    def get(self, request,p):
         prod = Producto.objects.get(id=p)
         form = ProductoFormulario(instance=prod)
         #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('productoProcesado'),'editar':True}    
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = {'form':form , 'modo':request.session.get('productoProcesado'),'editar':True}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/producto/agregarProducto.html', contexto)
-#Fin de vista------------------------------------------------------------------------------------#      
+#Fin de vista------------------------------------------------------------------------------------#
 
 
 #Crea una lista de los clientes, 10 por pagina----------------------------------------#
