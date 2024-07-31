@@ -2,6 +2,14 @@
     <div class="sidebar-container">
         <div class="sidebar-header">
             <div class="brand">
+
+                <div class="logo-nuevo">
+                    {% load static %}
+                    <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo2.png' %}">
+                </div> Administrador
+            </div>
+        </div>
+
                 <div class="logo-nuevo">
                     {% load static %}
                     <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo.png' %}">
@@ -15,6 +23,61 @@
                     <a href="/inventario/panel">
                         <i class="fa fa-home"></i> Inicio </a>
                 </li>
+                <!-- Sub-menu de producto -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-shopping-basket"></i> Producto
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarProductos"><i class="fa fa-ellipsis-h"></i>Listar productos</a>
+                        </li>
+                        <li><a href="/inventario/agregarProducto"><i class="fa fa-plus"></i>Agregar producto</a></li>
+                    </ul>
+                </li>
+                <!--Fin de sub-menu de producto -->
+
+
+                <!-- Sub-menu de producto -->
+                <li>
+                    <a href="#">
+                        <i class="fa fa-shopping-basket"></i> Kardex
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="{% url 'inventario:lista_productos' %}"><i class="fa fa-ellipsis-h"></i> Lista de
+                                productos</a></li>
+                        <li><a href="{% url 'inventario:detalle_kardex' 1 %}"><i class="fa fa-plus"></i> Detalle del
+                                Kardex</a></li>
+                        <li><a href="{% url 'inventario:resumen_kardex' 1 %}"><i class="fa fa-file-text"></i> Resumen
+                                del Kardex</a></li>
+                        <li><a href="{% url 'inventario:nuevo_movimiento' 1 %}"><i class="fa fa-plus-circle"></i> Nuevo
+                                Movimiento</a></li>
+                    </ul>
+                </li>
+                <!--Fin de sub-menu de producto -->
+
+
+                <!-- Sub-menu de proveedor -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-book"></i>Proveedor
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarProveedores"><i class="fa fa-ellipsis-h"></i>Listar
+                                proveedores</a></li>
+                        <li><a href="/inventario/agregarProveedor"><i class="fa fa-plus"></i>Agregar proveedor</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de proveedor -->
+
+
+
+                <!-- Sub-menu de pedido -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-gift"></i>Pedido
 
 
 
@@ -81,6 +144,14 @@
                 <!-- Fin de sub-menu de pedido -->
 
 
+                <!-- Sub-menu de clientes-->
+                <li>
+                    <a href="">
+                        <i class="fa fa-handshake-o"></i>Clientes
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+
 
                 <!-- Sub-menu de clientes-->
                 <li>
@@ -98,6 +169,10 @@
                 </li>
                 <!-- Fin de sub-menu de clientes -->
 
+                <!-- Sub-menu de factura-->
+                <li>
+                    <a href="">
+                        <i class="fa fa-ticket"></i>Factura
 
 
                 <!-- Sub-menu de factura-->
@@ -149,6 +224,8 @@
                 <!--Fin de sub-menu de opciones -->
 
 
+                <!-- Sub-menu de manual de usuario-->
+
 
                 <!-- Sub-menu de manual de usuario-->
                 <li>
@@ -173,6 +250,10 @@
 
                     </ul>
                 </li>
+
+                <!--Fin de sub-menu de manual de usuario -->
+
+                <!-- -->
                 <!--Fin de sub-menu de manual de usuario -->
             </ul>
         </nav>

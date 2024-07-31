@@ -56,6 +56,13 @@ path('importarBDD',views.ImportarBDD.as_view(), name='importarBDD'),
 path('descargarBDD', views.DescargarBDD.as_view(), name='descargarBDD'),
 path('configuracionGeneral', views.ConfiguracionGeneral.as_view(), name='configuracionGeneral'),
 
-path('verManualDeUsuario/<str:pagina>/',views.VerManualDeUsuario.as_view(), name='verManualDeUsuario')
+path('verManualDeUsuario/<str:pagina>/',views.VerManualDeUsuario.as_view(), name='verManualDeUsuario'),
+
+#rutas para el manejo del Kardex
+path('kardex/lista_productos/', views.lista_productos, name='lista_productos'),
+path('kardex/detalle_kardex/<int:producto_id>/', views.detalle_kardex, name='detalle_kardex'),
+path('kardex/resumen_kardex/<int:producto_id>/', views.resumen_kardex, name='resumen_kardex'),
+path('kardex/nuevo_movimiento/<int:producto_id>/', views.nuevo_movimiento, name='nuevo_movimiento'),
+path('kardex/registrar_movimiento/<int:producto_id>/', views.registrar_movimiento,name='registrar_movimiento'),
 ]
 
