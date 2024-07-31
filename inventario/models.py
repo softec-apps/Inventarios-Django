@@ -45,6 +45,7 @@ class Producto(models.Model):
     disponible = models.IntegerField(null=True)
     categoria = models.CharField(max_length=20,choices=decisiones)
     tiene_iva = models.BooleanField(null=True)
+    stock_actual = models.IntegerField(default=0)
 
     @classmethod
     def numeroRegistrados(self):
@@ -98,10 +99,63 @@ class Producto(models.Model):
             arreglo[indice + extra].append("%d" % (productos_disponibles) )  
 
         return arreglo 
+    
+    def actualizar_stock(self, cantidad , es_entrada=True):
+        if es_entrada:
+            self.stock_actual +=cantidad
+        else:
+            self.stock_actual -=cantidad
+        self.save()
 #---------------------------------------------------------------------------------------
 
 
 #------------------------------------------CLIENTE--------------------------------------
+
+
+#------------------------------------------Kardex--------------------------------------
+
+class Kardex(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    fecha = models.DateField(auto_now_add=True)
+    tipo_movimiento = models.CharField(max_length=10, choices=[('ENTRADA', 'Entrada'), ('SALIDA', 'Salida')])
+    cantidad = models.IntegerField()
+    valor_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    valor_total = models.DecimalField(max_digits=12, decimal_places=2)
+    saldo_cantidad = models.IntegerField()
+    saldo_valor_total = models.DecimalField(max_digits=12, decimal_places=2)
+    detalle = models.CharField(max_length=200)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Si es un nuevo registro
+            ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha').first()
+            
+            if self.tipo_movimiento == 'ENTRADA':
+                self.saldo_cantidad = (ultimo_kardex.saldo_cantidad if ultimo_kardex else 0) + self.cantidad
+                self.saldo_valor_total = (ultimo_kardex.saldo_valor_total if ultimo_kardex else 0) + self.valor_total
+            else:  # SALIDA
+                self.saldo_cantidad = (ultimo_kardex.saldo_cantidad if ultimo_kardex else 0) - self.cantidad
+                self.saldo_valor_total = (ultimo_kardex.saldo_valor_total if ultimo_kardex else 0) - self.valor_total
+
+            # Actualizar el stock del producto
+            self.producto.actualizar_stock(self.cantidad, self.tipo_movimiento == 'ENTRADA')
+
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def registrar_movimiento(cls, producto, tipo_movimiento, cantidad, valor_unitario, detalle):
+        valor_total = cantidad * valor_unitario
+        kardex = cls(
+            producto=producto,
+            tipo_movimiento=tipo_movimiento,
+            cantidad=cantidad,
+            valor_unitario=valor_unitario,
+            valor_total=valor_total,
+            detalle=detalle
+        )
+        kardex.save()
+        return kardex
+
+#---------------------------------------------------------------------------------------
 class Cliente(models.Model):
     #id
     cedula = models.CharField(max_length=12, unique=True)
@@ -186,6 +240,17 @@ class DetalleFactura(models.Model):
         objetos = self.objects.all().order_by('-id')[:10]
 
         return objetos
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Registrar el movimiento en el kardex
+        Kardex.registrar_movimiento(
+            producto=self.id_producto,
+            tipo_movimiento='SALIDA',
+            cantidad=self.cantidad,
+            valor_unitario=self.sub_total / self.cantidad,
+            detalle=f"Venta -Factura #{self.id_factura.id}"
+        )
 #---------------------------------------------------------------------------------------
 
 
@@ -245,6 +310,18 @@ class DetallePedido(models.Model):
     cantidad = models.IntegerField()
     sub_total = models.DecimalField(max_digits=20,decimal_places=2)
     total = models.DecimalField(max_digits=20,decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Registrar la entrada en el kardex solo si el pedido está presente
+        if self.id_pedido.presente:
+            Kardex.registrar_movimiento(
+                producto=self.id_producto,
+                tipo_movimiento='ENTRADA',
+                cantidad=self.cantidad,
+                valor_unitario=self.sub_total / self.cantidad,
+                detalle=f"Compra - Pedido #{self.id_pedido.id}"
+            )
 #---------------------------------------------------------------------------------------
 
 

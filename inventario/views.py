@@ -27,6 +27,16 @@ from django.core import serializers
 #permite acceder de manera mas facil a los ficheros
 from django.core.files.storage import FileSystemStorage
 
+#Para generar el Kardex
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from .models import Producto, Kardex
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
+from .forms import KardexForm
+
 #Vistas endogenas.
 
 
@@ -1612,3 +1622,74 @@ class VerManualDeUsuario(LoginRequiredMixin, View):
 
 
 #Fin de vista--------------------------------------------------------------------------------
+
+#Vistas para el Kardex------------------------------------------------------------------------
+
+@login_required
+def lista_productos(request):
+    productos = Producto.objects.all().order_by('descripcion')
+    return render(request, 'inventario/kardex/lista_productos.html', {'productos': productos})
+
+@login_required
+def detalle_kardex(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    movimientos = Kardex.objects.filter(producto=producto).order_by('-fecha')
+
+    paginator = Paginator(movimientos, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'producto': producto,
+        'page_obj': page_obj,
+    }
+    return render(request,'inventario/kardex/detalle_kardex.html', context)
+
+@login_required
+def resumen_kardex(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    ultimo_movimiento = Kardex.objects.filter(producto=producto).order_by('-fecha').first()
+
+    entradas = Kardex.objects.filter(producto=producto, tipo_movimiento = 'ENTRADA').aggregate(
+        total_cantidad=Sum('cantidad'),
+        total_valor=Sum('valor_total')
+
+    )
+
+    salidas = Kardex.objects.filter(producto=producto, tipo_movimiento = 'SALIDA').aggregate(
+        total_cantidad=Sum('cantidad'),
+        total_valor=Sum('valor_total')
+    )
+
+    context = {
+        'producto': producto,
+        'ultimo_movimiento': ultimo_movimiento,
+        'entradas':entradas,
+        'salidas':salidas,
+    }
+
+    return render(request, 'inventario/kardex/resumen_kardex.html', context)
+
+@login_required
+@require_POST
+def registrar_movimiento(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    form = Kardex(request.POST)
+
+    if form.isvalid():
+        kardex = form.save(commit=False)
+        kardex.producto = producto
+        kardex.save()
+        return JsonResponse({'status':'success', 'message':'Movimiento registrado correctamente'})
+    else:
+        return JsonResponse({'status':'error', 'message':'Error al registrar el movimiento'}, status=400)
+    
+
+@login_required
+def nuevo_movimiento(request, producto_id):
+    producto = get_object_or_404(Producto, id = producto_id)
+    form = KardexForm()
+    return render(request, 'inventario/kardex/nuevo_movimiento.html', {'form': form, 'producto': producto })
+
+
+#Fin de vistas--------------------------------------------------------------------------------
