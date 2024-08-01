@@ -3,6 +3,27 @@ from django.contrib.auth.models import AbstractUser
 
 
 # MODELOS
+class PersonaBase(models.Model):
+    #id
+    tipoC =  [
+        ('1', 'Cédula de Identidad'),
+        ('2', 'Pasaporte'),
+        ('3', 'Cédula de Identidad para Extranjeros'),
+    ]
+    tipoCedula = models.CharField(max_length=1, choices=tipoC, default='C')
+    cedula = models.CharField(max_length=10, unique=True)
+    nombre = models.CharField(max_length=40)
+    apellido = models.CharField(max_length=60)
+    ciudad = models.CharField(max_length=100, null=True)
+    direccion = models.CharField(max_length=200)
+    telefono = models.CharField(max_length=20)
+    telefono2 = models.CharField(max_length=20, null=True)
+    correo = models.CharField(max_length=100)
+    correo2 = models.CharField(max_length=100, null=True)
+
+    class Meta:
+        abstract = True
+
 
 #--------------------------------USUARIO------------------------------------------------
 class Usuario(AbstractUser):
@@ -117,20 +138,11 @@ class Producto(models.Model):
 
 
 #------------------------------------------CLIENTE--------------------------------------
-class Cliente(models.Model):
+class Cliente(PersonaBase):
     #id
-    cedula = models.CharField(max_length=12, unique=True)
     generoChoices =  [('1','Masculino'),('2','Femenino'),('3','Otro')]
     genero = models.CharField(max_length=20, choices=generoChoices, default='1')
-    nombre = models.CharField(max_length=40)
-    apellido = models.CharField(max_length=40)
-    ciudad = models.CharField(max_length=100, null=True)
-    direccion = models.CharField(max_length=200)
     nacimiento = models.DateField(null=True)
-    telefono = models.CharField(max_length=20)
-    telefono2 = models.CharField(max_length=20, null=True)
-    correo = models.CharField(max_length=100)
-    correo2 = models.CharField(max_length=100, null=True)
 
     @classmethod
     def numeroRegistrados(self):
@@ -208,17 +220,9 @@ class DetalleFactura(models.Model):
 
 
 #------------------------------------------PROVEEDOR-----------------------------------
-class Proveedor(models.Model):
+class Proveedor(PersonaBase):
     #id
-    ruc = models.CharField(max_length=13, unique=True, default='0000000000000')
-    cedula = models.CharField(max_length=12, unique=True)
-    nombre = models.CharField(max_length=100)
-    ciudad = models.CharField(max_length=100, null=True)
-    direccion = models.CharField(max_length=200)
-    telefono = models.CharField(max_length=20)
-    telefono2 = models.CharField(max_length=20, null=True)
-    correo = models.CharField(max_length=100)
-    correo2 = models.CharField(max_length=100, null=True)
+    ruc = models.CharField(max_length=13, unique=True)
 
     @classmethod
     def cedulasRegistradas(self):
