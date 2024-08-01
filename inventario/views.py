@@ -521,7 +521,7 @@ class AgregarProducto(LoginRequiredMixin, View):
             precio = form.cleaned_data['precio']
             categoria = form.cleaned_data['categoria']
             tiene_iva = form.cleaned_data['tiene_iva']
-            disponible = 0
+            disponible = form.cleaned_data['disponible']
 
             prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,tiene_iva=tiene_iva,disponible=disponible)
             prod.save()
@@ -630,12 +630,14 @@ class EditarProducto(LoginRequiredMixin, View):
             precio = form.cleaned_data['precio']
             categoria = form.cleaned_data['categoria']
             tiene_iva = form.cleaned_data['tiene_iva']
+            disponible = form.cleaned_data['disponible']
 
             prod = Producto.objects.get(id=p)
             prod.descripcion = descripcion
             prod.precio = precio
             prod.categoria = categoria
             prod.tiene_iva = tiene_iva
+            prod.disponible = disponible
             prod.save()
             form = ProductoFormulario(instance=prod)
             messages.success(request, 'Actualizado exitosamente el producto de ID %s.' % p)
@@ -1074,15 +1076,13 @@ class ListarProveedores(LoginRequiredMixin, View):
     redirect_field_name = None
 
     def get(self, request):
-        from django.db import models
         #Saca una lista de todos los clientes de la BDD
-        proveedores = Proveedor.objects.all()                
+        proveedores = Proveedor.objects.all()
         contexto = {'tabla': proveedores}
-        contexto = complementarContexto(contexto,request.user)         
+        contexto = complementarContexto(contexto,request.user)
 
-        return render(request, 'inventario/proveedor/listarProveedores.html',contexto) 
+        return render(request, 'inventario/proveedor/listarProveedores.html',contexto)
 #Fin de vista--------------------------------------------------------------------------#
-
 
 
 
@@ -1099,18 +1099,20 @@ class AgregarProveedor(LoginRequiredMixin, View):
         if form.is_valid():
             # Procesa y asigna los datos con form.cleaned_data como se requiere
 
+            ruc = form.cleaned_data['ruc']
             cedula = form.cleaned_data['cedula']
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
+            ciudad = form.cleaned_data['ciudad']
             direccion = form.cleaned_data['direccion']
-            nacimiento = form.cleaned_data['nacimiento']
             telefono = form.cleaned_data['telefono']
             correo = form.cleaned_data['correo']
             telefono2 = form.cleaned_data['telefono2']
             correo2 = form.cleaned_data['correo2']
 
-            proveedor = Proveedor(cedula=cedula,nombre=nombre,apellido=apellido,
-                direccion=direccion,nacimiento=nacimiento,telefono=telefono,
+            proveedor = Proveedor(
+                ruc=ruc,cedula=cedula,nombre=nombre,apellido=apellido,
+                ciudad=ciudad,direccion=direccion,telefono=telefono,
                 correo=correo,telefono2=telefono2,correo2=correo2)
             proveedor.save()
             form = ProveedorFormulario()
@@ -1120,13 +1122,13 @@ class AgregarProveedor(LoginRequiredMixin, View):
             return HttpResponseRedirect("/inventario/agregarProveedor")
         else:
             #De lo contrario lanzara el mismo formulario
-            return render(request, 'inventario/proveedor/agregarProveedor.html', {'form': form})        
+            return render(request, 'inventario/proveedor/agregarProveedor.html', {'form': form})
 
     def get(self,request):
         form = ProveedorFormulario()
         #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('proveedorProcesado')} 
-        contexto = complementarContexto(contexto,request.user)         
+        contexto = {'form':form , 'modo':request.session.get('proveedorProcesado')}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/proveedor/agregarProveedor.html', contexto)
 #Fin de vista-----------------------------------------------------------------------------#
 
@@ -1292,7 +1294,7 @@ class ListarPedidos(LoginRequiredMixin, View):
     def get(self, request):
         from django.db import models
         #Saca una lista de todos los clientes de la BDD
-        pedidos = Pedido.objects.all()                
+        pedidos = Pedido.objects.all()
         contexto = {'tabla': pedidos}
         contexto = complementarContexto(contexto,request.user)         
 
@@ -1312,9 +1314,9 @@ class DetallesPedido(LoginRequiredMixin, View):
         PedidoFormulario = formset_factory(DetallesPedidoFormulario, extra=productos)
         formset = PedidoFormulario()
         contexto = {'formset':formset}
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = complementarContexto(contexto,request.user)
 
-        return render(request, 'inventario/pedido/detallesPedido.html', contexto)        
+        return render(request, 'inventario/pedido/detallesPedido.html', contexto)
 
     def post(self, request):
         cedula = request.session.get('id_proveedor')
@@ -1329,14 +1331,13 @@ class DetallesPedido(LoginRequiredMixin, View):
         }
 
         data = {
-    'form-TOTAL_FORMS': productos,
-    'form-INITIAL_FORMS':0,
-    'form-MAX_NUM_FORMS': '',
-                }
+            'form-TOTAL_FORMS': productos,
+            'form-INITIAL_FORMS':0,
+            'form-MAX_NUM_FORMS': '',
+        }
 
         formset = PedidoFormulario(request.POST,data)
 
- 
         if formset.is_valid():
 
             id_producto = []
@@ -1350,10 +1351,10 @@ class DetallesPedido(LoginRequiredMixin, View):
                 desc = form.cleaned_data['descripcion'].descripcion
                 cant = form.cleaned_data['cantidad']
                 sub = form.cleaned_data['valor_subtotal']
-       
+
                 id_producto.append(obtenerIdProducto(desc)) #esta funcion, a estas alturas, es innecesaria porque ya tienes la id
                 cantidad.append(cant)
-                subtotal.append(sub)        
+                subtotal.append(sub)
 
             #Ingresa la factura
             #--Saca el sub-monto
@@ -1363,12 +1364,12 @@ class DetallesPedido(LoginRequiredMixin, View):
             #--Saca el monto general
             for index,element in enumerate(subtotal):
                 if productoTieneIva(id_producto[index]):
-                    nuevoPrecio = sacarIva(element)   
+                    nuevoPrecio = sacarIva(element)
                     monto_general += nuevoPrecio
-                    total_general.append(nuevoPrecio)                     
-                else:                   
+                    total_general.append(nuevoPrecio)
+                else:
                     monto_general += element
-                    total_general.append(element)        
+                    total_general.append(element)
 
             from datetime import date
 
@@ -1389,12 +1390,11 @@ class DetallesPedido(LoginRequiredMixin, View):
 
                 detallePedido = DetallePedido(id_pedido=id_pedido,id_producto=objetoProducto,cantidad=cantidadDetalle
                     ,sub_total=subDetalle,total=totalDetalle)
-                detallePedido.save()  
+                detallePedido.save()
 
 
             messages.success(request, 'Pedido de ID %s insertado exitosamente.' % id_pedido.id)
-            return HttpResponseRedirect("/inventario/agregarPedido")     
-    
+            return HttpResponseRedirect("/inventario/agregarPedido")
 #Fin de vista-----------------------------------------------------------------------------------#
 
 #Muestra los detalles individuales de un pedido------------------------------------------------#

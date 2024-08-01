@@ -65,9 +65,21 @@ class ProductoFormulario(forms.ModelForm):
         attrs={'placeholder': 'Precio del producto',
         'id':'precio','class':'form-control'}),
         )
+    disponible = forms.IntegerField(
+        min_value = 0,
+        initial = 0,
+        label = 'Cantidad',
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control',
+                'id': 'disponible',
+                'placeholder': 'Cantidad en Existencias',
+            }
+        )
+    )
     class Meta:
         model = Producto
-        fields = ['descripcion','precio','categoria','medida','tiene_iva']
+        fields = ['descripcion','precio','categoria','disponible','medida','tiene_iva']
         labels = {
         'descripcion': 'Nombre',
         'tiene_iva': 'Incluye IVA?',
@@ -116,18 +128,16 @@ class ExportarClientesFormulario(forms.Form):
         label = 'Desde',
         widget = forms.DateInput(format=('%d-%m-%Y'),
         attrs={'id':'desde','class':'form-control','type':'date'}),
-        )   
+        )
 
     hasta = forms.DateField(
         label = 'Hasta',
         widget = forms.DateInput(format=('%d-%m-%Y'),
         attrs={'id':'hasta','class':'form-control','type':'date'}),
-        )   
+        )
 
 
 class ClienteFormulario(forms.ModelForm):
-    tipoC =  [ ('1','V'),('2','E') ]
-
     telefono2 = forms.CharField(
         required = False,
         label = 'Segundo numero telefonico',
@@ -144,55 +154,58 @@ class ClienteFormulario(forms.ModelForm):
         'id':'correo2','class':'form-control'}),
         )
 
-    tipoCedula = forms.CharField(
-        label="Tipo de cedula",
-        max_length=2,
-        widget=forms.Select(choices=tipoC,attrs={'placeholder': 'Tipo de cedula',
-        'id':'tipoCedula','class':'form-control'}
-        )
-        )
-
+    nacimiento = forms.DateField(
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'id': 'hasta',
+                'class': 'form-control',
+                'type': 'date'
+            }
+        ),
+        required=False
+    )
 
     class Meta:
         model = Cliente
         fields = ['tipoCedula','cedula','nombre','apellido','direccion','nacimiento','telefono','correo','telefono2','correo2']
         labels = {
-        'cedula': 'Cedula del cliente',
-        'nombre': 'Nombre del cliente',
-        'apellido': 'Apellido del cliente',
-        'direccion': 'Direccion del cliente',
-        'nacimiento': 'Fecha de nacimiento del cliente',
-        'telefono': 'Numero telefonico del cliente',
-        'correo': 'Correo electronico del cliente',
-        'telefono2': 'Segundo numero telefonico',
-        'correo2': 'Segundo correo electronico'
+            'cedula': 'Cedula del cliente',
+            'nombre': 'Nombre del cliente',
+            'apellido': 'Apellido del cliente',
+            'direccion': 'Direccion del cliente',
+            'nacimiento': 'Fecha de nacimiento del cliente',
+            'telefono': 'Numero telefonico del cliente',
+            'correo': 'Correo electronico del cliente',
+            'telefono2': 'Segundo numero telefonico',
+            'correo2': 'Segundo correo electronico'
         }
         widgets = {
-        'cedula': forms.TextInput(attrs={'placeholder': 'Inserte la cedula de identidad del cliente',
-        'id':'cedula','class':'form-control'} ),
-        'nombre': forms.TextInput(attrs={'placeholder': 'Inserte el primer o primeros nombres del cliente',
-        'id':'nombre','class':'form-control'}),
-        'apellido': forms.TextInput(attrs={'class':'form-control','id':'apellido','placeholder':'El apellido del cliente'}),
-        'direccion': forms.TextInput(attrs={'class':'form-control','id':'direccion','placeholder':'Direccion del cliente'}), 
-        'nacimiento':forms.DateInput(format=('%d-%m-%Y'),attrs={'id':'hasta','class':'form-control','type':'date'} ),
-        'telefono':forms.TextInput(attrs={'id':'telefono','class':'form-control',
-        'placeholder':'El telefono del cliente'} ),
-        'correo':forms.TextInput(attrs={'placeholder': 'Correo del cliente',
-        'id':'correo','class':'form-control'} )
+            'tipoCedula': forms.Select(attrs={'class':'form-control','id':'tipoCedula'} ),
+            'cedula': forms.TextInput(attrs={'placeholder': 'Inserte la cedula de identidad del cliente',
+            'id':'cedula','class':'form-control'} ),
+            'nombre': forms.TextInput(attrs={'placeholder': 'Inserte el primer o primeros nombres del cliente',
+            'id':'nombre','class':'form-control'}),
+            'apellido': forms.TextInput(attrs={'class':'form-control','id':'apellido','placeholder':'El apellido del cliente'}),
+            'direccion': forms.TextInput(attrs={'class':'form-control','id':'direccion','placeholder':'Direccion del cliente'}),
+            'telefono':forms.TextInput(attrs={'id':'telefono','class':'form-control',
+            'placeholder':'El telefono del cliente'} ),
+            'correo':forms.TextInput(attrs={'placeholder': 'Correo del cliente',
+            'id':'correo','class':'form-control'} )
         }
 
 
 class EmitirFacturaFormulario(forms.Form):
     def __init__(self, *args, **kwargs):
-       elecciones = kwargs.pop('cedulas')
-       super(EmitirFacturaFormulario, self).__init__(*args, **kwargs)
+        elecciones = kwargs.pop('cedulas')
+        super(EmitirFacturaFormulario, self).__init__(*args, **kwargs)
 
-       if(elecciones):
+        if(elecciones):
             self.fields["cliente"] = forms.CharField(label="Cliente a facturar",max_length=50,
             widget=forms.Select(choices=elecciones,
             attrs={'placeholder': 'La cedula del cliente a facturar',
             'id':'cliente','class':'form-control'}))
-    
+
     productos = forms.IntegerField(label="Numero de productos",widget=forms.NumberInput(attrs={'placeholder': 'Numero de productos a facturar',
         'id':'productos','class':'form-control'}))
 
@@ -211,15 +224,15 @@ class DetallesFacturaFormulario(forms.Form):
 
     subtotal = forms.DecimalField(required=False,label="Sub-total",min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Monto sub-total','class':'form-control','disabled':'true','value':'0'}))
 
-    valor_subtotal = forms.DecimalField(min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Monto sub-total','class':'form-control','hidden':'true','value':'0'}))      
+    valor_subtotal = forms.DecimalField(min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Monto sub-total','class':'form-control','hidden':'true','value':'0'}))
 
 
 class EmitirPedidoFormulario(forms.Form):
     def __init__(self, *args, **kwargs):
-       elecciones = kwargs.pop('cedulas')
-       super(EmitirPedidoFormulario, self).__init__(*args, **kwargs)
+        elecciones = kwargs.pop('cedulas')
+        super(EmitirPedidoFormulario, self).__init__(*args, **kwargs)
 
-       if(elecciones):
+        if(elecciones):
             self.fields["proveedor"] = forms.CharField(label="Proveedor",max_length=50,
             widget=forms.Select(choices=elecciones,attrs={'placeholder': 'La cedula del proveedor que vende el producto',
             'id':'proveedor','class':'form-control'}))
@@ -294,8 +307,6 @@ class DetallesPedidoFormulario(forms.Form):
 
 
 class ProveedorFormulario(forms.ModelForm):
-    tipoC =  [ ('1','V'),('2','E') ]
-
     telefono2 = forms.CharField(
         required = False,
         label = 'Segundo numero telefonico( Opcional )',
@@ -312,42 +323,39 @@ class ProveedorFormulario(forms.ModelForm):
         'id':'correo2','class':'form-control'}),
         )
 
-    tipoCedula = forms.CharField(
-        label="Tipo de cedula",
-        max_length=2,
-        widget=forms.Select(choices=tipoC,attrs={'placeholder': 'Tipo de cedula',
-        'id':'tipoCedula','class':'form-control'}
-        )
-        )
-
 
     class Meta:
-        model = Cliente
-        fields = ['tipoCedula','cedula','nombre','apellido','direccion','nacimiento','telefono','correo','telefono2','correo2']
+        model = Proveedor
+        fields = ['ruc','tipoCedula','cedula','nombre','apellido','ciudad','direccion','telefono','correo','telefono2','correo2']
         labels = {
-        'cedula': 'Cedula del proveedor',
-        'nombre': 'Nombre del proveedor',
-        'apellido': 'Apellido del proveedor',
-        'direccion': 'Direccion del proveedor',
-        'nacimiento': 'Fecha de nacimiento del proveedor',
-        'telefono': 'Numero telefonico del proveedor',
-        'correo': 'Correo electronico del proveedor',
-        'telefono2': 'Segundo numero telefonico',
-        'correo2': 'Segundo correo electronico'
+            'ruc': 'RUC del proveedor',
+            'cedula': 'Cédula del proveedor',
+            'nombre': 'Nombre del proveedor',
+            'apellido': 'Apellido del proveedor',
+            'ciudad': 'Ciudad del proveedor',
+            'direccion': 'Dirección del proveedor',
+            'telefono': 'Numero telefónico del proveedor',
+            'correo': 'Correo electrónico del proveedor',
+            'telefono2': 'Segundo numero telefónico',
+            'correo2': 'Segundo correo electrónico'
         }
         widgets = {
-        'cedula': forms.TextInput(attrs={'placeholder': 'Inserte la cedula de identidad del proveedor',
-        'id':'cedula','class':'form-control'} ),
-        'nombre': forms.TextInput(attrs={'placeholder': 'Inserte el primer o primeros nombres del proveedor',
-        'id':'nombre','class':'form-control'}),
-        'apellido': forms.TextInput(attrs={'class':'form-control','id':'apellido','placeholder':'El apellido del proveedor'}),
-        'direccion': forms.TextInput(attrs={'class':'form-control','id':'direccion','placeholder':'Direccion del proveedor'}), 
-        'nacimiento':forms.DateInput(format=('%d-%m-%Y'),attrs={'id':'hasta','class':'form-control','type':'date'} ),
-        'telefono':forms.TextInput(attrs={'id':'telefono','class':'form-control',
-        'placeholder':'El telefono del proveedor'} ),
-        'correo':forms.TextInput(attrs={'placeholder': 'Correo del proveedor',
-        'id':'correo','class':'form-control'} )
-        } 
+            'ruc': forms.TextInput(attrs={'placeholder': 'Inserte el RUC del proveedor',
+                'id':'ruc','class':'form-control'} ),
+            'tipoCedula': forms.Select(attrs={'class':'form-control','id':'tipoCedula'} ),
+            'cedula': forms.TextInput(attrs={'placeholder': 'Inserte la cédula de identidad del proveedor',
+                'id':'cedula','class':'form-control'} ),
+            'nombre': forms.TextInput(attrs={'placeholder': 'Inserte el primer o primeros nombres del proveedor',
+                'id':'nombre','class':'form-control'}),
+            'apellido': forms.TextInput(attrs={'class':'form-control','id':'apellido','placeholder':'El apellido del proveedor'}),
+            'ciudad': forms.TextInput(attrs={'class':'form-control','id':'ciudad','placeholder':'La ciudad del proveedor'} ),
+            'direccion': forms.TextInput(attrs={'class':'form-control','id':'direccion','placeholder':'Dirección del proveedor'}),
+            'nacimiento':forms.DateInput(format=('%d-%m-%Y'),attrs={'id':'hasta','class':'form-control','type':'date'} ),
+            'telefono':forms.TextInput(attrs={'id':'telefono','class':'form-control',
+            'placeholder':'El teléfono del proveedor'} ),
+            'correo':forms.TextInput(attrs={'placeholder': 'Correo del proveedor',
+                'id':'correo','class':'form-control'} )
+        }
 
 
 class UsuarioFormulario(forms.Form):
