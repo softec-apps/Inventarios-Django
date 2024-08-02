@@ -3,6 +3,27 @@ from django.contrib.auth.models import AbstractUser
 
 
 # MODELOS
+class PersonaBase(models.Model):
+    #id
+    tipoC =  [
+        ('1', 'Cédula de Identidad'),
+        ('2', 'Pasaporte'),
+        ('3', 'Cédula de Identidad para Extranjeros'),
+    ]
+    tipoCedula = models.CharField(max_length=1, choices=tipoC, default='1')
+    cedula = models.CharField(max_length=10, unique=True)
+    nombre = models.CharField(max_length=40)
+    apellido = models.CharField(max_length=60)
+    ciudad = models.CharField(max_length=100, null=True)
+    direccion = models.CharField(max_length=200)
+    telefono = models.CharField(max_length=20)
+    telefono2 = models.CharField(max_length=20, null=True)
+    correo = models.CharField(max_length=100)
+    correo2 = models.CharField(max_length=100, null=True)
+
+    class Meta:
+        abstract = True
+
 
 #--------------------------------USUARIO------------------------------------------------
 class Usuario(AbstractUser):
@@ -60,7 +81,6 @@ class Producto(models.Model):
     medida = models.CharField(max_length=20, choices=decisiones, default='1')
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     tiene_iva = models.BooleanField(null=True)
-    stock_actual = models.IntegerField(default=0)
 
     @classmethod
     def numeroRegistrados(self):
@@ -113,19 +133,16 @@ class Producto(models.Model):
             productos_disponibles = objeto.disponible
             arreglo[indice + extra].append("%d" % (productos_disponibles) )
 
-        return arreglo 
-    
+        return arreglo
+
     def actualizar_stock(self, cantidad , es_entrada=True):
         if es_entrada:
-            self.stock_actual +=cantidad
+            self.productosDisponibles +=cantidad
         else:
-            self.stock_actual -=cantidad
+            self.disponible -=cantidad
         self.save()
         return arreglo
 #---------------------------------------------------------------------------------------
-
-
-#------------------------------------------CLIENTE--------------------------------------
 
 
 #------------------------------------------Kardex--------------------------------------
@@ -172,20 +189,14 @@ class Kardex(models.Model):
         return kardex
 
 #---------------------------------------------------------------------------------------
-class Cliente(models.Model):
+
+
+#------------------------------------------CLIENTE--------------------------------------
+class Cliente(PersonaBase):
     #id
-    cedula = models.CharField(max_length=12, unique=True)
     generoChoices =  [('1','Masculino'),('2','Femenino'),('3','Otro')]
     genero = models.CharField(max_length=20, choices=generoChoices, default='1')
-    nombre = models.CharField(max_length=40)
-    apellido = models.CharField(max_length=40)
-    ciudad = models.CharField(max_length=100, null=True)
-    direccion = models.CharField(max_length=200)
     nacimiento = models.DateField(null=True)
-    telefono = models.CharField(max_length=20)
-    telefono2 = models.CharField(max_length=20, null=True)
-    correo = models.CharField(max_length=100)
-    correo2 = models.CharField(max_length=100, null=True)
 
     @classmethod
     def numeroRegistrados(self):
@@ -259,32 +270,13 @@ class DetalleFactura(models.Model):
         objetos = self.objects.all().order_by('-id')[:10]
 
         return objetos
-    
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        # Registrar el movimiento en el kardex
-        Kardex.registrar_movimiento(
-            producto=self.id_producto,
-            tipo_movimiento='SALIDA',
-            cantidad=self.cantidad,
-            valor_unitario=self.sub_total / self.cantidad,
-            detalle=f"Venta -Factura #{self.id_factura.id}"
-        )
 #---------------------------------------------------------------------------------------
 
 
 #------------------------------------------PROVEEDOR-----------------------------------
-class Proveedor(models.Model):
+class Proveedor(PersonaBase):
     #id
-    ruc = models.CharField(max_length=13, unique=True, default='0000000000000')
-    cedula = models.CharField(max_length=12, unique=True)
-    nombre = models.CharField(max_length=100)
-    ciudad = models.CharField(max_length=100, null=True)
-    direccion = models.CharField(max_length=200)
-    telefono = models.CharField(max_length=20)
-    telefono2 = models.CharField(max_length=20, null=True)
-    correo = models.CharField(max_length=100)
-    correo2 = models.CharField(max_length=100, null=True)
+    ruc = models.CharField(max_length=13, unique=True)
 
     @classmethod
     def cedulasRegistradas(self):
@@ -328,18 +320,6 @@ class DetallePedido(models.Model):
     cantidad = models.IntegerField()
     sub_total = models.DecimalField(max_digits=20,decimal_places=2)
     total = models.DecimalField(max_digits=20,decimal_places=2)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        # Registrar la entrada en el kardex solo si el pedido está presente
-        if self.id_pedido.presente:
-            Kardex.registrar_movimiento(
-                producto=self.id_producto,
-                tipo_movimiento='ENTRADA',
-                cantidad=self.cantidad,
-                valor_unitario=self.sub_total / self.cantidad,
-                detalle=f"Compra - Pedido #{self.id_pedido.id}"
-            )
 #---------------------------------------------------------------------------------------
 
 

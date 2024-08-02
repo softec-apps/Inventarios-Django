@@ -4,7 +4,7 @@
             <div class="brand">
                 <div class="logo-nuevo">
                     {% load static %}
-                    <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo2.png' %}">
+                    <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo.png' %}">
                 </div>
                 Administrador
             </div>
@@ -17,6 +17,20 @@
                         <i class="fa fa-home"></i> Inicio
                     </a>
                 </li>
+
+                <!-- Sub-menu de categorías -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-list"></i> Categorías
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i>Listar categorías</a>
+                        </li>
+                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i>Agregar categoría</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de categorías -->
 
                 <!-- Sub-menu de producto -->
                 <li>
@@ -34,8 +48,8 @@
 
                 <!-- Sub-menu de kardex -->
                 <li>
-                    <a href="#">
-                        <i class="fa fa-shopping-basket"></i> Kardex
+                    <a href="">
+                        <i class="fa fa-shopping-cart"></i> Kardex
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -77,20 +91,6 @@
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de pedido -->
-
-                <!-- Sub-menu de categorías -->
-                <li>
-                    <a href="">
-                        <i class="fa fa-list"></i> Categorías
-                        <i class="fa arrow"></i>
-                    </a>
-                    <ul class="sidebar-nav">
-                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i>Listar categorías</a>
-                        </li>
-                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i>Agregar categoría</a></li>
-                    </ul>
-                </li>
-                <!-- Fin de sub-menu de categorías -->
 
                 <!-- Sub-menu de clientes -->
                 <li>

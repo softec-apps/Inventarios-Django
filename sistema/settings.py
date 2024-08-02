@@ -10,9 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+from pathlib import Path
+
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
+# Función para convertir las cadenas 'True' y 'False' a valores booleanos
+def str_to_bool(value):
+    return value.lower() in ('true', '1', 'yes')
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,9 +32,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str_to_bool(os.getenv('DEBUG', 'False'))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
