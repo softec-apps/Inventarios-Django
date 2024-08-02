@@ -36,6 +36,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from .forms import KardexForm
+from django.core.exceptions import ValidationError
 
 #Vistas endogenas.
 
@@ -1826,22 +1827,31 @@ def resumen_kardex(request, producto_id):
 @require_POST
 def registrar_movimiento(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
-    form = Kardex(request.POST)
+    form = KardexForm(request.POST)
 
-    if form.isvalid():
+    if form.is_valid():
         kardex = form.save(commit=False)
         kardex.producto = producto
-        kardex.save()
-        return JsonResponse({'status':'success', 'message':'Movimiento registrado correctamente'})
+        kardex.valor_total = kardex.cantidad * kardex.valor_unitario
+        
+        # Asignar valores a los campos saldo_cantidad y saldo_valor_total
+        kardex.saldo_cantidad = kardex.cantidad  # Ajusta esto según tu lógica de negocio
+        kardex.saldo_valor_total = kardex.valor_total  # Ajusta esto según tu lógica de negocio
+        
+        try:
+            kardex.save()
+            return redirect('inventario:detalle_kardex', producto_id=producto.id)
+        except ValidationError as e:
+            return JsonResponse({'status':'error', 'message':str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({'status':'error', 'message':f'Error al guardar el movimiento: {str(e)}'}, status=400)
     else:
-        return JsonResponse({'status':'error', 'message':'Error al registrar el movimiento'}, status=400)
-    
+        return JsonResponse({'status':'error', 'message':'Error en la validación del formulario', 'errors': form.errors}, status=400)
 
 @login_required
 def nuevo_movimiento(request, producto_id):
-    producto = get_object_or_404(Producto, id = producto_id)
+    producto = get_object_or_404(Producto, id=producto_id)
     form = KardexForm()
-    return render(request, 'inventario/kardex/nuevo_movimiento.html', {'form': form, 'producto': producto })
-
+    return render(request, 'inventario/kardex/nuevo_movimiento.html', {'form': form, 'producto': producto})
 
 #Fin de vistas--------------------------------------------------------------------------------
