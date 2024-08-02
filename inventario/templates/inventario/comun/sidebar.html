@@ -5,7 +5,8 @@
                 <div class="logo-nuevo">
                     {% load static %}
                     <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo.png' %}">
-                </div> Administrador
+                </div>
+                Administrador
             </div>
         </div>
 
@@ -13,12 +14,11 @@
             <ul class="sidebar-menu metismenu" id="sidebar-menu">
                 <li>
                     <a href="/inventario/panel">
-                        <i class="fa fa-home"></i> Inicio </a>
+                        <i class="fa fa-home"></i> Inicio
+                    </a>
                 </li>
 
-
-
-                <!-- Sub-menu de categoría -->
+                <!-- Sub-menu de categorías -->
                 <li>
                     <a href="">
                         <i class="fa fa-list"></i> Categorías
@@ -30,9 +30,7 @@
                         <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i>Agregar categoría</a></li>
                     </ul>
                 </li>
-                <!--Fin de sub-menu de producto -->
-
-
+                <!-- Fin de sub-menu de categorías -->
 
                 <!-- Sub-menu de producto -->
                 <li>
@@ -46,9 +44,26 @@
                         <li><a href="/inventario/agregarProducto"><i class="fa fa-plus"></i>Agregar producto</a></li>
                     </ul>
                 </li>
-                <!--Fin de sub-menu de producto -->
+                <!-- Fin de sub-menu de producto -->
 
-
+                <!-- Sub-menu de kardex -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-shopping-cart"></i> Kardex
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="{% url 'inventario:lista_productos' %}"><i class="fa fa-ellipsis-h"></i> Lista de
+                                productos</a></li>
+                        <li><a href="{% url 'inventario:detalle_kardex' 1 %}"><i class="fa fa-plus"></i> Detalle del
+                                Kardex</a></li>
+                        <li><a href="{% url 'inventario:resumen_kardex' 1 %}"><i class="fa fa-file-text"></i> Resumen
+                                del Kardex</a></li>
+                        <li><a href="{% url 'inventario:nuevo_movimiento' 1 %}"><i class="fa fa-plus-circle"></i> Nuevo
+                                Movimiento</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de kardex -->
 
                 <!-- Sub-menu de proveedor -->
                 <li>
@@ -64,8 +79,6 @@
                 </li>
                 <!-- Fin de sub-menu de proveedor -->
 
-
-
                 <!-- Sub-menu de pedido -->
                 <li>
                     <a href="">
@@ -75,32 +88,25 @@
                     <ul class="sidebar-nav">
                         <li><a href="/inventario/listarPedidos"><i class="fa fa-ellipsis-h"></i>Listar pedidos</a></li>
                         <li><a href="/inventario/agregarPedido"><i class="fa fa-plus"></i>Añadir pedido</a></li>
-
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de pedido -->
 
-
-
-                <!-- Sub-menu de clientes-->
+                <!-- Sub-menu de clientes -->
                 <li>
                     <a href="">
                         <i class="fa fa-handshake-o"></i> Clientes
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-
                         <li><a href="/inventario/listarClientes"><i class="fa fa-ellipsis-h"></i>Listar clientes</a>
                         </li>
                         <li><a href="/inventario/agregarCliente"><i class="fa fa-plus"></i>Agregar cliente</a></li>
-
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de clientes -->
 
-
-
-                <!-- Sub-menu de factura-->
+                <!-- Sub-menu de factura -->
                 <li>
                     <a href="">
                         <i class="fa fa-ticket"></i> Factura
@@ -110,12 +116,9 @@
                         <li><a href="/inventario/listarFacturas"><i class="fa fa-ellipsis-h"></i>Listar facturas</a>
                         </li>
                         <li><a href="/inventario/emitirFactura"><i class="fa fa-money"></i>Emitir factura</a></li>
-
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de factura -->
-
-
 
                 <!-- Sub-menu de usuarios -->
                 <li>
@@ -128,9 +131,9 @@
                         <li><a href="/inventario/listarUsuarios"><i class="fa fa-circle-o"></i>Listar usuarios</a></li>
                     </ul>
                 </li>
-                <!--Fin de sub-menu de usuarios -->
+                <!-- Fin de sub-menu de usuarios -->
 
-                <!-- Sub-menu de opciones-->
+                <!-- Sub-menu de opciones -->
                 <li>
                     <a href="">
                         <i class="fa fa-cog"></i> Opciones
@@ -141,39 +144,26 @@
                         </li>
                         <li><a href="/inventario/descargarBDD"><i class="fa fa-download"></i>Descargar base de datos</a>
                         </li>
-                        <li><a href="/inventario/configuracionGeneral"><i class="fa fa-gear"></i>Configuracion
+                        <li><a href="/inventario/configuracionGeneral"><i class="fa fa-gear"></i>Configuración
                                 general</a></li>
-
                     </ul>
                 </li>
-                <!--Fin de sub-menu de opciones -->
+                <!-- Fin de sub-menu de opciones -->
 
-
-
-                <!-- Sub-menu de manual de usuario-->
+                <!-- Sub-menu de manual de usuario -->
                 <li>
                     <a href="">
                         <i class="fa fa-book"></i> Manual de usuario
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-
-                        {% load static %}
-                        <!--
-                                <li>
-                                    <a href="{% static 'inventario/manual.pdf' %}" download>
-                                        <i class="fa fa-download"></i> Descargar manual de usuario (PDF)
-                                        
-                                    </a>
-                                </li>
-                            -->
-
+                        <li><a href="{% static 'inventario/manual.pdf' %}" download><i class="fa fa-download"></i>
+                                Descargar manual de usuario (PDF)</a></li>
                         <li><a href="/inventario/verManualDeUsuario/inicio"><i class="fa fa-eye"></i>Ver manual de
                                 usuario</a></li>
-
                     </ul>
                 </li>
-                <!--Fin de sub-menu de manual de usuario -->
+                <!-- Fin de sub-menu de manual de usuario -->
             </ul>
         </nav>
     </div>

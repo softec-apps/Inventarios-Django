@@ -134,6 +134,60 @@ class Producto(models.Model):
             arreglo[indice + extra].append("%d" % (productos_disponibles) )
 
         return arreglo
+
+    def actualizar_stock(self, cantidad , es_entrada=True):
+        if es_entrada:
+            self.productosDisponibles +=cantidad
+        else:
+            self.disponible -=cantidad
+        self.save()
+        return arreglo
+#---------------------------------------------------------------------------------------
+
+
+#------------------------------------------Kardex--------------------------------------
+
+class Kardex(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    fecha = models.DateField(auto_now_add=True)
+    tipo_movimiento = models.CharField(max_length=10, choices=[('ENTRADA', 'Entrada'), ('SALIDA', 'Salida')])
+    cantidad = models.IntegerField()
+    valor_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    valor_total = models.DecimalField(max_digits=12, decimal_places=2)
+    saldo_cantidad = models.IntegerField()
+    saldo_valor_total = models.DecimalField(max_digits=12, decimal_places=2)
+    detalle = models.CharField(max_length=200)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Si es un nuevo registro
+            ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha').first()
+            
+            if self.tipo_movimiento == 'ENTRADA':
+                self.saldo_cantidad = (ultimo_kardex.saldo_cantidad if ultimo_kardex else 0) + self.cantidad
+                self.saldo_valor_total = (ultimo_kardex.saldo_valor_total if ultimo_kardex else 0) + self.valor_total
+            else:  # SALIDA
+                self.saldo_cantidad = (ultimo_kardex.saldo_cantidad if ultimo_kardex else 0) - self.cantidad
+                self.saldo_valor_total = (ultimo_kardex.saldo_valor_total if ultimo_kardex else 0) - self.valor_total
+
+            # Actualizar el stock del producto
+            self.producto.actualizar_stock(self.cantidad, self.tipo_movimiento == 'ENTRADA')
+
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def registrar_movimiento(cls, producto, tipo_movimiento, cantidad, valor_unitario, detalle):
+        valor_total = cantidad * valor_unitario
+        kardex = cls(
+            producto=producto,
+            tipo_movimiento=tipo_movimiento,
+            cantidad=cantidad,
+            valor_unitario=valor_unitario,
+            valor_total=valor_total,
+            detalle=detalle
+        )
+        kardex.save()
+        return kardex
+
 #---------------------------------------------------------------------------------------
 
 

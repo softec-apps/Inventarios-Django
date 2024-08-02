@@ -27,6 +27,16 @@ from django.core import serializers
 #permite acceder de manera mas facil a los ficheros
 from django.core.files.storage import FileSystemStorage
 
+#Para generar el Kardex
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from .models import Producto, Kardex
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
+from .forms import KardexForm
+
 #Vistas endogenas.
 
 
@@ -689,6 +699,7 @@ class AgregarCliente(LoginRequiredMixin, View):
             # Procesa y asigna los datos con form.cleaned_data como se requiere
 
             cedula = form.cleaned_data['cedula']
+            tipoCedula = form.cleaned_data['tipoCedula']
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
             direccion = form.cleaned_data['direccion']
@@ -698,7 +709,7 @@ class AgregarCliente(LoginRequiredMixin, View):
             telefono2 = form.cleaned_data['telefono2']
             correo2 = form.cleaned_data['correo2']
 
-            cliente = Cliente(cedula=cedula,nombre=nombre,apellido=apellido,
+            cliente = Cliente(cedula=cedula,tipoCedula=tipoCedula,nombre=nombre,apellido=apellido,
                 direccion=direccion,nacimiento=nacimiento,telefono=telefono,
                 correo=correo,telefono2=telefono2,correo2=correo2)
             cliente.save()
@@ -709,15 +720,15 @@ class AgregarCliente(LoginRequiredMixin, View):
             return HttpResponseRedirect("/inventario/agregarCliente")
         else:
             #De lo contrario lanzara el mismo formulario
-            return render(request, 'inventario/cliente/agregarCliente.html', {'form': form})        
+            return render(request, 'inventario/cliente/agregarCliente.html', {'form': form})
 
     def get(self,request):
         form = ClienteFormulario()
         #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('clienteProcesado')} 
-        contexto = complementarContexto(contexto,request.user)         
+        contexto = {'form':form , 'modo':request.session.get('clienteProcesado')}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/cliente/agregarCliente.html', contexto)
-#Fin de vista-----------------------------------------------------------------------------#        
+#Fin de vista-----------------------------------------------------------------------------#
 
 
 
@@ -803,9 +814,10 @@ class EditarCliente(LoginRequiredMixin, View):
         cliente = Cliente.objects.get(id=p)
         form = ClienteFormulario(request.POST, instance=cliente)
         # Revisa si es valido:
-    
-        if form.is_valid():           
+
+        if form.is_valid():
             # Procesa y asigna los datos con form.cleaned_data como se requiere
+            tipoCedula = form.cleaned_data['tipoCedula']
             cedula = form.cleaned_data['cedula']
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
@@ -816,6 +828,7 @@ class EditarCliente(LoginRequiredMixin, View):
             telefono2 = form.cleaned_data['telefono2']
             correo2 = form.cleaned_data['correo2']
 
+            cliente.tipoCedula = tipoCedula
             cliente.cedula = cedula
             cliente.nombre = nombre
             cliente.apellido = apellido
@@ -829,20 +842,20 @@ class EditarCliente(LoginRequiredMixin, View):
             form = ClienteFormulario(instance=cliente)
 
             messages.success(request, 'Actualizado exitosamente el cliente de ID %s.' % p)
-            request.session['clienteProcesado'] = 'editado'            
+            request.session['clienteProcesado'] = 'editado'
             return HttpResponseRedirect("/inventario/editarCliente/%s" % cliente.id)
         else:
             #De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/cliente/agregarCliente.html', {'form': form})
 
-    def get(self, request,p): 
+    def get(self, request,p):
         cliente = Cliente.objects.get(id=p)
         form = ClienteFormulario(instance=cliente)
         #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('clienteProcesado'),'editar':True} 
-        contexto = complementarContexto(contexto,request.user)     
-        return render(request, 'inventario/cliente/agregarCliente.html', contexto)  
-#Fin de vista--------------------------------------------------------------------------------# 
+        contexto = {'form':form , 'modo':request.session.get('clienteProcesado'),'editar':True}
+        contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/cliente/agregarCliente.html', contexto)
+#Fin de vista--------------------------------------------------------------------------------#
 
 
 #Emite la primera parte de la factura------------------------------#
@@ -1100,6 +1113,7 @@ class AgregarProveedor(LoginRequiredMixin, View):
             # Procesa y asigna los datos con form.cleaned_data como se requiere
 
             ruc = form.cleaned_data['ruc']
+            tipoCedula = form.cleaned_data['tipoCedula']
             cedula = form.cleaned_data['cedula']
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
@@ -1111,7 +1125,7 @@ class AgregarProveedor(LoginRequiredMixin, View):
             correo2 = form.cleaned_data['correo2']
 
             proveedor = Proveedor(
-                ruc=ruc,cedula=cedula,nombre=nombre,apellido=apellido,
+                ruc=ruc,cedula=cedula,tipoCedula=tipoCedula,nombre=nombre,apellido=apellido,
                 ciudad=ciudad,direccion=direccion,telefono=telefono,
                 correo=correo,telefono2=telefono2,correo2=correo2)
             proveedor.save()
@@ -1214,24 +1228,26 @@ class EditarProveedor(LoginRequiredMixin, View):
         proveedor = Proveedor.objects.get(id=p)
         form = ProveedorFormulario(request.POST, instance=proveedor)
         # Revisa si es valido:
-      
-        if form.is_valid():           
+
+        if form.is_valid():
             # Procesa y asigna los datos con form.cleaned_data como se requiere
+            ruc = form.cleaned_data['ruc']
             cedula = form.cleaned_data['cedula']
+            tipoCedula = form.cleaned_data['tipoCedula']
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
             direccion = form.cleaned_data['direccion']
-            nacimiento = form.cleaned_data['nacimiento']
             telefono = form.cleaned_data['telefono']
             correo = form.cleaned_data['correo']
             telefono2 = form.cleaned_data['telefono2']
             correo2 = form.cleaned_data['correo2']
 
+            proveedor.ruc = ruc
             proveedor.cedula = cedula
+            proveedor.tipoCedula = tipoCedula
             proveedor.nombre = nombre
             proveedor.apellido = apellido
             proveedor.direccion = direccion
-            proveedor.nacimiento = nacimiento
             proveedor.telefono = telefono
             proveedor.correo = correo
             proveedor.telefono2 = telefono2
@@ -1240,23 +1256,23 @@ class EditarProveedor(LoginRequiredMixin, View):
             form = ProveedorFormulario(instance=proveedor)
 
             messages.success(request, 'Actualizado exitosamente el proveedor de ID %s.' % p)
-            request.session['proveedorProcesado'] = 'editado'            
+            request.session['proveedorProcesado'] = 'editado'
             return HttpResponseRedirect("/inventario/editarProveedor/%s" % proveedor.id)
         else:
             #De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/proveedor/agregarProveedor.html', {'form': form})
 
-    def get(self, request,p): 
+    def get(self, request,p):
         proveedor = Proveedor.objects.get(id=p)
         form = ProveedorFormulario(instance=proveedor)
         #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('proveedorProcesado'),'editar':True} 
-        contexto = complementarContexto(contexto,request.user)     
-        return render(request, 'inventario/proveedor/agregarProveedor.html', contexto)  
+        contexto = {'form':form , 'modo':request.session.get('proveedorProcesado'),'editar':True}
+        contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/proveedor/agregarProveedor.html', contexto)
 #Fin de vista--------------------------------------------------------------------------------#
 
 
-#Agrega un pedido-----------------------------------------------------------------------------------#      
+#Agrega un pedido-----------------------------------------------------------------------------------#
 class AgregarPedido(LoginRequiredMixin, View):
     login_url = '/inventario/login'
     redirect_field_name = None
@@ -1758,3 +1774,74 @@ class VerManualDeUsuario(LoginRequiredMixin, View):
 
 
 #Fin de vista--------------------------------------------------------------------------------
+
+#Vistas para el Kardex------------------------------------------------------------------------
+
+@login_required
+def lista_productos(request):
+    productos = Producto.objects.all().order_by('descripcion')
+    return render(request, 'inventario/kardex/lista_productos.html', {'productos': productos})
+
+@login_required
+def detalle_kardex(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    movimientos = Kardex.objects.filter(producto=producto).order_by('-fecha')
+
+    paginator = Paginator(movimientos, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'producto': producto,
+        'page_obj': page_obj,
+    }
+    return render(request,'inventario/kardex/detalle_kardex.html', context)
+
+@login_required
+def resumen_kardex(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    ultimo_movimiento = Kardex.objects.filter(producto=producto).order_by('-fecha').first()
+
+    entradas = Kardex.objects.filter(producto=producto, tipo_movimiento = 'ENTRADA').aggregate(
+        total_cantidad=Sum('cantidad'),
+        total_valor=Sum('valor_total')
+
+    )
+
+    salidas = Kardex.objects.filter(producto=producto, tipo_movimiento = 'SALIDA').aggregate(
+        total_cantidad=Sum('cantidad'),
+        total_valor=Sum('valor_total')
+    )
+
+    context = {
+        'producto': producto,
+        'ultimo_movimiento': ultimo_movimiento,
+        'entradas':entradas,
+        'salidas':salidas,
+    }
+
+    return render(request, 'inventario/kardex/resumen_kardex.html', context)
+
+@login_required
+@require_POST
+def registrar_movimiento(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    form = Kardex(request.POST)
+
+    if form.isvalid():
+        kardex = form.save(commit=False)
+        kardex.producto = producto
+        kardex.save()
+        return JsonResponse({'status':'success', 'message':'Movimiento registrado correctamente'})
+    else:
+        return JsonResponse({'status':'error', 'message':'Error al registrar el movimiento'}, status=400)
+    
+
+@login_required
+def nuevo_movimiento(request, producto_id):
+    producto = get_object_or_404(Producto, id = producto_id)
+    form = KardexForm()
+    return render(request, 'inventario/kardex/nuevo_movimiento.html', {'form': form, 'producto': producto })
+
+
+#Fin de vistas--------------------------------------------------------------------------------

@@ -1,0 +1,67 @@
+{% extends "inventario/comun/base.html" %}
+
+{% block content %}
+<article class="content">
+    <div class="title-block">
+        <h1 class="title">Resumen de Kardex para {{ producto.descripcion }}</h1>
+        <p class="title-description">Información general del producto y sus movimientos</p>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="card-title">Información General</h4>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Stock actual
+                                        <span class="badge badge-primary badge-pill">{{ producto.disponible }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        Último movimiento
+                                        <br>
+                                        <small>{{ ultimo_movimiento.fecha }} - {{ ultimo_movimiento.get_tipo_movimiento_display }}</small>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="card-title">Resumen de Movimientos</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Entradas</th>
+                                                <th>Salidas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>Total cantidad</th>
+                                                <td>{{ entradas.total_cantidad|default:0 }}</td>
+                                                <td>{{ salidas.total_cantidad|default:0 }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total valor</th>
+                                                <td>{{ entradas.total_valor|default:0 }}</td>
+                                                <td>{{ salidas.total_valor|default:0 }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'inventario:detalle_kardex' producto.id %}" class="btn btn-primary">Ver Detalle
+                            Completo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</article>
+{% endblock %}

@@ -141,7 +141,23 @@ class Migration(migrations.Migration):
                 ('disponible', models.IntegerField(null=True)),
                 ('medida', models.CharField(choices=[('1', 'Unidad'), ('2', 'Kilo'), ('3', 'Litro'), ('4', 'Otros')], default='1', max_length=20)),
                 ('tiene_iva', models.BooleanField(null=True)),
+                ('stock_actual', models.IntegerField(default=0)),
                 ('categoria', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventario.categoria')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Kardex',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('fecha', models.DateField(auto_now_add=True)),
+                ('tipo_movimiento', models.CharField(choices=[('ENTRADA', 'Entrada'), ('SALIDA', 'Salida')], max_length=10)),
+                ('cantidad', models.IntegerField()),
+                ('valor_unitario', models.DecimalField(decimal_places=2, max_digits=10)),
+                ('valor_total', models.DecimalField(decimal_places=2, max_digits=12)),
+                ('saldo_cantidad', models.IntegerField()),
+                ('saldo_valor_total', models.DecimalField(decimal_places=2, max_digits=12)),
+                ('detalle', models.CharField(max_length=200)),
+                ('producto', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventario.producto')),
             ],
         ),
         migrations.CreateModel(

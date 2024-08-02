@@ -1,6 +1,9 @@
 from django import forms
 from .models import Categoria, Producto, Cliente, Proveedor, Usuario, Opciones
 
+#Para el uso en el Kardex
+from .models import Kardex
+
 from django.forms import ModelChoiceField
 
 class MisProductos(ModelChoiceField):
@@ -516,3 +519,12 @@ class OpcionesFormulario(forms.Form):
 
     imagen = forms.FileField(required=False,widget = forms.FileInput(
         attrs={'class':'custom-file-input','id':'customFile'}))
+
+
+class KardexForm(forms.ModelForm):
+    class Meta:
+        model = Kardex
+        fields = ['tipo_movimiento', 'cantidad', 'valor_unitario', 'detalle']
+        widgets = {
+            'detalle':forms.Textarea(attrs={'rows':3})
+        }
