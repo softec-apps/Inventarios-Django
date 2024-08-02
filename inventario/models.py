@@ -10,7 +10,7 @@ class PersonaBase(models.Model):
         ('2', 'Pasaporte'),
         ('3', 'Cédula de Identidad para Extranjeros'),
     ]
-    tipoCedula = models.CharField(max_length=1, choices=tipoC, default='C')
+    tipoCedula = models.CharField(max_length=1, choices=tipoC, default='1')
     cedula = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=40)
     apellido = models.CharField(max_length=60)
