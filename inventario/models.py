@@ -135,13 +135,12 @@ class Producto(models.Model):
 
         return arreglo
 
-    def actualizar_stock(self, cantidad , es_entrada=True):
+    def actualizar_stock(self, cantidad, es_entrada=True):
         if es_entrada:
-            self.productosDisponibles +=cantidad
+            self.disponible += cantidad
         else:
-            self.disponible -=cantidad
+            self.disponible -= cantidad
         self.save()
-        return arreglo
 #---------------------------------------------------------------------------------------
 
 
@@ -160,6 +159,7 @@ class Kardex(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Si es un nuevo registro
+            self.full_clean()
             ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha').first()
             
             if self.tipo_movimiento == 'ENTRADA':

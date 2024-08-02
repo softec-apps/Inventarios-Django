@@ -526,5 +526,5 @@ class KardexForm(forms.ModelForm):
         model = Kardex
         fields = ['tipo_movimiento', 'cantidad', 'valor_unitario', 'detalle']
         widgets = {
-            'detalle':forms.Textarea(attrs={'rows':3})
+            'detalle': forms.Textarea(attrs={'rows': 3})
         }
