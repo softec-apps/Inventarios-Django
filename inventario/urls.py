@@ -59,10 +59,16 @@ path('configuracionGeneral', views.ConfiguracionGeneral.as_view(), name='configu
 path('verManualDeUsuario/<str:pagina>/',views.VerManualDeUsuario.as_view(), name='verManualDeUsuario'),
 
 #rutas para el manejo del Kardex
-path('kardex/lista_productos/', views.lista_productos, name='lista_productos'),
-path('kardex/detalle_kardex/<int:producto_id>/', views.detalle_kardex, name='detalle_kardex'),
-path('kardex/resumen_kardex/<int:producto_id>/', views.resumen_kardex, name='resumen_kardex'),
-path('kardex/nuevo_movimiento/<int:producto_id>/', views.nuevo_movimiento, name='nuevo_movimiento'),
-path('kardex/registrar_movimiento/<int:producto_id>/', views.registrar_movimiento,name='registrar_movimiento'),
+# path('kardex/lista_productos/', ListaProductosView.as_view(), name='lista_productos'),
+# path('kardex/detalle_kardex/<int:producto_id>/', DetalleKardexView.as_view(), name='detalle_kardex'),
+# path('kardex/resumen_kardex/<int:producto_id>/', ResumenKardexView.as_view(), name='resumen_kardex'),
+# path('kardex/nuevo_movimiento/<int:producto_id>/', NuevoMovimientoView.as_view(), name='nuevo_movimiento'),
+# path('kardex/registrar_movimiento/<int:producto_id>/', RegistrarMovimientoView.as_view(), name='registrar_movimiento'),
+path('lista_productos/', views.ListaProductosView.as_view(), name='lista_productos'),
+path('detalle_kardex/<int:producto_id>/', views.DetalleKardexView.as_view(), name='detalle_kardex'),
+path('resumen_kardex/<int:producto_id>/', views.ResumenKardexView.as_view(), name='resumen_kardex'),
+path('nuevo_movimiento/<int:producto_id>/', views.NuevoMovimientoView.as_view(), name='nuevo_movimiento'),
+path('registrar_movimiento/<int:producto_id>/', views.RegistrarMovimientoView.as_view(), name='registrar_movimiento'),
+
 ]
 

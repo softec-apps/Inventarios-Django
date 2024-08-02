@@ -4,7 +4,7 @@
             <div class="brand">
                 <div class="logo-nuevo">
                     {% load static %}
-                    <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo.png' %}">
+                    <img id="logo-endogeno" src="{% static 'inventario/assets/logo/logo2.png' %}">
                 </div>
                 Administrador
             </div>
@@ -17,20 +17,6 @@
                         <i class="fa fa-home"></i> Inicio
                     </a>
                 </li>
-
-                <!-- Sub-menu de categorías -->
-                <li>
-                    <a href="">
-                        <i class="fa fa-list"></i> Categorías
-                        <i class="fa arrow"></i>
-                    </a>
-                    <ul class="sidebar-nav">
-                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i>Listar categorías</a>
-                        </li>
-                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i>Agregar categoría</a></li>
-                    </ul>
-                </li>
-                <!-- Fin de sub-menu de categorías -->
 
                 <!-- Sub-menu de producto -->
                 <li>
@@ -48,18 +34,18 @@
 
                 <!-- Sub-menu de kardex -->
                 <li>
-                    <a href="">
+                    <a href="#">
                         <i class="fa fa-shopping-cart"></i> Kardex
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-                        <li><a href="{% url 'inventario:lista_productos' %}"><i class="fa fa-ellipsis-h"></i> Lista de
+                        <li><a href="/inventario/lista_productos/"><i class="fa fa-ellipsis-h"></i> Lista de
                                 productos</a></li>
-                        <!-- <li><a href="{% url 'inventario:detalle_kardex' 1 %}"><i class="fa fa-plus"></i> Detalle del
+                        <!-- <li><a href="/inventario/detalle_kardex/1/"><i class="fa fa-plus"></i> Detalle del Kardex</a>
+                        </li>
+                        <li><a href="/inventario/resumen_kardex/1/"><i class="fa fa-file-text"></i> Resumen del
                                 Kardex</a></li>
-                        <li><a href="{% url 'inventario:resumen_kardex' 1 %}"><i class="fa fa-file-text"></i> Resumen
-                                del Kardex</a></li>
-                        <li><a href="{% url 'inventario:nuevo_movimiento' 1 %}"><i class="fa fa-plus-circle"></i> Nuevo
+                        <li><a href="/inventario/nuevo_movimiento/1/"><i class="fa fa-plus-circle"></i> Nuevo
                                 Movimiento</a></li> -->
                     </ul>
                 </li>
@@ -91,6 +77,20 @@
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de pedido -->
+
+                <!-- Sub-menu de categorías -->
+                <li>
+                    <a href="">
+                        <i class="fa fa-list"></i> Categorías
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i>Listar categorías</a>
+                        </li>
+                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i>Agregar categoría</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de categorías -->
 
                 <!-- Sub-menu de clientes -->
                 <li>
