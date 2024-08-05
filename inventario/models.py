@@ -141,6 +141,21 @@ class Producto(models.Model):
         else:
             self.disponible -= cantidad
         self.save()
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_stock = Producto.objects.filter(pk=self.pk).values_list('disponible', flat=True).first() if not is_new else 0
+        super().save(*args, **kwargs)
+        
+        if is_new or self.disponible > old_stock:
+            cantidad = self.disponible - old_stock if not is_new else self.disponible
+            Kardex.registrar_movimiento(
+                producto=self,
+                tipo_movimiento='ENTRADA',
+                cantidad=cantidad,
+                valor_unitario=self.precio,
+                detalle='Registro inicial' if is_new else 'Actualización de stock'
+            )
 #---------------------------------------------------------------------------------------
 
 
@@ -159,7 +174,6 @@ class Kardex(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Si es un nuevo registro
-            self.full_clean()
             ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha').first()
             
             if self.tipo_movimiento == 'ENTRADA':
@@ -170,7 +184,8 @@ class Kardex(models.Model):
                 self.saldo_valor_total = (ultimo_kardex.saldo_valor_total if ultimo_kardex else 0) - self.valor_total
 
             # Actualizar el stock del producto
-            self.producto.actualizar_stock(self.cantidad, self.tipo_movimiento == 'ENTRADA')
+            self.producto.disponible = self.saldo_cantidad
+            self.producto.save()
 
         super().save(*args, **kwargs)
 

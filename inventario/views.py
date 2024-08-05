@@ -924,7 +924,6 @@ class DetallesFactura(LoginRequiredMixin, View):
 
         formset = FacturaFormulario(request.POST,data)
 
-
         if formset.is_valid():
 
             id_producto = []
@@ -938,7 +937,7 @@ class DetallesFactura(LoginRequiredMixin, View):
                 desc = form.cleaned_data['descripcion'].descripcion
                 cant = form.cleaned_data['cantidad']
                 sub = form.cleaned_data['valor_subtotal']
-                id_producto.append(obtenerIdProducto(desc)) #esta funcion, a estas alturas, es innecesaria porque ya tienes la id
+                id_producto.append(obtenerIdProducto(desc))
                 cantidad.append(cant)
                 subtotal.append(sub)
 
@@ -980,8 +979,22 @@ class DetallesFactura(LoginRequiredMixin, View):
 
                 detalleFactura.save()  
 
+                # Registrar movimiento en Kardex (NUEVO)
+                Kardex.registrar_movimiento(
+                    producto=objetoProducto,
+                    tipo_movimiento='SALIDA',
+                    cantidad=cantidadDetalle,
+                    valor_unitario=subDetalle / cantidadDetalle,
+                    detalle=f'Venta - Factura #{id_factura.id}'
+                )
+
             messages.success(request, 'Factura de ID %s insertada exitosamente.' % id_factura.id)
             return HttpResponseRedirect("/inventario/emitirFactura")    
+        else:
+            # Si el formset no es válido, se podría manejar el error aquí
+            # Por ejemplo, redirigir de vuelta al formulario con un mensaje de error
+            messages.error(request, 'Error al procesar la factura. Por favor, revise los datos.')
+            return HttpResponseRedirect("/inventario/emitirFactura")
     
 #Fin de vista-----------------------------------------------------------------------------------#
 
