@@ -38,6 +38,8 @@ from django.core.paginator import Paginator
 from .forms import KardexForm
 from django.core.exceptions import ValidationError
 from django.utils.decorators import method_decorator
+from django.db.models import F
+from django.db import transaction
 
 #Vistas endogenas.
 
@@ -632,39 +634,56 @@ class EditarProducto(LoginRequiredMixin, View):
     login_url = '/inventario/login'
     redirect_field_name = None
 
-    def post(self,request,p):
-        # Crea una instancia del formulario y la llena con los datos:
+    def post(self, request, p):
         form = ProductoFormulario(request.POST)
-        # Revisa si es valido:
         if form.is_valid():
-            # Procesa y asigna los datos con form.cleaned_data como se requiere
-            descripcion = form.cleaned_data['descripcion']
-            precio = form.cleaned_data['precio']
-            categoria = form.cleaned_data['categoria']
-            tiene_iva = form.cleaned_data['tiene_iva']
-            disponible = form.cleaned_data['disponible']
+            with transaction.atomic():
+                descripcion = form.cleaned_data['descripcion']
+                precio = form.cleaned_data['precio']
+                categoria = form.cleaned_data['categoria']
+                tiene_iva = form.cleaned_data['tiene_iva']
+                disponible_nuevo = form.cleaned_data['disponible']
 
-            prod = Producto.objects.get(id=p)
-            prod.descripcion = descripcion
-            prod.precio = precio
-            prod.categoria = categoria
-            prod.tiene_iva = tiene_iva
-            prod.disponible = disponible
-            prod.save()
+                prod = Producto.objects.select_for_update().get(id=p)
+                stock_anterior = prod.disponible
+                
+                prod.descripcion = descripcion
+                prod.precio = precio
+                prod.categoria = categoria
+                prod.tiene_iva = tiene_iva
+                
+                # Actualizar el campo 'disponible' sumando el nuevo valor al existente
+                Producto.objects.filter(id=p).update(disponible=F('disponible') + disponible_nuevo)
+                
+                # Refrescar la instancia del producto después de la actualización
+                prod.refresh_from_db()
+
+                # Registrar el movimiento en el Kardex
+                if disponible_nuevo != 0:
+                    tipo_movimiento = 'ENTRADA' if disponible_nuevo > 0 else 'SALIDA'
+                    Kardex.registrar_movimiento(
+                        producto=prod,
+                        tipo_movimiento=tipo_movimiento,
+                        cantidad=abs(disponible_nuevo),
+                        valor_unitario=prod.precio,
+                        detalle='Actualización de stock'
+                    )
+                
+                # Refrescar la instancia del producto después de la actualización del Kardex
+                prod.refresh_from_db()
+            
             form = ProductoFormulario(instance=prod)
-            messages.success(request, 'Actualizado exitosamente el producto de ID %s.' % p)
+            messages.success(request, f'Actualizado exitosamente el producto de ID {p}. Stock anterior: {stock_anterior}, Nuevo stock: {prod.disponible}')
             request.session['productoProcesado'] = 'editado'
-            return HttpResponseRedirect("/inventario/editarProducto/%s" % prod.id)
+            return HttpResponseRedirect(f"/inventario/editarProducto/{prod.id}")
         else:
-            #De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/producto/agregarProducto.html', {'form': form})
 
-    def get(self, request,p):
+    def get(self, request, p):
         prod = Producto.objects.get(id=p)
         form = ProductoFormulario(instance=prod)
-        #Envia al usuario el formulario para que lo llene
-        contexto = {'form':form , 'modo':request.session.get('productoProcesado'),'editar':True}
-        contexto = complementarContexto(contexto,request.user)
+        contexto = {'form': form, 'modo': request.session.get('productoProcesado'), 'editar': True}
+        contexto = complementarContexto(contexto, request.user)
         return render(request, 'inventario/producto/agregarProducto.html', contexto)
 #Fin de vista------------------------------------------------------------------------------------#
 
@@ -924,7 +943,6 @@ class DetallesFactura(LoginRequiredMixin, View):
 
         formset = FacturaFormulario(request.POST,data)
 
-
         if formset.is_valid():
 
             id_producto = []
@@ -938,7 +956,7 @@ class DetallesFactura(LoginRequiredMixin, View):
                 desc = form.cleaned_data['descripcion'].descripcion
                 cant = form.cleaned_data['cantidad']
                 sub = form.cleaned_data['valor_subtotal']
-                id_producto.append(obtenerIdProducto(desc)) #esta funcion, a estas alturas, es innecesaria porque ya tienes la id
+                id_producto.append(obtenerIdProducto(desc))
                 cantidad.append(cant)
                 subtotal.append(sub)
 
@@ -980,8 +998,22 @@ class DetallesFactura(LoginRequiredMixin, View):
 
                 detalleFactura.save()  
 
+                # Registrar movimiento en Kardex (NUEVO)
+                Kardex.registrar_movimiento(
+                    producto=objetoProducto,
+                    tipo_movimiento='SALIDA',
+                    cantidad=cantidadDetalle,
+                    valor_unitario=subDetalle / cantidadDetalle,
+                    detalle=f'Venta - Factura #{id_factura.id}'
+                )
+
             messages.success(request, 'Factura de ID %s insertada exitosamente.' % id_factura.id)
             return HttpResponseRedirect("/inventario/emitirFactura")    
+        else:
+            # Si el formset no es válido, se podría manejar el error aquí
+            # Por ejemplo, redirigir de vuelta al formulario con un mensaje de error
+            messages.error(request, 'Error al procesar la factura. Por favor, revise los datos.')
+            return HttpResponseRedirect("/inventario/emitirFactura")
     
 #Fin de vista-----------------------------------------------------------------------------------#
 
