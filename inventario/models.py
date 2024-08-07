@@ -174,7 +174,7 @@ class Kardex(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Si es un nuevo registro
-            ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha').first()
+            ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha', '-id').first()
             
             if self.tipo_movimiento == 'ENTRADA':
                 self.saldo_cantidad = (ultimo_kardex.saldo_cantidad if ultimo_kardex else 0) + self.cantidad
