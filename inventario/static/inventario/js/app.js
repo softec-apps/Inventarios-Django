@@ -1288,7 +1288,7 @@ $(function () {
 	*				Initial State
 	*************************************************/
 
-	setThemeSettings();
+	// setThemeSettings();
 
 	/************************************************
 	*					Events
@@ -1333,6 +1333,7 @@ $(function () {
 
 	function setThemeState() {
 		// set theme type
+		console.log(themeSettings.themeName)
 		if (themeSettings.themeName) {
 			$styleLink.attr('href', '/static/inventario/css/app-' + themeSettings.themeName + '.css');
 		}
