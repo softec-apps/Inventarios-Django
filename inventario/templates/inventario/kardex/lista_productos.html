@@ -31,6 +31,18 @@
                     <div class="card-block">
                         <div class="card-title-block">
                             <h3 class="title">Productos</h3>
+                            <div class="export-buttons">
+                                <button id="exportCSV" class="btn btn-primary">
+                                    <a href="{% url 'inventario:exportar_kardex_csv' %}">
+                                        <i class="fas fa-file-csv"></i>
+                                    </a>
+                                </button>
+                                <button id="exportExcel" class="btn btn-success">
+                                    <a href="{% url 'inventario:exportar_kardex_excel' %}">
+                                        <i class="fas fa-file-excel"></i>
+                                    </a>
+                                </button>
+                            </div>
                         </div>
                         <section class="example">
                             <div class="table-responsive">
