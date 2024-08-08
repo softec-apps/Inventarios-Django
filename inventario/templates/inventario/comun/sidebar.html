@@ -1,3 +1,5 @@
+{% load sidebar_active_routes %}
+
 <aside class="sidebar">
     <div class="sidebar-container">
         <div class="sidebar-header mt-1">
@@ -12,16 +14,29 @@
 
         <nav class="menu">
             <ul class="sidebar-menu metismenu" id="sidebar-menu">
-                <li>
+                <li class="{% if 'panel'|in_list:request %}active{% endif %}">
                     <a href="/inventario/panel">
                         <i class="fa fa-home"></i> Inicio
                     </a>
                 </li>
+                <!-- Sub-menu de categorías -->
+                <li class="{% if 'categorias'|in_list:request %}active open{% endif %}">
+                    <a href="">
+                        <i class="fa fa-list"></i> Categorías
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i> Listar categorías</a>
+                        </li>
+                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i> Agregar categoría</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de categorías -->
 
                 <!-- Sub-menu de producto -->
-                <li>
+                <li class="{% if 'productos'|in_list:request %}active open{% endif %}">
                     <a href="">
-                        <i class="fa fa-shopping-basket"></i> Producto
+                        <i class="fa fa-shopping-basket"></i> Productos
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -33,7 +48,7 @@
                 <!-- Fin de sub-menu de producto -->
 
                 <!-- Sub-menu de kardex -->
-                <li>
+                <li class="{% if 'kardex'|in_list:request %}active open{% endif %}">
                     <a href="#">
                         <i class="fa fa-shopping-cart"></i> Kardex
                         <i class="fa arrow"></i>
@@ -52,9 +67,9 @@
                 <!-- Fin de sub-menu de kardex -->
 
                 <!-- Sub-menu de proveedor -->
-                <li>
+                <li class="{% if 'proveedores'|in_list:request %}active open{% endif %}">
                     <a href="">
-                        <i class="fa fa-book"></i> Proveedor
+                        <i class="fa fa-book"></i> Proveedores
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -66,9 +81,9 @@
                 <!-- Fin de sub-menu de proveedor -->
 
                 <!-- Sub-menu de pedido -->
-                <li>
+                <li class="{% if 'pedidos'|in_list:request %}active open{% endif %}">
                     <a href="">
-                        <i class="fa fa-gift"></i> Pedido
+                        <i class="fa fa-gift"></i> Pedidos
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -78,22 +93,8 @@
                 </li>
                 <!-- Fin de sub-menu de pedido -->
 
-                <!-- Sub-menu de categorías -->
-                <li>
-                    <a href="">
-                        <i class="fa fa-list"></i> Categorías
-                        <i class="fa arrow"></i>
-                    </a>
-                    <ul class="sidebar-nav">
-                        <li><a href="/inventario/listarCategorias"><i class="fa fa-ellipsis-h"></i> Listar categorías</a>
-                        </li>
-                        <li><a href="/inventario/agregarCategoria"><i class="fa fa-plus"></i> Agregar categoría</a></li>
-                    </ul>
-                </li>
-                <!-- Fin de sub-menu de categorías -->
-
                 <!-- Sub-menu de clientes -->
-                <li>
+                <li class="{% if 'clientes'|in_list:request %}active open{% endif %}">
                     <a href="">
                         <i class="fa fa-handshake-o"></i> Clientes
                         <i class="fa arrow"></i>
@@ -107,9 +108,9 @@
                 <!-- Fin de sub-menu de clientes -->
 
                 <!-- Sub-menu de factura -->
-                <li>
+                <li class="{% if 'facturas'|in_list:request %}active open{% endif %}">
                     <a href="">
-                        <i class="fa fa-file-invoice"></i> Factura
+                        <i class="fa fa-file-invoice"></i> Facturas
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
@@ -120,26 +121,26 @@
                 <!-- Fin de sub-menu de factura -->
 
                 <!-- Sub-menu de usuarios -->
-                <li>
+                <li class="{% if 'usuarios'|in_list:request %}active open{% endif %}">
                     <a href="">
                         <i class="fa fa-users"></i> Usuarios
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-                        <li><a href="/inventario/crearUsuario"><i class="fa fa-circle-o"></i> Crear usuario</a></li>
-                        <li><a href="/inventario/listarUsuarios"><i class="fa fa-circle-o"></i> Listar usuarios</a></li>
+                        <li><a href="/inventario/listarUsuarios"><i class="fa fa-ellipsis-h"></i> Listar usuarios</a></li>
+                        <li><a href="/inventario/crearUsuario"><i class="fa fa-plus"></i> Crear usuario</a></li>
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de usuarios -->
 
                 <!-- Sub-menu de opciones -->
-                <li>
+                <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
                     <a href="">
                         <i class="fa fa-cog"></i> Opciones
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-                        <li><a href="/inventario/importarBDD"><i class="fa fa-file-o"></i> Importar base de datos</a>
+                        <li><a href="/inventario/importarBDD"><i class="fa fa-file"></i> Importar base de datos</a>
                         </li>
                         <li><a href="/inventario/descargarBDD"><i class="fa fa-download"></i> Descargar base de datos</a>
                         </li>
