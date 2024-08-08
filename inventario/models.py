@@ -5,12 +5,12 @@ from django.contrib.auth.models import AbstractUser
 # MODELOS
 class PersonaBase(models.Model):
     #id
-    tipoC =  [
+    CEDULA_CHOICES =  [
         ('1', 'Cédula de Identidad'),
         ('2', 'Pasaporte'),
         ('3', 'Cédula de Identidad para Extranjeros'),
     ]
-    tipoCedula = models.CharField(max_length=1, choices=tipoC, default='1')
+    tipoCedula = models.CharField(max_length=1, choices=CEDULA_CHOICES, default='1')
     cedula = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=40)
     apellido = models.CharField(max_length=60)
@@ -23,6 +23,10 @@ class PersonaBase(models.Model):
 
     class Meta:
         abstract = True
+
+    def get_tipo_cedula_texto(self):
+        # Retorna el texto correspondiente al tipo de cedula
+        return dict(self.CEDULA_CHOICES).get(self.tipoCedula, 'Desconocido')
 
 
 #--------------------------------USUARIO------------------------------------------------
@@ -79,7 +83,7 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=9,decimal_places=2)
     disponible = models.IntegerField(null=True)
     medida = models.CharField(max_length=20, choices=decisiones, default='1')
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
     tiene_iva = models.BooleanField(null=True)
 
     @classmethod
@@ -232,7 +236,8 @@ class Cliente(PersonaBase):
 
     @staticmethod
     def formatearCedula(cedula):
-        return format(int(cedula), ',d')
+        # return format(int(cedula), ',d')
+        return cedula
 #-----------------------------------------------------------------------------------------
 
 
