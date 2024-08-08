@@ -33,6 +33,18 @@
                         <div class="card-block">
                             <div class="card-title-block">
                                 <h3 class="title">Clientes</h3>
+                                <div class="export-buttons">
+                                    <button id="exportCSV" class="btn btn-primary">
+                                        <a href="{% url 'inventario:exportar_clientes_csv' %}">
+                                            <i class="fas fa-file-csv"></i>
+                                        </a>
+                                    </button>
+                                    <button id="exportExcel" class="btn btn-success">
+                                        <a href="{% url 'inventario:exportar_clientes_excel' %}">
+                                            <i class="fas fa-file-excel"></i>
+                                        </a>
+                                    </button>
+                                </div>
                             </div>
                             <section class="example">
                                 <div class="table-responsive">
@@ -59,13 +71,11 @@
                                                 <td>{{ fila.telefono }}</td>
                                                 <td>{{ fila.correo }}</td>
                                                 <td>
-
                                                     <div class="btn-group">
 
                                                         <button type="button" class="btn btn-info dropdown-toggle"
                                                             data-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false"><i class="fa fa-wrench"></i></button>
-
                                                         <div class="dropdown-menu">
                                                             <a class="dropdown-item"
                                                                 href="/inventario/editarCliente/{{ fila.id}}">Editar/Ver

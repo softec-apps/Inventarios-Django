@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from .funciones import *
 app_name = "inventario"
 
 urlpatterns = [
@@ -59,16 +59,28 @@ path('configuracionGeneral', views.ConfiguracionGeneral.as_view(), name='configu
 path('verManualDeUsuario/<str:pagina>/',views.VerManualDeUsuario.as_view(), name='verManualDeUsuario'),
 
 #rutas para el manejo del Kardex
-# path('kardex/lista_productos/', ListaProductosView.as_view(), name='lista_productos'),
-# path('kardex/detalle_kardex/<int:producto_id>/', DetalleKardexView.as_view(), name='detalle_kardex'),
-# path('kardex/resumen_kardex/<int:producto_id>/', ResumenKardexView.as_view(), name='resumen_kardex'),
-# path('kardex/nuevo_movimiento/<int:producto_id>/', NuevoMovimientoView.as_view(), name='nuevo_movimiento'),
-# path('kardex/registrar_movimiento/<int:producto_id>/', RegistrarMovimientoView.as_view(), name='registrar_movimiento'),
 path('lista_productos/', views.ListaProductosView.as_view(), name='lista_productos'),
 path('detalle_kardex/<int:producto_id>/', views.DetalleKardexView.as_view(), name='detalle_kardex'),
 path('resumen_kardex/<int:producto_id>/', views.ResumenKardexView.as_view(), name='resumen_kardex'),
 path('nuevo_movimiento/<int:producto_id>/', views.NuevoMovimientoView.as_view(), name='nuevo_movimiento'),
 path('registrar_movimiento/<int:producto_id>/', views.RegistrarMovimientoView.as_view(), name='registrar_movimiento'),
 
+#rutas exportacion de datos
+path('exportar/productos/csv/', exportar_productos_csv, name='exportar_productos_csv'),
+path('exportar/productos/excel/', exportar_productos_excel, name='exportar_productos_excel'),
+path('exportar/kardex/csv/', exportar_kardex_csv, name='exportar_kardex_csv'),
+path('exportar/kardex/excel/', exportar_kardex_excel, name='exportar_kardex_excel'),
+path('exportar/proveedores/csv/', exportar_proveedores_csv, name='exportar_proveedores_csv'),
+path('exportar/proveedores/excel/', exportar_proveedores_excel, name='exportar_proveedores_excel'),
+path('exportar/pedidos/csv/', exportar_pedidos_csv, name='exportar_pedidos_csv'),
+path('exportar/pedidos/excel/', exportar_pedidos_excel, name='exportar_pedidos_excel'),
+path('exportar/categorias/csv/', exportar_categorias_csv, name='exportar_categorias_csv'),
+path('exportar/categorias/excel/', exportar_categorias_excel, name='exportar_categorias_excel'),
+path('exportar/clientes/csv/', exportar_clientes_csv, name='exportar_clientes_csv'),
+path('exportar/clientes/excel/', exportar_clientes_excel, name='exportar_clientes_excel'),
+path('exportar/facturas/csv/', exportar_facturas_csv, name='exportar_facturas_csv'),
+path('exportar/facturas/excel/', exportar_facturas_excel, name='exportar_facturas_excel'),
+path('exportar/usuarios/csv/', exportar_usuarios_csv, name='exportar_usuarios_csv'),
+path('exportar/usuarios/excel/', exportar_usuarios_excel, name='exportar_usuarios_excel'),
 ]
 

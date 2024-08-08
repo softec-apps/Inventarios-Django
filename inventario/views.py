@@ -668,9 +668,6 @@ class EditarProducto(LoginRequiredMixin, View):
                         valor_unitario=prod.precio,
                         detalle='Actualización de stock'
                     )
-                
-                # Refrescar la instancia del producto después de la actualización del Kardex
-                prod.refresh_from_db()
             
             form = ProductoFormulario(instance=prod)
             messages.success(request, f'Actualizado exitosamente el producto de ID {p}. Stock anterior: {stock_anterior}, Nuevo stock: {prod.disponible}')

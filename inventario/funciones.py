@@ -1,7 +1,11 @@
 #----------------------------FUNCIONES DE AYUDA Y COMPLEMENTO--------------------------------------------------
 
-from .models import Producto, Opciones
+from .models import Producto, Opciones, Kardex, Proveedor, Pedido, Categoria, Cliente, Usuario, Factura
 from decimal import Decimal
+import csv
+from openpyxl import Workbook
+from django.http import HttpResponse
+from datetime import datetime
 
 
 def obtenerIdProducto(descripcion):
@@ -81,4 +85,321 @@ def render_to_pdf(template_src, context_dict={}):
     return None
 
 #--------------------------------------------------------------------------------------------------------------                 
+
+#----------------------------FUNCIONES PARA LA EXPORTACION DE ARCHIVOS SCV, EXEL--------------------------------------------------
+
+def exportar_productos_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="productos.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Descripcion', 'Precio', 'Disponible', 'Medida', 'Categoria', 'IVA'])
+
+    productos = Producto.objects.all().values_list('id', 'descripcion', 'precio', 'disponible', 'medida', 'categoria__nombre', 'tiene_iva')
+    for producto in productos:
+        writer.writerow(producto)
+
+    return response
+
+def exportar_productos_excel(request):
+    productos = Producto.objects.all()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Productos'
+
+    columns = ['ID', 'Descripción', 'Precio', 'Disponible', 'Medida', 'Categoría', 'Tiene IVA']
+    ws.append(columns)
+
+    for producto in productos:
+        ws.append([
+            producto.id,
+            producto.descripcion,
+            producto.precio,
+            producto.disponible,
+            producto.get_medida_display(),
+            producto.categoria.nombre,
+            'Si' if producto.tiene_iva else 'No'
+        ])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=productos.xlsx'
+
+    wb.save(response)
+    return response
+
+
+def exportar_kardex_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="kardex.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Producto', 'Fecha', 'Tipo Movimiento', 'Cantidad', 'Valor Unitario', 'Valor Total', 'Saldo Cantidad', 'Saldo Valor Total', 'Detalle'])
+    
+    kardex_entries = Kardex.objects.all().select_related('producto')
+    for entry in kardex_entries:
+        writer.writerow([
+            entry.id, entry.producto.descripcion, entry.fecha, entry.tipo_movimiento,
+            entry.cantidad, entry.valor_unitario, entry.valor_total,
+            entry.saldo_cantidad, entry.saldo_valor_total, entry.detalle
+        ])
+    
+    return response
+
+def exportar_kardex_excel(request):
+    kardex_entries = Kardex.objects.all().select_related('producto')
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Kardex"
+    
+    ws.append(['ID', 'Producto', 'Fecha', 'Tipo Movimiento', 'Cantidad', 'Valor Unitario', 'Valor Total', 'Saldo Cantidad', 'Saldo Valor Total', 'Detalle'])
+    
+    for entry in kardex_entries:
+        # Formatear la fecha
+        fecha_formateada = entry.fecha.strftime('%d-%m-%Y')
+        ws.append([
+            entry.id, entry.producto.descripcion, fecha_formateada, entry.tipo_movimiento,
+            entry.cantidad, entry.valor_unitario, entry.valor_total,
+            entry.saldo_cantidad, entry.saldo_valor_total, entry.detalle
+        ])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=kardex.xlsx'
+    wb.save(response)
+    return response
+
+def exportar_proveedores_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="proveedores.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Tipo Cédula', 'Cédula', 'Nombre', 'Apellido', 'Ciudad', 'Dirección', 'Teléfono', 'Teléfono 2', 'Correo', 'Correo 2', 'RUC'])
+    
+    proveedores = Proveedor.objects.all()
+    for proveedor in proveedores:
+        writer.writerow([
+            proveedor.id, proveedor.get_tipoCedula_display(), proveedor.cedula,
+            proveedor.nombre, proveedor.apellido, proveedor.ciudad, proveedor.direccion,
+            proveedor.telefono, proveedor.telefono2, proveedor.correo, proveedor.correo2,
+            proveedor.ruc
+        ])
+    
+    return response
+
+def exportar_proveedores_excel(request):
+    proveedores = Proveedor.objects.all()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Proveedores"
+    
+    ws.append(['ID', 'Tipo Cédula', 'Cédula', 'Nombre', 'Apellido', 'Ciudad', 'Dirección', 'Teléfono', 'Teléfono 2', 'Correo', 'Correo 2', 'RUC'])
+    
+    for proveedor in proveedores:
+        ws.append([
+            proveedor.id, proveedor.get_tipoCedula_display(), proveedor.cedula,
+            proveedor.nombre, proveedor.apellido, proveedor.ciudad, proveedor.direccion,
+            proveedor.telefono, proveedor.telefono2, proveedor.correo, proveedor.correo2,
+            proveedor.ruc
+        ])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=proveedores.xlsx'
+    wb.save(response)
+    return response
+
+def exportar_pedidos_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="pedidos.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Proveedor', 'Fecha', 'Sub Monto', 'Monto General', 'IVA', 'Presente'])
+    
+    pedidos = Pedido.objects.all().select_related('proveedor', 'iva')
+    for pedido in pedidos:
+        writer.writerow([
+            pedido.id, f"{pedido.proveedor.nombre} {pedido.proveedor.apellido}",
+            pedido.fecha, pedido.sub_monto, pedido.monto_general,
+            pedido.iva.valor_iva, pedido.presente
+        ])
+    
+    return response
+
+def exportar_pedidos_excel(request):
+    pedidos = Pedido.objects.all().select_related('proveedor', 'iva')
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Pedidos"
+    
+    ws.append(['ID', 'Proveedor', 'Fecha', 'Sub Monto', 'Monto General', 'IVA', 'Presente'])
+    
+    for pedido in pedidos:
+        fecha_formateada = pedido.fecha.strftime('%d-%m-%Y')
+        ws.append([
+            pedido.id, f"{pedido.proveedor.nombre} {pedido.proveedor.apellido}",
+            fecha_formateada, pedido.sub_monto, pedido.monto_general,
+            pedido.iva.valor_iva, pedido.presente
+        ])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=pedidos.xlsx'
+    wb.save(response)
+    return response
+
+def exportar_categorias_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="categorias.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Nombre'])
+    
+    categorias = Categoria.objects.all()
+    for categoria in categorias:
+        writer.writerow([categoria.id, categoria.nombre])
+    
+    return response
+
+def exportar_categorias_excel(request):
+    categorias = Categoria.objects.all()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Categorias"
+    
+    ws.append(['ID', 'Nombre'])
+    
+    for categoria in categorias:
+        ws.append([categoria.id, categoria.nombre])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=categorias.xlsx'
+    wb.save(response)
+    return response
+
+def exportar_clientes_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="clientes.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Tipo Cédula', 'Cédula', 'Nombre', 'Apellido', 'Ciudad', 'Dirección', 'Teléfono', 'Teléfono 2', 'Correo', 'Correo 2', 'Género', 'Nacimiento'])
+    
+    clientes = Cliente.objects.all()
+    for cliente in clientes:
+        writer.writerow([
+            cliente.id, cliente.get_tipoCedula_display(), cliente.cedula,
+            cliente.nombre, cliente.apellido, cliente.ciudad, cliente.direccion,
+            cliente.telefono, cliente.telefono2, cliente.correo, cliente.correo2,
+            cliente.get_genero_display(), cliente.nacimiento
+        ])
+    
+    return response
+
+def exportar_clientes_excel(request):
+    clientes = Cliente.objects.all()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Clientes"
+    
+    ws.append(['ID', 'Tipo Cédula', 'Cédula', 'Nombre', 'Apellido', 'Ciudad', 'Dirección', 'Teléfono', 'Teléfono 2', 'Correo', 'Correo 2', 'Género', 'Nacimiento'])
+    
+    for cliente in clientes:
+        ws.append([
+            cliente.id, cliente.get_tipoCedula_display(), cliente.cedula,
+            cliente.nombre, cliente.apellido, cliente.ciudad, cliente.direccion,
+            cliente.telefono, cliente.telefono2, cliente.correo, cliente.correo2,
+            cliente.get_genero_display(), cliente.nacimiento
+        ])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=clientes.xlsx'
+    wb.save(response)
+    return response
+
+def exportar_facturas_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition']='attachment; filename="facturas.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Cliente', 'Fecha','Sub Monto','Monto General','IVA'])
+
+    facturas = Factura.objects.all().select_related('cliente','iva')
+    for factura in facturas:
+        writer.writerow([
+            factura.id,
+            f"{factura.cliente.nombre}{factura.cliente.apellido}",
+            factura.fecha,
+            factura.sub_monto,
+            factura.monto_general,
+            factura.iva.valor_iva
+        ])
+
+    return response
+
+def exportar_facturas_excel(request):
+    facturas = Factura.objects.all().select_related('cliente','iva')
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Facturas"
+
+    columns = ['ID', 'Cliente', 'Fecha', 'Sub Monto', 'Monto general', 'IVA']
+    ws.append(columns)
+
+    for factura in facturas:
+        fecha_formateada = factura.fecha.strftime('%d-%m-%Y')
+        ws.append([
+            factura.id,
+            f"{factura.cliente.nombre} {factura.cliente.apellido}",
+            fecha_formateada,
+            factura.sub_monto,
+            factura.monto_general,
+            factura.iva.valor_iva
+        ])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=facturas.xlsx'
+
+    wb.save(response)
+    return response
+
+def exportar_usuarios_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="usuarios.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Username', 'Email', 'Nombre', 'Apellido', 'Nivel', 'Es Superusuario'])
+    
+    usuarios = Usuario.objects.all()
+    for usuario in usuarios:
+        writer.writerow([
+            usuario.id, usuario.username, usuario.email,
+            usuario.first_name, usuario.last_name, usuario.nivel,
+            usuario.is_superuser
+        ])
+    
+    return response
+
+def exportar_usuarios_excel(request):
+    usuarios = Usuario.objects.all()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Usuarios"
+    
+    ws.append(['ID', 'Username', 'Email', 'Nombre', 'Apellido', 'Nivel', 'Es Superusuario'])
+    
+    for usuario in usuarios:
+        ws.append([
+            usuario.id, usuario.username, usuario.email,
+            usuario.first_name, usuario.last_name, usuario.nivel,
+            usuario.is_superuser
+        ])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=usuarios.xlsx'
+    wb.save(response)
+    return response
 
