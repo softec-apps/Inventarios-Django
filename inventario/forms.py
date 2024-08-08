@@ -80,6 +80,13 @@ class ProductoFormulario(forms.ModelForm):
             }
         )
     )
+    categoria = forms.ModelChoiceField(
+        queryset=Categoria.objects.all(),
+        required=False,
+        empty_label=None,
+        label='Categoría',
+        widget=forms.Select(attrs={'id':'categoria','class':'form-control'}),
+    )
     class Meta:
         model = Producto
         fields = ['descripcion','precio','categoria','disponible','medida','tiene_iva']
@@ -91,10 +98,9 @@ class ProductoFormulario(forms.ModelForm):
         widgets = {
         'descripcion': forms.TextInput(attrs={'placeholder': 'Nombre del producto',
             'id':'descripcion','class':'form-control'} ),
-        'categoria': forms.Select(attrs={'id':'categoria','class':'form-control'} ),
+        # 'categoria': forms.Select(attrs={'id':'categoria','class':'form-control'} ),
         'medida': forms.Select(attrs={'class':'form-control','id':'medida'}),
         'tiene_iva': forms.CheckboxInput(attrs={'class':'checkbox rounded','id':'tiene_iva'}),
-        'medida': forms.Select(attrs={'class':'form-control','id':'medida'}),
         }
 
 class ImportarProductosFormulario(forms.Form):

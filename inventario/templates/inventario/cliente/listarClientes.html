@@ -52,9 +52,9 @@
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Cedula</th>
+                                                <th>Cédula</th>
                                                 <th>Nombre completo</th>
-                                                <th>Telefono</th>
+                                                <th>Teléfono</th>
                                                 <th>Correo</th>
                                                 <th>Opciones</th>
                                             </tr>
@@ -63,18 +63,19 @@
                                             {% for fila in tabla %}
                                             <tr>
                                                 <td>{{ fila.id }}</td>
-                                                <td>{{ fila.cedula}}</td>
+                                                <td>
+                                                    <span class="badge bg-primary text-white">{{ fila.get_tipo_cedula_texto }}</span>
+                                                    <p>{{ fila.cedula }}</p>
+                                                </td>
                                                 <td>{{ fila.nombre }} {{ fila.apellido }}</td>
                                                 <td>{{ fila.telefono }}</td>
                                                 <td>{{ fila.correo }}</td>
                                                 <td>
-
                                                     <div class="btn-group">
 
                                                         <button type="button" class="btn btn-info dropdown-toggle"
                                                             data-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false"><i class="fa fa-wrench"></i></button>
-
                                                         <div class="dropdown-menu">
                                                             <a class="dropdown-item"
                                                                 href="/inventario/editarCliente/{{ fila.id}}">Editar/Ver
