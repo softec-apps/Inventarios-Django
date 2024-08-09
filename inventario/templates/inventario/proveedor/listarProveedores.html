@@ -34,16 +34,16 @@
                             <div class="card-title-block">
                                 <h3 class="title">Proveedores</h3>
                                 <div class="export-buttons">
-                                    <button id="exportCSV" class="btn btn-primary">
-                                        <a href="{% url 'inventario:exportar_proveedores_csv' %}">
+                                    <a href="{% url 'inventario:exportar_proveedores_csv' %}">
+                                        <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
                                             <i class="fas fa-file-csv"></i>
-                                        </a>
-                                    </button>
-                                    <button id="exportExcel" class="btn btn-success">
-                                        <a href="{% url 'inventario:exportar_proveedores_excel' %}">
+                                        </button>
+                                    </a>
+                                    <a href="{% url 'inventario:exportar_proveedores_excel' %}" title="Exportar Exel">
+                                        <button id="exportExcel" class="btn btn-success">
                                             <i class="fas fa-file-excel"></i>
-                                        </a>
-                                    </button>
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
                             <section class="example">
@@ -64,7 +64,6 @@
                                             <tr>
                                                 <td>{{ fila.id }}</td>
                                                 <td>
-                                                    <span class="badge bg-primary text-white">{{ fila.get_tipo_cedula_texto }}</span>
                                                     <p>{{ fila.cedula }}</p>
                                                 </td>
                                                 <td>{{ fila.nombre }} {{ fila.apellido }}</td>
