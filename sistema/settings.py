@@ -132,3 +132,6 @@ STATIC_URL = '/static/'
 
 
 AUTH_USER_MODEL = 'inventario.Usuario' # modelo de usuario
+
+handler404 = 'inventario.views.custom_404' # vista personalizada para el error 404
+handler500 = 'inventario.views.custom_500' # vista personalizada para el error 500

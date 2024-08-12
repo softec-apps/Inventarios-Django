@@ -884,15 +884,21 @@ class EmitirFactura(LoginRequiredMixin, View):
     def post(self, request):
         # Crea una instancia del formulario y la llena con los datos:
         cedulas = Cliente.cedulasRegistradas()
-        form = EmitirFacturaFormulario(request.POST,cedulas=cedulas)
+        form = EmitirFacturaFormulario(request.POST, cedulas=cedulas)
         # Revisa si es valido:
         if form.is_valid():
-            # Procesa y asigna los datos con form.cleaned_data como se requiere
-            request.session['form_details'] = form.cleaned_data['productos']
-            request.session['id_client'] = form.cleaned_data['cliente']
-            return HttpResponseRedirect("detallesDeFactura")
+            try:
+                # Verificar si las claves 'cliente' y 'productos' existen
+                cliente = form.cleaned_data['cliente']
+                productos = form.cleaned_data['productos']
+                request.session['form_details'] = productos
+                request.session['id_client'] = cliente
+                return HttpResponseRedirect("detallesDeFactura")
+            except KeyError:
+                # Renderizar la página de error 404 personalizada si falta alguna clave
+                return render(request, 'inventario/error/404.html', status=404)
         else:
-            #De lo contrario lanzara el mismo formulario
+            # De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/factura/emitirFactura.html', {'form': form})
 
     def get(self, request):
@@ -1316,17 +1322,19 @@ class AgregarPedido(LoginRequiredMixin, View):
         return render(request, 'inventario/pedido/emitirPedido.html', contexto)
 
     def post(self, request):
-        # Crea una instancia del formulario y la llena con los datos:
         cedulas = Proveedor.cedulasRegistradas()
-        form = EmitirPedidoFormulario(request.POST,cedulas=cedulas)
-        # Revisa si es valido:
+        form = EmitirPedidoFormulario(request.POST, cedulas=cedulas)
         if form.is_valid():
-            # Procesa y asigna los datos con form.cleaned_data como se requiere
-            request.session['form_details'] = form.cleaned_data['productos']
-            request.session['id_proveedor'] = form.cleaned_data['proveedor']
-            return HttpResponseRedirect("detallesPedido")
+            try:
+                # Verificar si la clave 'proveedor' existe
+                proveedor = form.cleaned_data['proveedor']
+                request.session['form_details'] = form.cleaned_data['productos']
+                request.session['id_proveedor'] = proveedor
+                return HttpResponseRedirect("detallesPedido")
+            except KeyError:
+                # Renderizar la página de error 404 personalizada si falta la clave 'proveedor'
+                return render(request, 'inventario/error/404.html', status=404)
         else:
-            #De lo contrario lanzara el mismo formulario
             return render(request, 'inventario/pedido/emitirPedido.html', {'form': form})
 
 #--------------------------------------------------------------------------------------------------#
@@ -1913,5 +1921,15 @@ class NuevoMovimientoView(LoginRequiredMixin, View):
             'id_usuario': request.user.id
         }
         return render(request, 'inventario/kardex/nuevo_movimiento.html', contexto)
+
+# Fin de vistas--------------------------------------------------------------------------------
+
+# Vistas para el Errores------------------------------------------------------------------------
+
+def custom_404(request, exception):
+    return render(request, 'inventario/error/404.html', status=404)
+
+def custom_500(request):
+    return render(request, 'inventario/error/500.html', status=500)
 
 # Fin de vistas--------------------------------------------------------------------------------
