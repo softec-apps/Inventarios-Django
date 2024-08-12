@@ -34,16 +34,16 @@
                             <div class="card-title-block">
                                 <h3 class="title">Categorías</h3>
                                 <div class="export-buttons">
-                                    <button id="exportCSV" class="btn btn-primary">
-                                        <a href="{% url 'inventario:exportar_categorias_csv' %}">
+                                    <a href="{% url 'inventario:exportar_categorias_csv' %}">
+                                        <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
                                             <i class="fas fa-file-csv"></i>
-                                        </a>
-                                    </button>
-                                    <button id="exportExcel" class="btn btn-success">
-                                        <a href="{% url 'inventario:exportar_categorias_excel' %}">
+                                        </button>
+                                    </a>
+                                    <a href="{% url 'inventario:exportar_categorias_excel' %}" title="Exportar Exel">
+                                        <button id="exportExcel" class="btn btn-success">
                                             <i class="fas fa-file-excel"></i>
-                                        </a>
-                                    </button>
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
                             <section class="example">

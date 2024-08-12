@@ -1,31 +1,56 @@
 {% load static %}
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Sistema de inventario</title>
-        <meta name="description" content="Sistema de inventario">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <link rel="shortcut icon" href="{% static 'inventario/assets/logo/logo.png' %}" type="image/x-icon">
-        <!-- Place favicon.ico in the root directory -->
-        <link rel="stylesheet" href='{% static "inventario/css/vendor.css" %}'>
 
-        <link rel="stylesheet" id="theme-style" href="{% static 'inventario/css/app-blue.css' %}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Sistema de inventario</title>
+    <meta name="description" content="Sistema de inventario">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="{% static 'inventario/assets/logo/logo.png' %}" type="image/x-icon">
+    <!-- Place favicon.ico in the root directory -->
+    <link rel="stylesheet" href='{% static "inventario/css/vendor.css" %}'>
 
-        <link rel="stylesheet" href="{% static 'inventario/css/Ionicons/css/ionicons.css' %}">
+    <link rel="stylesheet" id="theme-style" href="{% static 'inventario/css/app-blue.css' %}">
 
-        <link rel="stylesheet" href="{% static 'inventario/css/datatables.net-bs/css/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'inventario/css/Ionicons/css/ionicons.css' %}">
 
-        <link rel="stylesheet" href="{% static 'inventario/css/alertify-css/alertify.css' %}">
+    <link rel="stylesheet" href="{% static 'inventario/css/datatables.net-bs/css/dataTables.bootstrap4.css' %}">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'inventario/css/alertify-css/alertify.css' %}">
 
-        <style>
-            .error-personal
-            {
-                color: #fff;
-                background: rgba(250, 0, 0, 0,95);
-                text-shadow: -1px -1px 0 rgba(0, 0, 0, 0,5);
-            }
-        </style>
-    </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+
+    <style>
+        .error-personal {
+            color: #fff;
+            background: rgba(250, 0, 0, 0, 95);
+            text-shadow: -1px -1px 0 rgba(0, 0, 0, 0, 5);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .export-buttons button {
+            font-size: 1.2em;
+            /* Tamaño de fuente más grande */
+            padding: 10px 20px;
+            /* Aumentar el tamaño del botón */
+        }
+
+        .export-buttons i {
+            color: white;
+            /* Color de los iconos */
+        }
+
+        .export-buttons a {
+            text-decoration: none;
+            color: inherit;
+            /* Mantener el color del texto */
+        }
+    </style>
+</head>
