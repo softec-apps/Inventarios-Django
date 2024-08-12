@@ -896,10 +896,15 @@ class EmitirFactura(LoginRequiredMixin, View):
             return render(request, 'inventario/factura/emitirFactura.html', {'form': form})
 
     def get(self, request):
-        cedulas = Cliente.cedulasRegistradas()   
+        cedulas = Cliente.cedulasRegistradas()
+        missing = False
+        if cedulas is None:
+            missing = True
+        else:
+            missing = len(cedulas) == 0
         form = EmitirFacturaFormulario(cedulas=cedulas)
-        contexto = {'form':form}
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = {'form':form, 'missing':missing}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/factura/emitirFactura.html', contexto)
 #Fin de vista---------------------------------------------------------------------------------#
 
@@ -1310,9 +1315,14 @@ class AgregarPedido(LoginRequiredMixin, View):
 
     def get(self, request):
         cedulas = Proveedor.cedulasRegistradas()
+        missing = False
+        if cedulas is None:
+            missing = True
+        else:
+            missing = len(cedulas) == 0
         form = EmitirPedidoFormulario(cedulas=cedulas)
-        contexto = {'form':form}
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = {'form':form, 'missing':missing}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/pedido/emitirPedido.html', contexto)
 
     def post(self, request):
