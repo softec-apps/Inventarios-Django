@@ -230,6 +230,18 @@ class DetallesFacturaFormulario(forms.Form):
 
     valor_subtotal = forms.DecimalField(min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Monto sub-total','class':'form-control','hidden':'true','value':'0'}))
 
+    valor_con_iva = forms.DecimalField(
+        required=False,
+        label="Valor con IVA",
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Valor con IVA',
+            'class': 'form-control',
+            'disabled': 'true',
+            'value': '0'
+        })
+    )
+
 
 class EmitirPedidoFormulario(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -301,6 +313,18 @@ class DetallesPedidoFormulario(forms.Form):
                 'placeholder': 'Monto sub-total',
                 'class': 'form-control',
                 'hidden': 'true',
+                'value': '0'
+            })
+        )
+
+        self.fields['valor_con_iva'] = forms.DecimalField(
+            required=False,
+            label="Valor con IVA",
+            min_value=0,
+            widget=forms.NumberInput(attrs={
+                'placeholder': 'Valor con IVA',
+                'class': 'form-control',
+                'disabled': 'true',
                 'value': '0'
             })
         )
