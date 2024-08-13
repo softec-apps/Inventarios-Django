@@ -317,6 +317,18 @@ class DetallesPedidoFormulario(forms.Form):
             })
         )
 
+        self.fields['valor_con_iva'] = forms.DecimalField(
+            required=False,
+            label="Valor con IVA",
+            min_value=0,
+            widget=forms.NumberInput(attrs={
+                'placeholder': 'Valor con IVA',
+                'class': 'form-control',
+                'disabled': 'true',
+                'value': '0'
+            })
+        )
+
     def get_product_choices(self):
         return Producto.preciosProductos()
 
