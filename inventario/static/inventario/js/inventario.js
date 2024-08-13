@@ -256,33 +256,42 @@ function establecerDisponibles(elemento) {
 }
 
 function establecerPrecio(elemento) {
-	inicializarCampos(0)
+    inicializarCampos(0);
 
-	let nombre = elemento.id
-	let lista = document.getElementById(elemento.id)
-	let idProducto = lista.value
+    let nombre = elemento.id;
+    let lista = document.getElementById(elemento.id);
+    let idProducto = lista.value;
 
-	let nombreNuevo = idNuevo(nombre, '-', 2, 'vista_precio')
+    let nombreNuevo = idNuevo(nombre, '-', 2, 'vista_precio');
 
-	let elementoAModificar = document.getElementById(nombreNuevo)
-	let seguir = true
+    let elementoAModificar = document.getElementById(nombreNuevo);
+    let seguir = true;
 
-	for (let i = 0; i < lista.children.length; i++) {
-		if (idProducto == elementoAModificar[i].value && seguir) {
-			elementoAModificar.selectedIndex = i
-			seguir = false
-		}
-	}
+    for (let i = 0; i < lista.children.length; i++) {
+        if (idProducto == elementoAModificar[i].value && seguir) {
+            elementoAModificar.selectedIndex = i;
+            seguir = false;
+        }
+    }
 
-	// Actualizar el valor con IVA
-	let valorConIva = idNuevo(idDescripcion, '-', 2, 'valor_con_iva');
-	let elementoValorConIva = document.getElementById(valorConIva);
-	let iva = parseFloat(document.getElementById('iva_valor').value) / 100;
-	let valorConIvaCalculado = precio.value * (1 + iva);
-	elementoValorConIva.value = valorConIvaCalculado.toFixed(2);
+    // Definir idDescripcion
+    let idDescripcion = elemento.id;
 
+    // Definir precio
+    let precio = document.getElementById(idNuevo(idDescripcion, '-', 2, 'precio'));
+
+    // Verificar si el elemento precio existe
+    if (precio) {
+        // Actualizar el valor con IVA
+        let valorConIva = idNuevo(idDescripcion, '-', 2, 'valor_con_iva');
+        let elementoValorConIva = document.getElementById(valorConIva);
+        let iva = parseFloat(document.getElementById('iva_valor').value) / 100;
+        let valorConIvaCalculado = precio.value * (1 + iva);
+        elementoValorConIva.value = valorConIvaCalculado.toFixed(2);
+    } else {
+        
+    }
 }
-
 
 
 
