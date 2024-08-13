@@ -928,6 +928,8 @@ class DetallesFactura(LoginRequiredMixin, View):
         formset = FacturaFormulario()
         contexto = {'formset':formset}
         contexto = complementarContexto(contexto,request.user) 
+        iva = Opciones.objects.first().valor_iva
+        contexto['iva_valor'] = iva
 
         return render(request, 'inventario/factura/detallesFactura.html', contexto)        
 
@@ -967,6 +969,15 @@ class DetallesFactura(LoginRequiredMixin, View):
                 id_producto.append(obtenerIdProducto(desc))
                 cantidad.append(cant)
                 subtotal.append(sub)
+
+                 # Calcular el valor con IVA
+                producto = obtenerProducto(obtenerIdProducto(desc))
+                iva = Opciones.objects.first().valor_iva / 100  # Asumimos que el IVA está almacenado como porcentaje
+                valor_sin_iva = form.cleaned_data['valor_subtotal']
+                valor_con_iva = valor_sin_iva * (1 + iva)
+                
+                # Añadir el valor_con_iva al formulario
+                form.cleaned_data['valor_con_iva'] = valor_con_iva
 
             #Ingresa la factura
             #--Saca el sub-monto

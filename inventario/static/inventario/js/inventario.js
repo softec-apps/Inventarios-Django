@@ -175,6 +175,17 @@ function calculoPrecio(elemento)
 
 	valorSub.value = elementoAModificar.value
 
+	// para el calculo del iva
+	let valorConIva = idNuevo(idCantidad, '-', 2, 'valor_con_iva');
+    let elementoValorConIva = document.getElementById(valorConIva);
+    
+    // Obtener el valor del IVA (asumimos que está disponible en una variable global)
+    let iva = parseFloat(document.getElementById('iva_valor').value) / 100;
+    
+    // Calcular el valor con IVA
+    let valorConIvaCalculado = elementoAModificar.value * (1 + iva);
+    elementoValorConIva.value = valorConIvaCalculado.toFixed(2);
+
 }
 
 
