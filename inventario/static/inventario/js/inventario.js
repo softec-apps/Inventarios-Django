@@ -1,5 +1,5 @@
 //se obtiene el numero de productos a facturar
-let productos = document.getElementById('id_form-TOTAL_FORMS').value 
+let productos = document.getElementById('id_form-TOTAL_FORMS').value
 
 idCalculoDisponible = "";
 
@@ -8,12 +8,12 @@ idCalculoDisponible = "";
 let ultimoValor = 0
 
 //se utiliza en calculoDisponible
-let usado = 0 
+let usado = 0
 
 /*matriz que guarda que productos se han seleccionado en cada formulario. se inicia en 
 arreglosProductos
 */
-let productosUsados = [] 
+let productosUsados = []
 
 /* matriz que guarda los productos anteriores */
 let productosAnteriores = []
@@ -25,18 +25,17 @@ let indiceABorrar = null
 
 
 const selects = document.querySelectorAll('.select-group');
-selects.forEach( (elem) => {
-	elem.addEventListener('change',(event) => {
+selects.forEach((elem) => {
+	elem.addEventListener('change', (event) => {
 		let values = Array.from(selects).map(select => select.value);
-		for(let select of selects)
-		{
+		for (let select of selects) {
 			select.querySelectorAll('option').forEach((option) => {
-			let value = option.value;
-			if(value && value !== select.value && values.includes(value)) {
-				option.disabled = true;
-			} else {
-				option.disabled = false;
-			}
+				let value = option.value;
+				if (value && value !== select.value && values.includes(value)) {
+					option.disabled = true;
+				} else {
+					option.disabled = false;
+				}
 			});
 		}
 	});
@@ -51,70 +50,64 @@ window.onload
 
 
 
-function establecerOperaciones(elemento)
-{
+function establecerOperaciones(elemento) {
 	establecerPrecio(elemento)
 	establecerDisponibles(elemento)
 
 }
 
-function idNuevo(nombreViejo,separador,posicion,cambio)
-{
+function idNuevo(nombreViejo, separador, posicion, cambio) {
 	let nombreTemporal = nombreViejo.split(separador) // nombre temporal de la id del campo cantidad en forma de array
 
- 	nombreTemporal[posicion] = cambio // se le cambia el segmento a la parte que se desea enlazar
+	nombreTemporal[posicion] = cambio // se le cambia el segmento a la parte que se desea enlazar
 
 	let nuevoNombre = nombreTemporal.join(separador) //se convierte el array a un string para ser procesado
 	// hasta aqui esta bien jejejejej
 
- 	return nuevoNombre
+	return nuevoNombre
 }
 
 
-function deStringANumero(numero)
-{
-	return parseInt(numero,10)
-}	
-
-
-function inicializarCampos(primeraVez)
-{
-
-for(let i = 0; i < productos; i++) //el bucle que recorre cada campo de descripcion de cada producto
-{
-	let descripcion = document.getElementById('id_form-'+i+'-descripcion')//una variable que guarda cada campo
-
-
-	if(primeraVez == 1)
-	{
-		descripcion.selectedIndex = 0
-		let precio = document.getElementById('id_form-'+i+'-vista_precio')
-		let subtotal = document.getElementById('id_form-'+i+'-subtotal')
-		let disponibles = document.getElementById('id_form-'+i+'-selec_disponibles')
-		let cantidadDisponibles = document.getElementById('id_form-'+i+'-cantidad_disponibles')
-
-		precio.selectedIndex = 0
-		subtotal.value = 0
-		subtotal.selectedIndex = 0
-		disponibles.selectedIndex = 0
-		cantidadDisponibles.value = 0
-	}
-
-	if(descripcion.selectedIndex == 0) //si el indice de el campo actual es cero.....
-	{
-
-		let cantidad = document.getElementById('id_form-'+i+'-cantidad')
-		cantidad.value = 0
-		cantidad.disabled = true 
-	}
-
-	else
-	{
-		let cantidad = document.getElementById('id_form-'+i+'-cantidad')
-		cantidad.disabled = false
-
-	}
+function deStringANumero(numero) {
+	return parseInt(numero, 10)
 }
+
+
+function inicializarCampos(primeraVez) {
+
+	for (let i = 0; i < productos; i++) //el bucle que recorre cada campo de descripcion de cada producto
+	{
+		let descripcion = document.getElementById('id_form-' + i + '-descripcion')//una variable que guarda cada campo
+
+
+		if (primeraVez == 1) {
+			descripcion.selectedIndex = 0
+			let precio = document.getElementById('id_form-' + i + '-vista_precio')
+			let subtotal = document.getElementById('id_form-' + i + '-subtotal')
+			let disponibles = document.getElementById('id_form-' + i + '-selec_disponibles')
+			let cantidadDisponibles = document.getElementById('id_form-' + i + '-cantidad_disponibles')
+
+			precio.selectedIndex = 0
+			subtotal.value = 0
+			subtotal.selectedIndex = 0
+			disponibles.selectedIndex = 0
+			cantidadDisponibles.value = 0
+		}
+
+		if (descripcion.selectedIndex == 0) //si el indice de el campo actual es cero.....
+		{
+
+			let cantidad = document.getElementById('id_form-' + i + '-cantidad')
+			cantidad.value = 0
+			cantidad.disabled = true
+		}
+
+		else {
+			let cantidad = document.getElementById('id_form-' + i + '-cantidad')
+			cantidad.disabled = false
+
+		}
+	}
 
 }
 
@@ -122,8 +115,7 @@ for(let i = 0; i < productos; i++) //el bucle que recorre cada campo de descripc
 
 
 
-function clienteCamposOcultos(esto)
-{
+function clienteCamposOcultos(esto) {
 	let check = esto.checked
 
 	let segTelefono = document.getElementById('div_telefono2')
@@ -131,39 +123,36 @@ function clienteCamposOcultos(esto)
 
 
 
-	if(check)
-	{
+	if (check) {
 
-		$(document).ready(function(){
-		segTelefono.hidden = '';
-		segCorreo.hidden = '';
-									}
-									)
+		$(document).ready(function () {
+			segTelefono.hidden = '';
+			segCorreo.hidden = '';
+		}
+		)
 	}
 
-	else
-	{
-		$(document).ready(function(){
-		segTelefono.hidden = 'true';
-		segCorreo.hidden = 'true';
-									}
-									)
+	else {
+		$(document).ready(function () {
+			segTelefono.hidden = 'true';
+			segCorreo.hidden = 'true';
+		}
+		)
 	}
 
-	}
+}
 
 
-function calculoPrecio(elemento)
-{
+function calculoPrecio(elemento) {
 	let idCantidad = elemento.id //la id del campo de cantidad
 
 	let valorCantidad = elemento.value // el valor actual del campo cantidad
 
-	let precioNuevo = idNuevo(idCantidad,'-',2,'vista_precio') // campo de precio
+	let precioNuevo = idNuevo(idCantidad, '-', 2, 'vista_precio') // campo de precio
 
- 	let subTotalNuevo = idNuevo(idCantidad,'-',2,'subtotal') //el campo que visualiza el subtotal
+	let subTotalNuevo = idNuevo(idCantidad, '-', 2, 'subtotal') //el campo que visualiza el subtotal
 
- 	let valorSubTotal = idNuevo(idCantidad,'-',2,'valor_subtotal')
+	let valorSubTotal = idNuevo(idCantidad, '-', 2, 'valor_subtotal')
 
 	let precio = document.getElementById(precioNuevo)
 
@@ -175,46 +164,50 @@ function calculoPrecio(elemento)
 
 	valorSub.value = elementoAModificar.value
 
+	// para el calculo del iva
+	let valorConIva = idNuevo(idCantidad, '-', 2, 'valor_con_iva');
+	let elementoValorConIva = document.getElementById(valorConIva);
+
+	// Obtener el valor del IVA (asumimos que está disponible en una variable global)
+	let iva = parseFloat(document.getElementById('iva_valor').value) / 100;
+
+	// Calcular el valor con IVA
+	let valorConIvaCalculado = elementoAModificar.value * (1 + iva);
+	elementoValorConIva.value = valorConIvaCalculado.toFixed(2);
+
 }
 
 
-function calculoDisponible(elemento)
-{
+function calculoDisponible(elemento) {
 	//obtengo el select por la id de arriba
-	let idDisponible = document.getElementById(idNuevo(elemento.id,'-',2,'selec_disponibles')) 
+	let idDisponible = document.getElementById(idNuevo(elemento.id, '-', 2, 'selec_disponibles'))
 
 	//el number input
-	let cantidadIdDisponible = document.getElementById(idNuevo(elemento.id,'-',2,'cantidad_disponibles')) 
+	let cantidadIdDisponible = document.getElementById(idNuevo(elemento.id, '-', 2, 'cantidad_disponibles'))
 
 	let nuevoValor = 0
 
 
-	if(elemento.value == elemento.defaultValue)
-	{
+	if (elemento.value == elemento.defaultValue) {
 
-		if(usado != 0)
-		{
+		if (usado != 0) {
 			nuevoValor = deStringANumero(cantidadIdDisponible.value) + 1
 			cantidadIdDisponible.value = nuevoValor
 		}
 
-		else
-		{
+		else {
 			ultimoValor = elemento.value
 		}
 
 	}
 
-	else
-	{
-		if(deStringANumero(elemento.value) < deStringANumero(ultimoValor) )
-		{
+	else {
+		if (deStringANumero(elemento.value) < deStringANumero(ultimoValor)) {
 			nuevoValor = deStringANumero(cantidadIdDisponible.value) + 1
 			usado = 1
 		}
 
-		else
-		{
+		else {
 			nuevoValor = deStringANumero(cantidadIdDisponible.value) - 1
 			usado = 1
 		}
@@ -222,13 +215,12 @@ function calculoDisponible(elemento)
 		ultimoValor = elemento.value
 	}
 
-	cantidadIdDisponible.value = nuevoValor	
+	cantidadIdDisponible.value = nuevoValor
 
 
 }
 
-function establecerDisponibles(elemento)
-{
+function establecerDisponibles(elemento) {
 
 	inicializarCampos(0)
 
@@ -238,17 +230,15 @@ function establecerDisponibles(elemento)
 	let lista = document.getElementById(elemento.id)
 	let idProducto = lista.value
 
-	let elementoAModificar = document.getElementById(idNuevo(nombre,'-',2,'selec_disponibles'))
-	let cantidadFacturar = document.getElementById( idNuevo(nombre,'-',2,'cantidad') )
+	let elementoAModificar = document.getElementById(idNuevo(nombre, '-', 2, 'selec_disponibles'))
+	let cantidadFacturar = document.getElementById(idNuevo(nombre, '-', 2, 'cantidad'))
 
 	cantidadFacturar.value = 0
 
 	let seguir = true
 
-	for(let i = 0; i < lista.children.length; i++)
-	{
-		if(idProducto == elementoAModificar[i].value && seguir)
-		{
+	for (let i = 0; i < lista.children.length; i++) {
+		if (idProducto == elementoAModificar[i].value && seguir) {
 			elementoAModificar.selectedIndex = i
 			seguir = false
 		}
@@ -258,37 +248,50 @@ function establecerDisponibles(elemento)
 	cantidadFacturar.max = maximo
 
 
-	let stockDisponible = document.getElementById(idNuevo(nombre,'-',2,'cantidad_disponibles'))
+	let stockDisponible = document.getElementById(idNuevo(nombre, '-', 2, 'cantidad_disponibles'))
 	stockDisponible.value = maximo
 	stockDisponible.max = maximo
 
 
 }
 
-function establecerPrecio(elemento)
-{
-	inicializarCampos(0)
+function establecerPrecio(elemento) {
+    inicializarCampos(0);
 
-	let nombre = elemento.id
-	let lista = document.getElementById(elemento.id)
-	let idProducto = lista.value
+    let nombre = elemento.id;
+    let lista = document.getElementById(elemento.id);
+    let idProducto = lista.value;
 
-	let nombreNuevo = idNuevo(nombre,'-',2,'vista_precio')
+    let nombreNuevo = idNuevo(nombre, '-', 2, 'vista_precio');
 
-	let elementoAModificar = document.getElementById(nombreNuevo)
-	let seguir = true
+    let elementoAModificar = document.getElementById(nombreNuevo);
+    let seguir = true;
 
-	for(let i = 0; i < lista.children.length; i++)
-	{
-		if(idProducto == elementoAModificar[i].value && seguir)
-		{
-			elementoAModificar.selectedIndex = i
-			seguir = false
-		}
-	}
+    for (let i = 0; i < lista.children.length; i++) {
+        if (idProducto == elementoAModificar[i].value && seguir) {
+            elementoAModificar.selectedIndex = i;
+            seguir = false;
+        }
+    }
 
+    // Definir idDescripcion
+    let idDescripcion = elemento.id;
+
+    // Definir precio
+    let precio = document.getElementById(idNuevo(idDescripcion, '-', 2, 'precio'));
+
+    // Verificar si el elemento precio existe
+    if (precio) {
+        // Actualizar el valor con IVA
+        let valorConIva = idNuevo(idDescripcion, '-', 2, 'valor_con_iva');
+        let elementoValorConIva = document.getElementById(valorConIva);
+        let iva = parseFloat(document.getElementById('iva_valor').value) / 100;
+        let valorConIvaCalculado = precio.value * (1 + iva);
+        elementoValorConIva.value = valorConIvaCalculado.toFixed(2);
+    } else {
+        
+    }
 }
-
 
 
 

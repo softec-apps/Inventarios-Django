@@ -62,45 +62,40 @@ class ExportarCategoriasFormulario(forms.Form):
 
 class ProductoFormulario(forms.ModelForm):
     precio = forms.DecimalField(
-        min_value = 0,
-        label = 'Precio',
-        widget = forms.NumberInput(
-        attrs={'placeholder': 'Precio del producto',
-        'id':'precio','class':'form-control'}),
-        )
-    disponible = forms.IntegerField(
-        min_value = 0,
-        initial = 0,
-        label = 'Cantidad',
+        min_value=0,
+        label='Precio',
         widget=forms.NumberInput(
-            attrs={
-                'class': 'form-control',
-                'id': 'disponible',
-                'placeholder': 'Cantidad en Existencias',
-            }
-        )
+            attrs={'placeholder': 'Precio del producto', 'id': 'precio', 'class': 'form-control'}
+        ),
+    )
+    disponible = forms.IntegerField(
+        min_value=0,
+        initial=0,
+        label='Cantidad',
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'id': 'disponible', 'placeholder': 'Cantidad en Existencias'}
+        ),
     )
     categoria = forms.ModelChoiceField(
         queryset=Categoria.objects.all(),
-        required=False,
-        empty_label=None,
+        required=True,
+        empty_label='Seleccione una categoría',
         label='Categoría',
-        widget=forms.Select(attrs={'id':'categoria','class':'form-control'}),
+        widget=forms.Select(attrs={'id': 'categoria', 'class': 'form-control'}),
     )
+
     class Meta:
         model = Producto
-        fields = ['descripcion','precio','categoria','disponible','medida','tiene_iva']
+        fields = ['descripcion', 'precio', 'categoria', 'disponible', 'medida', 'tiene_iva']
         labels = {
-        'descripcion': 'Nombre',
-        'tiene_iva': 'Incluye IVA?',
-        'medida': 'Unidad de medida'
+            'descripcion': 'Nombre',
+            'tiene_iva': 'Incluye IVA?',
+            'medida': 'Unidad de medida'
         }
         widgets = {
-        'descripcion': forms.TextInput(attrs={'placeholder': 'Nombre del producto',
-            'id':'descripcion','class':'form-control'} ),
-        # 'categoria': forms.Select(attrs={'id':'categoria','class':'form-control'} ),
-        'medida': forms.Select(attrs={'class':'form-control','id':'medida'}),
-        'tiene_iva': forms.CheckboxInput(attrs={'class':'checkbox rounded','id':'tiene_iva'}),
+            'descripcion': forms.TextInput(attrs={'placeholder': 'Nombre del producto', 'id': 'descripcion', 'class': 'form-control'}),
+            'medida': forms.Select(attrs={'class': 'form-control', 'id': 'medida'}),
+            'tiene_iva': forms.CheckboxInput(attrs={'class': 'checkbox rounded', 'id': 'tiene_iva'}),
         }
 
 class ImportarProductosFormulario(forms.Form):
@@ -235,6 +230,18 @@ class DetallesFacturaFormulario(forms.Form):
 
     valor_subtotal = forms.DecimalField(min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Monto sub-total','class':'form-control','hidden':'true','value':'0'}))
 
+    valor_con_iva = forms.DecimalField(
+        required=False,
+        label="Valor con IVA",
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Valor con IVA',
+            'class': 'form-control',
+            'disabled': 'true',
+            'value': '0'
+        })
+    )
+
 
 class EmitirPedidoFormulario(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -306,6 +313,18 @@ class DetallesPedidoFormulario(forms.Form):
                 'placeholder': 'Monto sub-total',
                 'class': 'form-control',
                 'hidden': 'true',
+                'value': '0'
+            })
+        )
+
+        self.fields['valor_con_iva'] = forms.DecimalField(
+            required=False,
+            label="Valor con IVA",
+            min_value=0,
+            widget=forms.NumberInput(attrs={
+                'placeholder': 'Valor con IVA',
+                'class': 'form-control',
+                'disabled': 'true',
                 'value': '0'
             })
         )
