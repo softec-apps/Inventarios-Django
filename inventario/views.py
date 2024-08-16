@@ -73,7 +73,7 @@ class Login(View):
         form = LoginFormulario()
         #Envia al usuario el formulario para que lo llene
         return render(request, 'inventario/login.html', {'form': form})
-#Fin de vista---------------------------------------------------------------------#        
+#Fin de vista---------------------------------------------------------------------#
 
 
 
@@ -113,7 +113,7 @@ class Panel(LoginRequiredMixin, View):
 
 #Maneja la salida del usuario------------------------------------------------------#
 class Salir(LoginRequiredMixin, View):
-    #Sale de la sesion actual
+    #Sale de la sesión actual
     login_url = 'inventario/login'
     redirect_field_name = None
 
@@ -141,9 +141,9 @@ class Perfil(LoginRequiredMixin, View):
                     return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)
                 editandoSuperAdmin = True
             else:
-                if request.user.is_superuser != True: 
+                if request.user.is_superuser != True:
                     messages.error(request, 'No puede cambiar el perfil por no tener los permisos suficientes')
-                    return HttpResponseRedirect('/inventario/perfil/ver/%s' % p) 
+                    return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)
 
                 else:
                     if perf.is_superuser == True:
@@ -153,7 +153,7 @@ class Perfil(LoginRequiredMixin, View):
                         elif perf.id != request.user.id:
                             messages.error(request, 'No puedes cambiar el perfil de un usuario de tu mismo nivel')
 
-                            return HttpResponseRedirect('/inventario/perfil/ver/%s' % p) 
+                            return HttpResponseRedirect('/inventario/perfil/ver/%s' % p)
 
             if editandoSuperAdmin:
                 form = UsuarioFormulario()
@@ -161,7 +161,7 @@ class Perfil(LoginRequiredMixin, View):
             else:
                 form = UsuarioFormulario()
 
-            #Me pregunto si habia una manera mas facil de hacer esto, solo necesitaba hacer que el formulario-
+            #Me pregunto si había una manera mas fácil de hacer esto, solo necesitaba hacer que el formulario-
             #-apareciera lleno de una vez, pero arrojaba User already exists y no pasaba de form.is_valid()
             form['username'].field.widget.attrs['value']  = perf.username
             form['first_name'].field.widget.attrs['value']  = perf.first_name
@@ -169,7 +169,7 @@ class Perfil(LoginRequiredMixin, View):
             form['email'].field.widget.attrs['value']  = perf.email
             form['level'].field.widget.attrs['value']  = perf.nivel
 
-            #Envia al usuario el formulario para que lo llene
+            #Envía al usuario el formulario para que lo llene
             contexto = {'form':form,'modo':request.session.get('perfilProcesado'),'editar':'perfil',
             'nombreUsuario':perf.username}
 
@@ -1620,14 +1620,14 @@ class CrearUsuario(LoginRequiredMixin, View):
 
             else:
                 error = 1
-                messages.error(request, 'La clave y su repeticion tienen que coincidir')
+                messages.error(request, 'La clave y su repetición tienen que coincidir')
 
             if usuarioExiste(Usuario,'username',username) is False:
                 pass
 
             else:
                 error = 1
-                messages.error(request, "El nombre de usuario '%s' ya existe. eliga otro!" % username)
+                messages.error(request, "El nombre de usuario '%s' ya existe. elija otro!" % username)
 
 
             if usuarioExiste(Usuario,'email',email) is False:

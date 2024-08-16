@@ -54,3 +54,12 @@ python manage.py makemigrations
 ```python
 python manage.py migrate
 ```
+
+# Lanzamiento a producción
+1. Colectar los archivos estáticos en un solo directorio general a producción:
+```python
+python manage.py collectstatic
+```
+> Este directorio no se incluye a rastreo de cambios de git
+2. Continuar con el proceso de configuración de un servicio con gunicorn y nginx.
+> Seguir este tutorial (!! Aquí !!)[https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04]

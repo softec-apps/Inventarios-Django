@@ -7,8 +7,13 @@
             height: 100vh;
         }
         .image-side {
-            flex: 1;
-            background: url('{% static "inventario/assets/inventory-background.jpg" %}') center/cover no-repeat;
+            background: url('{% static "inventario/assets/login-bg.jpg" %}') center/cover no-repeat;
+        }
+        /* A partir de pantallas medianas */
+        @media (min-width: 768px) {
+            .image-side {
+                flex: 1;
+            }
         }
         .login-side {
             flex: 1;
@@ -73,13 +78,13 @@
     </style>
 {% include "inventario/comun/estilos.html" %}
     <body>
-        <div class="login-container">
-            <div class="image-side"></div>
-            <div class="login-side">
+        <div class="login-container row">
+            <div class="col-md-6 image-side"></div>
+            <div class="col-md-6 login-side">
                 <div class="login-card">
                     <div class="login-header">
                         <img src="{% static 'inventario/assets/logo/logo.png' %}" alt="Logo">
-                        <h1>Inventario</h1>
+                        <h2>Comercial Marquito</h2>
                     </div>
                     <form method="post">
                         {% csrf_token %}
@@ -92,22 +97,12 @@
                             {{ form.password }}
                         </div>
                         <div class="form-group">
-                            <button type="submit" class="btn btn-block btn-primary">Iniciar sesion</button>
+                            <button type="submit" class="btn btn-block btn-primary">Iniciar sesión</button>
                         </div>
-                        <!-- <div class="form-group">
-                            <label for="remember">
-                                <input class="checkbox" id="remember" type="checkbox">
-                                <span>Recordarme</span>
-                            </label>
-                            <a href="/reiniciarClave" class="forgot-btn pull-right">Olvidaste la contraseña?</a>
-                        </div> -->
-
-                        <!-- <button type="submit" class="btn-login">Iniciar sesión</button> -->
                     </form>
                 </div>
             </div>
         </div>
-
     {% include "inventario/comun/scripts.html" %}
     </body>
 </html>
