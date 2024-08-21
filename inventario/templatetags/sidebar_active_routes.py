@@ -5,12 +5,13 @@ register = template.Library()
 
 sections={
     'panel': ['panel'],
-    'categorias':['listarCategorias', 'agregarCategoria'],
-    'productos': ['listarProductos', 'agregarProducto'],
+    'categorias':['listarCategorias', 'agregarCategoria', 'editarCategoria'],
+    'productos': ['listarProductos', 'agregarProducto', 'editarProducto'],
     'kardex': ['lista_productos','detalle_kardex','resumen_kardex','nuevo_movimiento','registrar_movimiento'],
-    'proveedores': ['listarProveedores', 'agregarProveedor'],
-    'pedidos': ['listarPedidos', 'agregarPedido'],
-    'clientes': ['listarClientes', 'agregarCliente'],
+    'proveedores': ['listarProveedores', 'agregarProveedor', 'editarProveedor'],
+    'pedidos': ['listarPedidos', 'agregarPedido', 'detallesPedido', 'verPedido'],
+    'clientes': ['listarClientes', 'agregarCliente', 'editarCliente'],
+    'descuentos': ['listarDescuentos', 'agregarDescuento', 'editarDescuento'],
     'facturas': ['emitirFactura', 'detallesDeFactura', 'listarFacturas'],
     'usuarios': ['crearUsuario', 'listarUsuarios'],
     'opciones': ['configuracionGeneral']

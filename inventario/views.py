@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse,FileResponse
 from .forms import *
 # clase para crear vistas basadas en sub-clases
 from django.views import View
+from django.views.generic import TemplateView
 #autentificacion de usuario e inicio de sesion
 from django.contrib.auth import authenticate, login, logout
 #verifica si el usuario esta logeado
@@ -693,14 +694,12 @@ class ListarClientes(LoginRequiredMixin, View):
     def get(self, request):
         from django.db import models
         #Saca una lista de todos los clientes de la BDD
-        clientes = Cliente.objects.all()                
+        clientes = Cliente.objects.all()
         contexto = {'tabla': clientes}
-        contexto = complementarContexto(contexto,request.user)         
+        contexto = complementarContexto(contexto,request.user)
 
-        return render(request, 'inventario/cliente/listarClientes.html',contexto) 
+        return render(request, 'inventario/cliente/listarClientes.html',contexto)
 #Fin de vista--------------------------------------------------------------------------#
-
-
 
 
 #Crea y procesa un formulario para agregar a un cliente---------------------------------#
@@ -876,6 +875,96 @@ class EditarCliente(LoginRequiredMixin, View):
 #Fin de vista--------------------------------------------------------------------------------#
 
 
+#Crea una lista de los descuentos----------------------------------------#
+class ListarDescuentos(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def get(self, request):
+        #Saca una lista de todos los clientes de la BDD
+        descuentos = Descuento.objects.all()
+        contexto = {'tabla': descuentos}
+        contexto = complementarContexto(contexto,request.user)
+
+        return render(request, 'inventario/descuento/listarDescuentos.html',contexto)
+#Fin de vista--------------------------------------------------------------------------#
+
+
+#registra un nuevo descuento----------------------------------------#
+class AgregarDescuento(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def post(self, request):
+        # Crea una instancia del formulario y la llena con los datos:
+        form = DescuentoFormulario(request.POST)
+        # Revisa si es valido:
+
+        if form.is_valid():
+            # Procesa y asigna los datos con form.cleaned_data como se requiere
+
+            nombre = form.cleaned_data['nombre']
+            valor = form.cleaned_data['valor']
+
+            descuento = Descuento(nombre=nombre,valor=valor)
+            descuento.save()
+            form = DescuentoFormulario()
+
+            messages.success(request, 'Ingresado exitosamente bajo la ID %s.' % descuento.id)
+            request.session['descuentoProcesado'] = 'agregado'
+            return HttpResponseRedirect("/inventario/agregarDescuento")
+        else:
+            #De lo contrario lanzara el mismo formulario
+            return render(request, 'inventario/descuento/agregarDescuento.html', {'form': form})
+
+    def get(self,request):
+        form = DescuentoFormulario()
+        #Envia al usuario el formulario para que lo llene
+        contexto = {'form':form , 'modo':request.session.get('descuentoProcesado')}
+        contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/descuento/agregarDescuento.html', contexto)
+#Fin de vista--------------------------------------------------------------------------#
+
+
+#Crea una lista de los descuentos----------------------------------------#
+class EditarDescuento(LoginRequiredMixin, View):
+    login_url = '/inventario/login'
+    redirect_field_name = None
+
+    def post(self, request, p):
+        # Crea una instancia del formulario y la llena con los datos:
+        descuento = Descuento.objects.get(id=p)
+        form = DescuentoFormulario(request.POST, instance=descuento)
+        # Revisa si es valido
+
+        if form.is_valid():
+            # Procesa y asigna los datos con form.cleaned_data como se requiere
+
+            nombre = form.cleaned_data['nombre']
+            valor = form.cleaned_data['valor']
+
+            descuento.nombre = nombre
+            descuento.valor = valor
+            descuento.save()
+            form = DescuentoFormulario(instance=descuento)
+
+            messages.success(request, 'Actualizado exitosamente el descuento de ID %s.' % p)
+            request.session['descuentoProcesado'] = 'editado'
+            return HttpResponseRedirect("/inventario/editarDescuento/%s" % descuento.id)
+        else:
+            #De lo contrario lanzara el mismo formulario
+            return render(request, 'inventario/descuento/agregarDescuento.html', {'form': form})
+
+    def get(self, request, p):
+        descuento = Descuento.objects.get(id=p)
+        form = DescuentoFormulario(instance=descuento)
+        #Envia al usuario el formulario para que lo llene
+        contexto = {'form':form , 'modo':request.session.get('descuentoProcesado'),'editar':True}
+        contexto = complementarContexto(contexto,request.user)
+        return render(request, 'inventario/descuento/agregarDescuento.html', contexto)
+#Fin de vista--------------------------------------------------------------------------#
+
+
 #Emite la primera parte de la factura------------------------------#
 class EmitirFactura(LoginRequiredMixin, View):
     login_url = '/inventario/login'
@@ -891,8 +980,11 @@ class EmitirFactura(LoginRequiredMixin, View):
                 # Verificar si las claves 'cliente' y 'productos' existen
                 cliente = form.cleaned_data['cliente']
                 productos = form.cleaned_data['productos']
+                descuento = form.cleaned_data['descuento'].id if form.cleaned_data['descuento'] else None
+                print(descuento)
                 request.session['form_details'] = productos
                 request.session['id_client'] = cliente
+                request.session['id_descuento'] = descuento
                 return HttpResponseRedirect("detallesDeFactura")
             except KeyError:
                 # Renderizar la página de error 404 personalizada si falta alguna clave
@@ -903,17 +995,17 @@ class EmitirFactura(LoginRequiredMixin, View):
 
     def get(self, request):
         cedulas = Cliente.cedulasRegistradas()
+        productos_disponibles = Producto.numeroDisponibles()
         missing = False
         if cedulas is None:
             missing = True
         else:
             missing = len(cedulas) == 0
         form = EmitirFacturaFormulario(cedulas=cedulas)
-        contexto = {'form':form, 'missing':missing}
+        contexto = {'form':form, 'missing':missing, 'productos_disponibles':productos_disponibles}
         contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/factura/emitirFactura.html', contexto)
 #Fin de vista---------------------------------------------------------------------------------#
-
 
 
 #Muestra y procesa los detalles de cada producto de la factura--------------------------------#
@@ -924,32 +1016,29 @@ class DetallesFactura(LoginRequiredMixin, View):
     def get(self, request):
         cedula = request.session.get('id_client')
         productos = request.session.get('form_details')
+        request.session.get('id_descuento')
         FacturaFormulario = formset_factory(DetallesFacturaFormulario, extra=productos)
         formset = FacturaFormulario()
         contexto = {'formset':formset}
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = complementarContexto(contexto,request.user)
         iva = Opciones.objects.first().valor_iva
         contexto['iva_valor'] = iva
 
-        return render(request, 'inventario/factura/detallesFactura.html', contexto)        
+        return render(request, 'inventario/factura/detallesFactura.html', contexto)
 
     def post(self, request):
         cedula = request.session.get('id_client')
         productos = request.session.get('form_details')
+        descuento_id = request.session.get('id_descuento')
+        descuento_total = 0
 
         FacturaFormulario = formset_factory(DetallesFacturaFormulario, extra=productos)
 
-        inicial = {
-        'descripcion':'',
-        'cantidad': 0,
-        'subtotal':0,
-        }
-
         data = {
-    'form-TOTAL_FORMS': productos,
-    'form-INITIAL_FORMS':0,
-    'form-MAX_NUM_FORMS': '',
-                }
+        'form-TOTAL_FORMS': productos,
+        'form-INITIAL_FORMS':0,
+        'form-MAX_NUM_FORMS': '',
+        }
 
         formset = FacturaFormulario(request.POST,data)
 
@@ -970,35 +1059,41 @@ class DetallesFactura(LoginRequiredMixin, View):
                 cantidad.append(cant)
                 subtotal.append(sub)
 
-                # Calcular el valor con IVA
                 producto = obtenerProducto(obtenerIdProducto(desc))
-                iva = Opciones.objects.first().valor_iva / 100  # Asumimos que el IVA está almacenado como #porcentaje
+
+                # Calcular el valor con IVA
+                iva = Decimal(Opciones.objects.first().valor_iva) / Decimal(100)  # Asumimos que el IVA está almacenado como #porcentaje
                 valor_sin_iva = form.cleaned_data['valor_subtotal']
                 valor_con_iva = valor_sin_iva * (1 + iva)
-                
+
                 # Añadir el valor_con_iva al formulario
                 form.cleaned_data['valor_con_iva'] = valor_con_iva
 
-            #Ingresa la factura
-            #--Saca el sub-monto
-            for index in subtotal:
-                sub_monto += index
+
+            # Calcular el sub-monto
+            sub_monto = sum(subtotal)
 
             #--Saca el monto general
             for index,element in enumerate(subtotal):
                 if productoTieneIva(id_producto[index]):
-                    nuevoPrecio = sacarIva(element)   
+                    nuevoPrecio = sacarIva(element)
                     monto_general += nuevoPrecio
-                    total_general.append(nuevoPrecio)                     
-                else:                   
+                    total_general.append(nuevoPrecio)
+                else:
                     monto_general += element
-                    total_general.append(element)        
+                    total_general.append(element)
+
+            descuento_obj = None
+            # Sumar el descuento total para el cálculo final
+            if descuento_id is not None:
+                descuento_obj = Descuento.objects.get(id=descuento_id)
+                descuento_total = sub_monto * Decimal(descuento_obj.valor) / Decimal(100) if descuento_obj else 0
 
             from datetime import date
 
             cliente = Cliente.objects.get(cedula=cedula)
             iva = ivaActual('objeto')
-            factura = Factura(cliente=cliente,fecha=date.today(),sub_monto=sub_monto,monto_general=monto_general,iva=iva)
+            factura = Factura(cliente=cliente,descuento=descuento_obj,descuento_total=descuento_total,fecha=date.today(),sub_monto=sub_monto,monto_general=monto_general-descuento_total,iva=iva)
 
             factura.save()
             id_factura = factura
@@ -1015,7 +1110,7 @@ class DetallesFactura(LoginRequiredMixin, View):
                 objetoProducto.disponible -= cantidadDetalle
                 objetoProducto.save()
 
-                detalleFactura.save()  
+                detalleFactura.save()
 
                 # Registrar movimiento en Kardex (NUEVO)
                 Kardex.registrar_movimiento(
@@ -1027,13 +1122,12 @@ class DetallesFactura(LoginRequiredMixin, View):
                 )
 
             messages.success(request, 'Factura de ID %s insertada exitosamente.' % id_factura.id)
-            return HttpResponseRedirect("/inventario/emitirFactura")    
+            return HttpResponseRedirect("/inventario/emitirFactura")
         else:
             # Si el formset no es válido, se podría manejar el error aquí
             # Por ejemplo, redirigir de vuelta al formulario con un mensaje de error
             messages.error(request, 'Error al procesar la factura. Por favor, revise los datos.')
             return HttpResponseRedirect("/inventario/emitirFactura")
-    
 #Fin de vista-----------------------------------------------------------------------------------#
 
 
@@ -1046,7 +1140,7 @@ class ListarFacturas(LoginRequiredMixin, View):
         #Lista de productos de la BDD
         facturas = Factura.objects.all()
         #Crea el paginador
-                               
+
         contexto = {'tabla': facturas}
         contexto = complementarContexto(contexto,request.user) 
 
@@ -1087,9 +1181,9 @@ class GenerarFactura(LoginRequiredMixin, View):
         writer = csv.writer(response)
 
         writer.writerow(['Producto', 'Cantidad', 'Sub-total', 'Total',
-         'Porcentaje IVA utilizado: %s' % (factura.iva.valor_iva)])
+            'Porcentaje IVA utilizado: %s' % (factura.iva.valor_iva)])
 
-        for producto in detalles:            
+        for producto in detalles:
             writer.writerow([producto.id_producto.descripcion,producto.cantidad,producto.sub_total,producto.total])
 
         writer.writerow(['Total general:','','', factura.monto_general])
@@ -1332,13 +1426,14 @@ class AgregarPedido(LoginRequiredMixin, View):
 
     def get(self, request):
         cedulas = Proveedor.cedulasRegistradas()
+        productos_disponibles = Producto.numeroRegistrados()
         missing = False
         if cedulas is None:
             missing = True
         else:
             missing = len(cedulas) == 0
         form = EmitirPedidoFormulario(cedulas=cedulas)
-        contexto = {'form':form, 'missing':missing}
+        contexto = {'form':form, 'missing':missing, 'productos_disponibles':productos_disponibles}
         contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/pedido/emitirPedido.html', contexto)
 
@@ -1402,12 +1497,6 @@ class DetallesPedido(LoginRequiredMixin, View):
 
         PedidoFormulario = formset_factory(DetallesPedidoFormulario, extra=productos)
 
-        inicial = {
-        'descripcion':'',
-        'cantidad': 0,
-        'subtotal':0,
-        }
-
         data = {
             'form-TOTAL_FORMS': productos,
             'form-INITIAL_FORMS':0,
@@ -1435,11 +1524,12 @@ class DetallesPedido(LoginRequiredMixin, View):
                 subtotal.append(sub)
 
                 # Calcular el valor con IVA
-                producto = obtenerProducto(obtenerIdProducto(desc))
-                iva = Opciones.objects.first().valor_iva / 100
+                # producto = obtenerProducto(obtenerIdProducto(desc))
+                iva = Decimal(Opciones.objects.first().valor_iva) / Decimal(100)
                 valor_sin_iva = form.cleaned_data['valor_subtotal']
+
                 valor_con_iva = valor_sin_iva * (1 + iva)
-                
+
                 # Añadir el valor_con_iva al formulario
                 form.cleaned_data['valor_con_iva'] = valor_con_iva
 

@@ -47,6 +47,7 @@
                                             <th>ID del cliente</th>
                                             <th>Fecha</th>
                                             <th>Sub-Total</th>
+                                            <th>Descuento</th>
                                             <th>Total</th>
                                             <th>IVA</th>
                                             <th>Opciones</th>
@@ -58,8 +59,9 @@
                                             <td>{{ fila.id}}</td>
                                             <td>{{ fila.cliente.cedula }}</td>
                                             <td>{{ fila.fecha }}</td>
-                                            <td>{{ fila.sub_monto }}</td>
-                                            <td>{{ fila.monto_general }}</td>
+                                            <td>$ {{ fila.sub_monto }}</td>
+                                            <td>$ {{ fila.descuento_total }}</td>
+                                            <td>$ {{ fila.monto_general }}</td>
                                             <td>{{ fila.iva.valor_iva }}</td>
                                             <td>
 

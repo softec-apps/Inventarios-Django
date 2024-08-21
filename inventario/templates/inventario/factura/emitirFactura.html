@@ -7,22 +7,41 @@
 		<p class="title-description">Introduzca la cédula y el número de
 			productos para generar los campos</p>
 	</div>
-	{% if missing %}
-	<section class="section">
-		<div class="row sameheight-container">
-			<div class="col-md-12">
-				<div class="alert alert-danger d-flex align-items-center" role="alert">
-					<div class="icon-block mr-3">
-						<span class="fa fa-exclamation-triangle fa-2x"></span>
-					</div>
-					<div>
-						<span>Necesita tener al menos un cliente para poder emitir una factura</span>
-						<a href="/inventario/agregarCliente" class="btn btn-secondary">Da click aquí para agregar</a>
+	{% if missing or productos_disponibles < 1 %}
+		{% if missing %}
+		<section class="section">
+			<div class="row sameheight-container">
+				<div class="col-md-12">
+					<div class="alert alert-danger d-flex align-items-center" role="alert">
+						<div class="icon-block mr-3">
+							<span class="fa fa-exclamation-triangle fa-2x"></span>
+						</div>
+						<div>
+							<span>Necesita tener al menos un cliente para poder emitir una factura</span>
+							<a href="/inventario/agregarCliente" class="btn btn-secondary">Da click aquí para agregar</a>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</section>
+		</section>
+		{% endif %}
+		{% if productos_disponibles < 1 %}
+		<section class="section">
+			<div class="row sameheight-container">
+				<div class="col-md-12">
+					<div class="alert alert-danger d-flex align-items-center" role="alert">
+						<div class="icon-block mr-3">
+							<span class="fa fa-exclamation-triangle fa-2x"></span>
+						</div>
+						<div>
+							<span>Necesita tener al menos un producto registrado y en stock para poder emitir una factura</span>
+							<a href="/inventario/agregarProducto" class="btn btn-secondary">Da click aquí para agregar</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		{% endif %}
 	{%else%}
 	<section class="section">
 		<div class="row sameheight-container">
@@ -62,4 +81,18 @@
 	</section>
 	{%endif%}
 </article>
+
+<script type="module">
+	$(document).ready(function() {
+		$('.select2').select2({
+			theme: 'bootstrap-5'
+		});
+
+		let productos = document.getElementById('productos');
+		if (productos != null) {
+			productos.max = '{{ productos_disponibles }}';
+		}
+	});
+</script>
+
 {% endblock %}

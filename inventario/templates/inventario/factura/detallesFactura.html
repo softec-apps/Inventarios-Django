@@ -40,6 +40,9 @@
 
 						{% elif field.name == 'cantidad_disponibles' %}
 
+						{% elif field.name == 'disponibles_info' %}
+						{{field}}
+
 						{% elif field.name == 'selec_disponibles' %}
 						{{ field }}
 
@@ -68,6 +71,15 @@
 		</div>
 	</section>
 </article>
+
+<script type="module">
+	$(document).ready(function() {
+		$('.select2').select2({
+			theme: 'bootstrap-5'
+		});
+	});
+</script>
+
 {% load static %}
 <script src='{% static "inventario/js/inventario.js" %}'></script>
 {% endblock %}

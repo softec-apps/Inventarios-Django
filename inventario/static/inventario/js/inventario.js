@@ -79,7 +79,6 @@ function inicializarCampos(primeraVez) {
 	{
 		let descripcion = document.getElementById('id_form-' + i + '-descripcion')//una variable que guarda cada campo
 
-
 		if (primeraVez == 1) {
 			descripcion.selectedIndex = 0
 			let precio = document.getElementById('id_form-' + i + '-vista_precio')
@@ -96,7 +95,6 @@ function inicializarCampos(primeraVez) {
 
 		if (descripcion.selectedIndex == 0) //si el indice de el campo actual es cero.....
 		{
-
 			let cantidad = document.getElementById('id_form-' + i + '-cantidad')
 			cantidad.value = 0
 			cantidad.disabled = true
@@ -105,13 +103,10 @@ function inicializarCampos(primeraVez) {
 		else {
 			let cantidad = document.getElementById('id_form-' + i + '-cantidad')
 			cantidad.disabled = false
-
 		}
 	}
 
 }
-
-
 
 
 
@@ -120,8 +115,6 @@ function clienteCamposOcultos(esto) {
 
 	let segTelefono = document.getElementById('div_telefono2')
 	let segCorreo = document.getElementById('div_correo2')
-
-
 
 	if (check) {
 
@@ -139,7 +132,6 @@ function clienteCamposOcultos(esto) {
 		}
 		)
 	}
-
 }
 
 
@@ -179,45 +171,37 @@ function calculoPrecio(elemento) {
 
 
 function calculoDisponible(elemento) {
-	//obtengo el select por la id de arriba
-	let idDisponible = document.getElementById(idNuevo(elemento.id, '-', 2, 'selec_disponibles'))
+	// Obtengo la cantidad a facturar
+	let cantidadAFacturar = document.getElementById(idNuevo(elemento.id, '-', 2, 'cantidad'))
 
-	//el number input
+	// Obtengo el input de cantidad disponible
 	let cantidadIdDisponible = document.getElementById(idNuevo(elemento.id, '-', 2, 'cantidad_disponibles'))
 
-	let nuevoValor = 0
+	// Valor máximo disponible
+	let maxDisponible = deStringANumero(cantidadIdDisponible.max)
 
+	// Valor actual de la cantidad a facturar
+	let cantidadFacturarValue = deStringANumero(cantidadAFacturar.value) || 0;
+	cantidadAFacturar.value = cantidadFacturarValue;
 
-	if (elemento.value == elemento.defaultValue) {
-
-		if (usado != 0) {
-			nuevoValor = deStringANumero(cantidadIdDisponible.value) + 1
-			cantidadIdDisponible.value = nuevoValor
-		}
-
-		else {
-			ultimoValor = elemento.value
-		}
-
+	// Verifica si el valor ingresado supera el máximo disponible
+	if (cantidadFacturarValue > maxDisponible) {
+		alert(`La cantidad ingresada (${cantidadFacturarValue}) supera el máximo disponible (${maxDisponible}). Se ajustará al máximo permitido.`)
+		cantidadFacturarValue = maxDisponible
+		cantidadAFacturar.value = maxDisponible // Ajusta el valor en el input
 	}
 
-	else {
-		if (deStringANumero(elemento.value) < deStringANumero(ultimoValor)) {
-			nuevoValor = deStringANumero(cantidadIdDisponible.value) + 1
-			usado = 1
-		}
+	// Calcula el nuevo valor disponible
+	let nuevoValorDisponible = maxDisponible - cantidadFacturarValue
 
-		else {
-			nuevoValor = deStringANumero(cantidadIdDisponible.value) - 1
-			usado = 1
-		}
+	// Asegura que el valor no sea negativo
+	nuevoValorDisponible = nuevoValorDisponible < 0 ? 0 : nuevoValorDisponible
 
-		ultimoValor = elemento.value
-	}
+	// Actualiza el valor en el input de stock disponible
+	cantidadIdDisponible.value = nuevoValorDisponible
 
-	cantidadIdDisponible.value = nuevoValor
-
-
+	// Guarda el último valor facturado para futuras comparaciones
+	ultimoValor = cantidadFacturarValue
 }
 
 function establecerDisponibles(elemento) {
@@ -251,8 +235,6 @@ function establecerDisponibles(elemento) {
 	let stockDisponible = document.getElementById(idNuevo(nombre, '-', 2, 'cantidad_disponibles'))
 	stockDisponible.value = maximo
 	stockDisponible.max = maximo
-
-
 }
 
 function establecerPrecio(elemento) {

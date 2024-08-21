@@ -1,5 +1,5 @@
 from django import forms
-from .models import Categoria, Producto, Cliente, Proveedor, Usuario, Opciones
+from .models import Categoria, Producto, Cliente, Proveedor, Descuento
 
 #Para el uso en el Kardex
 from .models import Kardex
@@ -17,6 +17,11 @@ class MisPrecios(ModelChoiceField):
 class MisDisponibles(ModelChoiceField):
     def label_from_instance(self,obj):
         return "%s" % obj.disponible
+
+class MisDescuentos(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        # Define cómo quieres mostrar el descuento en el select, por ejemplo su nombre
+        return f"{obj.nombre} - {obj.valor}%"
 
 
 class LoginFormulario(forms.Form):
@@ -60,6 +65,21 @@ class ExportarCategoriasFormulario(forms.Form):
         attrs={'id':'hasta','class':'form-control','type':'date'}),
         )
 
+class DescuentoFormulario(forms.ModelForm):
+    class Meta:
+        model = Descuento
+        fields = ['nombre', 'valor']
+        labels = {
+            'nombre': 'Nombre',
+            'valor': 'Valor'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={'placeholder': 'Nombre/Descripción del descuento',
+                'id':'nombre','class':'form-control'} ),
+            'valor': forms.NumberInput(attrs={'placeholder': 'Valor del descuento',
+                'id':'valor','class':'form-control'} ),
+        }
+
 class ProductoFormulario(forms.ModelForm):
     precio = forms.DecimalField(
         min_value=0,
@@ -78,7 +98,8 @@ class ProductoFormulario(forms.ModelForm):
     )
     categoria = forms.ModelChoiceField(
         queryset=Categoria.objects.all(),
-        required=True,
+        required =False,
+        blank=True,
         empty_label='Seleccione una categoría',
         label='Categoría',
         widget=forms.Select(attrs={'id': 'categoria', 'class': 'form-control'}),
@@ -208,10 +229,19 @@ class EmitirFacturaFormulario(forms.Form):
             self.fields["cliente"] = forms.CharField(label="Cliente a facturar",max_length=50,
             widget=forms.Select(choices=elecciones,
             attrs={'placeholder': 'La cedula del cliente a facturar',
-            'id':'cliente','class':'form-control'}))
+            'id':'cliente','class':'form-control select2'}))
 
     productos = forms.IntegerField(label="Numero de productos",widget=forms.NumberInput(attrs={'placeholder': 'Numero de productos a facturar',
-        'id':'productos','class':'form-control'}))
+        'id':'productos','class':'form-control','value':'1','min':'1'}))
+
+    descuento = forms.ModelChoiceField(
+        queryset=Descuento.objects.all(),
+        required=False,
+        blank=True,
+        empty_label='Ninguno',
+        label='Descuento',
+        widget=forms.Select(attrs={'id': 'descuento', 'class': 'form-control select2'}),
+    )
 
 class DetallesFacturaFormulario(forms.Form):
     productos = Producto.productosRegistrados()
@@ -220,7 +250,7 @@ class DetallesFacturaFormulario(forms.Form):
 
     vista_precio = MisPrecios(required=False,queryset=productos,label="Precio del producto",widget=forms.Select(attrs={'placeholder': 'El precio del producto','class':'form-control','disabled':'true'}))
 
-    cantidad = forms.IntegerField(label="Cantidad a facturar",min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Introduzca la cantidad del producto','class':'form-control','value':'0','onchange':'calculoPrecio(this);calculoDisponible(this)', 'max':'0'}))
+    cantidad = forms.IntegerField(required=True,label="Cantidad a facturar",min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Introduzca la cantidad del producto','class':'form-control','value':'0','onchange':'calculoPrecio(this);calculoDisponible(this)', 'max':'0'}))
 
     cantidad_disponibles = forms.IntegerField(required=False,label="Stock disponible",min_value=0,widget=forms.NumberInput(attrs={'placeholder': 'Introduzca la cantidad del producto','class':'form-control','value':'0', 'max':'0', 'disabled':'true'}))
 
@@ -254,7 +284,7 @@ class EmitirPedidoFormulario(forms.Form):
             'id':'proveedor','class':'form-control'}))
 
     productos = forms.IntegerField(label="Numero de productos",widget=forms.NumberInput(attrs={'placeholder': 'Numero de productos a comprar',
-        'id':'productos','class':'form-control'}))
+        'id':'productos','class':'form-control','value':'1','min':'1'}))
 
 
 class DetallesPedidoFormulario(forms.Form):

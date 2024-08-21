@@ -42,6 +42,10 @@ path('importarClientes', views.ImportarClientes.as_view(), name='importarCliente
 path('exportarClientes', views.ExportarClientes.as_view(), name='exportarClientes'),
 path('editarCliente/<int:p>', views.EditarCliente.as_view(), name='editarCliente'),
 
+path('listarDescuentos', views.ListarDescuentos.as_view(), name='listarDescuentos'),
+path('agregarDescuento', views.AgregarDescuento.as_view(), name='agregarDescuento'),
+path('editarDescuento/<int:p>', views.EditarDescuento.as_view(), name='editarDescuento'),
+
 path('emitirFactura', views.EmitirFactura.as_view(), name='emitirFactura'),
 path('detallesDeFactura', views.DetallesFactura.as_view(), name='detallesDeFactura'),
 path('listarFacturas',views.ListarFacturas.as_view(), name='listarFacturas'),
@@ -78,6 +82,8 @@ path('exportar/categorias/csv/', exportar_categorias_csv, name='exportar_categor
 path('exportar/categorias/excel/', exportar_categorias_excel, name='exportar_categorias_excel'),
 path('exportar/clientes/csv/', exportar_clientes_csv, name='exportar_clientes_csv'),
 path('exportar/clientes/excel/', exportar_clientes_excel, name='exportar_clientes_excel'),
+path('exportar/descuentos/csv/', exportar_descuentos_csv, name='exportar_descuentos_csv'),
+path('exportar/descuentos/excel/', exportar_descuentos_excel, name='exportar_descuentos_excel'),
 path('exportar/facturas/csv/', exportar_facturas_csv, name='exportar_facturas_csv'),
 path('exportar/facturas/excel/', exportar_facturas_excel, name='exportar_facturas_excel'),
 path('exportar/usuarios/csv/', exportar_usuarios_csv, name='exportar_usuarios_csv'),
