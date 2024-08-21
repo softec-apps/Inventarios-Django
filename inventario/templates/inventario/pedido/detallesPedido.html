@@ -15,30 +15,43 @@
 					{% for form in formset %}
 					<div class="card card-block sameheight-item">
 						{% csrf_token %}
-						{% for field in form %}
-							{% if field.name == 'valor_subtotal' %}
-								{{field}}
-							{% elif field.name == 'valor_con_iva' %}
-								<div class="form-group">
-									<label for="{{ field.name }}">
-										{{field.label}}
-									</label>
-									{{field}}
-								</div>
-							{% else %}
-								<div class="form-group">
-									<label for="{{ field.name }}">
-										{{field.label}}
-									</label>
-									{{field}}
-								</div>
-							{% endif %}
-						{% endfor %}
+						<div class="row">
+							<div class="form-group col-12">
+								<label for="{{ form.descripcion.name }}">
+									{{form.descripcion.label}}
+								</label>
+								{{form.descripcion}}
+							</div>
+							<div class="form-group col-md-6">
+								<label for="{{ form.cantidad.name }}">
+									{{form.cantidad.label}}
+								</label>
+								{{form.cantidad}}
+							</div>
+							<div class="form-group col-md-6">
+								<label for="{{ form.vista_precio.name }}">
+									{{form.vista_precio.label}}
+								</label>
+								{{form.vista_precio}}
+							</div>
+							<div class="form-group col-md-4">
+								<label for="{{ form.subtotal.name }}">
+									{{form.subtotal.label}}
+								</label>
+								{{form.subtotal}}
+							</div>
+								{{form.valor_subtotal}}
+							<div class="form-group col-md-4">
+								<label for="{{ form.valor_con_iva.name }}">
+									{{form.valor_con_iva.label}}
+								</label>
+								{{form.valor_con_iva}}
+							</div>
+						</div>
 					</div>
 					{% endfor %}
 					<button type="submit" class="btn btn-primary">Ingresar</button>
 				</form>
-
 			</div>
 		</div>
 	</section>

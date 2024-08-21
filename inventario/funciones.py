@@ -1,6 +1,6 @@
 #----------------------------FUNCIONES DE AYUDA Y COMPLEMENTO--------------------------------------------------
 
-from .models import Producto, Opciones, Kardex, Proveedor, Pedido, Categoria, Cliente, Usuario, Factura
+from .models import Producto, Opciones, Kardex, Proveedor, Pedido, Categoria, Cliente, Usuario, Factura, Descuento
 from decimal import Decimal
 import csv
 from openpyxl import Workbook
@@ -315,6 +315,44 @@ def exportar_clientes_excel(request):
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=clientes.xlsx'
+    wb.save(response)
+    return response
+
+def exportar_descuentos_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="descuentos.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Nombre Descuento', 'Valor'])
+    
+    descuentos = Descuento.objects.all()
+    for descuento in descuentos:
+        writer.writerow([
+            descuento.id,
+            descuento.nombre,
+            descuento.valor
+        ])
+    
+    return response
+
+def exportar_descuentos_excel(request):
+    descuentos = Descuento.objects.all()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Descuentos"
+    
+    ws.append(['ID', 'Nombre Descuento', 'Valor'])
+    
+    for descuento in descuentos:
+        ws.append([
+            descuento.id,
+            descuento.nombre,
+            descuento.valor
+        ])
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=descuentos.xlsx'
     wb.save(response)
     return response
 

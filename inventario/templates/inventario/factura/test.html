@@ -1,0 +1,166 @@
+{% extends "inventario/comun/base.html" %}
+
+{% block content %}
+<article class="content forms-page">
+    <div class="title-block">
+        <h3 class="title">Emitir Factura</h3>
+        <p class="title-description">Complete los detalles de la factura a continuación</p>
+    </div>
+    {% if missing %}
+	<section class="section">
+		<div class="row sameheight-container">
+			<div class="col-md-12">
+				<div class="alert alert-danger d-flex align-items-center" role="alert">
+					<div class="icon-block mr-3">
+						<span class="fa fa-exclamation-triangle fa-2x"></span>
+					</div>
+					<div>
+						<span>Necesita tener al menos un cliente para poder emitir una factura</span>
+						<a href="/inventario/agregarCliente" class="btn btn-secondary">Da click aquí para agregar</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{%else%}
+
+    <div id="form-template" style="display: none">
+        <div class="row border mx-1 mt-1 mb-2 py-1" id="form-producto-0">
+            <div class="form-group col-md-8">
+                <label for="{{ form2.descripcion.label }}">
+                    {{ form2.descripcion.label }}
+                </label>
+                {{ form2.descripcion }}
+            </div>
+            <div class="form-group col-md-4">
+                <label for="{{ form2.vista_precio.label }}">
+                    {{ form2.vista_precio.label }}
+                </label>
+                {{ form2.vista_precio }}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="{{ form2.cantidad_disponibles.label }}">
+                    {{ form2.cantidad_disponibles.label }}
+                </label>
+                {{ form2.cantidad_disponibles }}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="{{ form2.cantidad.label }}">
+                    {{ form2.cantidad.label }}
+                </label>
+                {{ form2.cantidad }}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="{{ form2.subtotal.label }}">
+                    {{ form2.subtotal.label }}
+                </label>
+                {{ form2.subtotal }}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="{{ form2.valor_con_iva.label }}">
+                    {{ form2.valor_con_iva.label }}
+                </label>
+                {{ form2.valor_con_iva }}
+            </div>
+            <div class="col-12 d-flex align-items-center justify-content-end">
+                <button type="button" class="btn btn-danger remove-producto" id="remove-producto">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="row sameheight-container">
+            <!-- Formulario Único -->
+            <div class="col-md-12">
+                <form id="factura-form" method="POST">
+                    {% csrf_token %}
+
+                    <!-- Sección Izquierda: Agregar Productos -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card card-block sameheight-item">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="add-producto">Agregar Producto</button>
+                                </div>
+                                <div id="productos-container" style="overflow-y: auto;">
+                                    {{ formset.management_form }}
+                                    <!-- Formularios dinámicos -->
+                                </div>
+                                <input type="hidden" id="id_form-TOTAL_PRODUCTS" name="form-TOTAL_PRODUCTS" value="0">
+                            </div>
+                        </div>
+
+                        <!-- Sección Derecha: Datos del Cliente y Resumen -->
+                        <div class="col-md-4">
+                            <div class="card card-block sameheight-item">
+                                {{ form1.as_p }}
+                                <div class="form-group">
+                                    <label for="subtotal">Subtotal</label>
+                                    <input type="text" id="subtotal" name="subtotal" class="form-control" value="0.00" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="descuento_total">Descuento Total</label>
+                                    <input type="text" id="descuento_total" name="descuento_total" class="form-control" value="0.00" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="monto_total">Monto Total</label>
+                                    <input type="text" id="monto_total" name="monto_total" class="form-control" value="0.00" disabled>
+                                </div>
+                                <button type="submit" class="btn btn-success">Emitir Factura</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    {%endif%}
+</article>
+
+{% load static %}
+<script src="{% static 'inventario/js/inventario.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var formsetContainer = document.getElementById('productos-container');
+        var totalFormsField = document.getElementById('id_form-TOTAL_PRODUCTS');
+        var formIndex = parseInt(totalFormsField.value, 10);
+
+        // Función para crear un nuevo formulario
+        function addForm() {
+            var formTemplate = document.getElementById('form-template').innerHTML;
+            var newForm = document.createElement('div');
+            newForm.className = 'producto-card';
+            newForm.innerHTML = formTemplate.replace(/form-producto-0/g, 'form-producto-' + formIndex+1);
+            // Actualizar los índices de los campos
+            newForm.querySelectorAll('input, select').forEach(function(input) {
+                var name = input.name.replace(/form-\d+/g, 'form-' + formIndex);
+                input.name = name;
+                input.id = name;
+            });
+
+            formsetContainer.appendChild(newForm);
+
+            formIndex++;
+            totalFormsField.value = formIndex;
+        }
+
+        // Función para borrar un formulario
+        function removeForm(e) {
+            if (e.target.classList.contains('remove-producto')) {
+                var formToDelete = e.target.closest('.producto-card');
+                formToDelete.remove();
+            }
+        }
+
+        // Eventos
+        document.getElementById('add-producto').addEventListener('click', addForm);
+        formsetContainer.addEventListener('click', removeForm);
+    });
+
+    // Actualizar los campos de resumen (puedes usar eventos en inputs o lógica de actualización aquí)
+</script>
+
+{% load static %}
+<script src='{% static "inventario/js/inventario.js" %}'></script>
+
+{% endblock %}
