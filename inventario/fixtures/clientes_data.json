@@ -1,0 +1,18 @@
+[
+    {
+        "model": "inventario.cliente",
+        "pk": 1,
+        "fields": {
+            "tipoCedula": 1,
+            "cedula": "123456789",
+            "nombre": "Final User",
+            "apellido": "Customer",
+            "ciudad": "User City",
+            "direccion": "User Address",
+            "telefono": "999-9999",
+            "correo": "user@user.com",
+            "genero": 1,
+            "nacimiento": "1990-01-01"
+        }
+    }
+]
