@@ -78,7 +78,7 @@ class Categoria(models.Model):
 class Producto(models.Model):
     #id
     # ruc_proveedor = models.CharField(max_length=13, unique=True)
-    decisiones =  [('1','Unidad'),('2','Kilo'),('3','Litro'),('4','Otros')]
+    decisiones =  [('1','sacos'),('2','kg'),('3','lb')]
     descripcion = models.CharField(max_length=40)
     precio = models.DecimalField(max_digits=9,decimal_places=2)
     disponible = models.IntegerField(null=True)
@@ -89,6 +89,10 @@ class Producto(models.Model):
     @classmethod
     def numeroRegistrados(self):
         return int(self.objects.all().count() )
+
+    @classmethod
+    def numeroDisponibles(self):
+        return int(self.objects.filter(disponible__gt=0).values().count() )
 
 
     @classmethod
@@ -241,6 +245,21 @@ class Cliente(PersonaBase):
 #-----------------------------------------------------------------------------------------
 
 
+#-------------------------------------DESCUENTOS---------------------------------------------
+class Descuento(models.Model):
+    #id
+    nombre = models.CharField(max_length=100)
+    valor = models.FloatField()
+    # porcentaje = models.BooleanField()
+
+    def __str__(self):
+        return str(self.nombre) + " - " + str(self.valor) + "%"
+
+    @classmethod
+    def numeroRegistrados(self):
+        return int(self.objects.all().count() )
+#-----------------------------------------------------------------------------------------
+
 
 #-------------------------------------FACTURA---------------------------------------------
 class Factura(models.Model):
@@ -248,6 +267,8 @@ class Factura(models.Model):
     cliente = models.ForeignKey(Cliente,to_field='cedula', on_delete=models.CASCADE)
     fecha = models.DateField()
     sub_monto = models.DecimalField(max_digits=20,decimal_places=2)
+    descuento = models.ForeignKey(Descuento, on_delete=models.SET_NULL, null=True, blank=True)
+    descuento_total = models.DecimalField(max_digits=20,decimal_places=2)
     monto_general = models.DecimalField(max_digits=20,decimal_places=2)
     iva = models.ForeignKey(Opciones,to_field='valor_iva', on_delete=models.CASCADE)
 
