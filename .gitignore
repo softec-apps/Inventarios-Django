@@ -5,4 +5,4 @@ BDD.sqlite3
 inventario/archivos/tmp
 
 # Ignore the static directory in root for deployment
-static/
+/static/
