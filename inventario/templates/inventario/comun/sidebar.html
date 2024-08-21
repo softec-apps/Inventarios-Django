@@ -2,13 +2,13 @@
 
 <aside class="sidebar">
     <div class="sidebar-container">
-        <div class="sidebar-header mt-1">
-            <div class="row p-1">
+        <div class="sidebar-header border-secondary border-right" style="background-color: #eceff1">
+            <div class="row px-2 pb-1">
                 <div class="container col-4">
                     {% load static %}
-                    <img class="img-fluid bg-white" src="{% static 'inventario/assets/logo/logo.png' %}">
+                    <img class="img-fluid" src="{% static 'inventario/assets/logo/logo.png' %}">
                 </div>
-                <span class="col-8">
+                <span class="col-8 d-flex align-items-center text-dark">
                     <strong>Comercial Marquito</strong>
                 </span>
             </div>
@@ -109,6 +109,20 @@
                 </li>
                 <!-- Fin de sub-menu de clientes -->
 
+                <!-- Sub-menu de clientes -->
+                <li class="{% if 'descuentos'|in_list:request %}active open{% endif %}">
+                    <a href="">
+                        <i class="fa fa-tags"></i> Descuentos
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav">
+                        <li><a href="/inventario/listarDescuentos"><i class="fa fa-ellipsis-h"></i> Listar descuentos</a>
+                        </li>
+                        <li><a href="/inventario/agregarDescuento"><i class="fa fa-plus"></i> Agregar descuento</a></li>
+                    </ul>
+                </li>
+                <!-- Fin de sub-menu de clientes -->
+
                 <!-- Sub-menu de factura -->
                 <li class="{% if 'facturas'|in_list:request %}active open{% endif %}">
                     <a href="">
@@ -136,7 +150,7 @@
                 <!-- Fin de sub-menu de usuarios -->
 
                 <!-- Sub-menu de opciones -->
-                <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
+                <!-- <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
                     <a href="">
                         <i class="fa fa-cog"></i> Opciones
                         <i class="fa arrow"></i>
@@ -149,7 +163,7 @@
                         <li><a href="/inventario/configuracionGeneral"><i class="fa fa-gear"></i> Configuración
                                 general</a></li>
                     </ul>
-                </li>
+                </li> -->
                 <!-- Fin de sub-menu de opciones -->
             </ul>
         </nav>
