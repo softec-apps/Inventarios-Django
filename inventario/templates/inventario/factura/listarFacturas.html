@@ -3,8 +3,8 @@
 {% block content %}
 <article class="content responsive-tables-page">
     <div class="title-block">
-        <h1 class="title"> Listar facturas </h1>
-        <p class="title-description"> Verifique las facturas agregados </p>
+        <h1 class="title"> Listar ventas </h1>
+        <p class="title-description"> Verifique las ventas agregadas </p>
     </div>
     <section class="section">
         <div class="row">
@@ -24,7 +24,7 @@
                 <div class="card">
                     <div class="card-block">
                         <div class="card-title-block">
-                            <h3 class="title">Facturas</h3>
+                            <h3 class="title">Ventas</h3>
                             <div class="export-buttons">
                                 <a href="{% url 'inventario:exportar_facturas_csv' %}" title="Exportar CSV">
                                     <button id="exportCSV" class="btn btn-primary">
@@ -74,7 +74,7 @@
                                                     <div class="dropdown-menu">
                                                         <a class="dropdown-item"
                                                             href="/inventario/verFactura/{{ fila.id}}">Editar/Ver
-                                                            Factura</a>
+                                                            Venta</a>
                                                         <div class="dropdown-divider"></div>
                                                         <a class="dropdown-item"
                                                             href="/inventario/generarFactura/{{ fila.id}}">Generar

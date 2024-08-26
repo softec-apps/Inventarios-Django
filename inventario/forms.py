@@ -246,7 +246,7 @@ class EmitirFacturaFormulario(forms.Form):
 class DetallesFacturaFormulario(forms.Form):
     productos = Producto.productosRegistrados()
 
-    descripcion = MisProductos(queryset=productos,widget=forms.Select(attrs={'placeholder': 'El producto a debitar','class':'form-control select-group','onchange':'establecerOperaciones(this)'}))
+    descripcion = MisProductos(queryset=productos,widget=forms.Select(attrs={'placeholder': 'El producto a debitar','class':'form-control select-group select2','onchange':'establecerOperaciones(this)'}))
 
     vista_precio = MisPrecios(required=False,queryset=productos,label="Precio del producto",widget=forms.Select(attrs={'placeholder': 'El precio del producto','class':'form-control','disabled':'true'}))
 
@@ -298,7 +298,7 @@ class DetallesPedidoFormulario(forms.Form):
             queryset=productos,
             widget=forms.Select(attrs={
                 'placeholder': 'El producto a debitar',
-                'class': 'form-control',
+                'class': 'form-control select2',
                 'onchange': 'establecerPrecio(this)'
             })
         )
