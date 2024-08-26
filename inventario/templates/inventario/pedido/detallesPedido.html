@@ -57,6 +57,14 @@
 	</section>
 </article>
 
+<script type="module">
+	$(document).ready(function() {
+		$('.select2').select2({
+			theme: 'bootstrap-5'
+		});
+	});
+</script>
+
 {% load static %}
 <script src='{% static "inventario/js/inventario.js" %}'></script>
 
