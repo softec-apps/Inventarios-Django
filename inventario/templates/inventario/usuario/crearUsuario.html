@@ -37,6 +37,16 @@
           <div class="card card-block sameheight-item">
             <form role="form" method="POST" onsubmit="return validarTodo('usuario')">
               {% csrf_token %}
+
+              <!-- Mostrar errores generales del formulario -->
+              {% if form.errors %}
+                <ul class="alert alert-danger">
+                    {% for error in form.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+
               <div class="form-group">
                 <label for="{{ form.username.name }}">{{ form.username.label }}</label>
                 {{ form.username }}
