@@ -49,7 +49,6 @@
                                                 <th>Fecha</th>
                                                 <th>Sub-Total</th>
                                                 <th>Total</th>
-                                                <th>IVA</th>
                                                 <th>Recibido</th>
                                                 <th>Opciones</th>
                                             </tr>
@@ -62,7 +61,6 @@
                                                 <td>{{ fila.fecha }}</td>
                                                 <td>{{ fila.sub_monto }}</td>
                                                 <td>{{ fila.monto_general }}</td>
-                                                <td>{{ fila.iva.valor_iva }}</td>
                                                 {% if fila.presente == 1%}
                                                 <td align="center" style="color: green;"> <em class="fa fa-check"></em>
                                                 </td>

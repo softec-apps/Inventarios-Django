@@ -124,46 +124,48 @@
                 <!-- Fin de sub-menu de clientes -->
 
                 <!-- Sub-menu de factura -->
-                <li class="{% if 'facturas'|in_list:request %}active open{% endif %}">
+                <li class="{% if 'ventas'|in_list:request %}active open{% endif %}">
                     <a href="">
                         <i class="fa fa-file-invoice"></i> Ventas
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-                        <li><a href="/inventario/listarFacturas"><i class="fa fa-ellipsis-h"></i> Listar ventas</a></li>
-                        <li><a href="/inventario/emitirFactura"><i class="fa fa-money"></i> Emitir venta</a></li>
+                        <li><a href="/inventario/listarVentas"><i class="fa fa-ellipsis-h"></i> Listar ventas</a></li>
+                        <li><a href="/inventario/emitirVenta"><i class="fa fa-money"></i> Emitir venta</a></li>
                     </ul>
                 </li>
                 <!-- Fin de sub-menu de factura -->
 
-                <!-- Sub-menu de usuarios -->
-                <li class="{% if 'usuarios'|in_list:request %}active open{% endif %}">
-                    <a href="">
-                        <i class="fa fa-users"></i> Usuarios
-                        <i class="fa arrow"></i>
-                    </a>
-                    <ul class="sidebar-nav">
-                        <li><a href="/inventario/listarUsuarios"><i class="fa fa-ellipsis-h"></i> Listar usuarios</a></li>
-                        <li><a href="/inventario/crearUsuario"><i class="fa fa-plus"></i> Crear usuario</a></li>
-                    </ul>
-                </li>
+                {% if user.is_authenticated and user.is_staff %}
+                    <!-- Sub-menu de usuarios -->
+                    <li class="{% if 'usuarios'|in_list:request %}active open{% endif %}">
+                        <a href="">
+                            <i class="fa fa-users"></i> Usuarios
+                            <i class="fa arrow"></i>
+                        </a>
+                        <ul class="sidebar-nav">
+                            <li><a href="/inventario/listarUsuarios"><i class="fa fa-ellipsis-h"></i> Listar usuarios</a></li>
+                            <li><a href="/inventario/crearUsuario"><i class="fa fa-plus"></i> Crear usuario</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
                 <!-- Fin de sub-menu de usuarios -->
 
                 <!-- Sub-menu de opciones -->
-                <!-- <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
+                <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
                     <a href="">
                         <i class="fa fa-cog"></i> Opciones
                         <i class="fa arrow"></i>
                     </a>
                     <ul class="sidebar-nav">
-                        <li><a href="/inventario/importarBDD"><i class="fa fa-file"></i> Importar base de datos</a>
+                        <!-- <li><a href="/inventario/importarBDD"><i class="fa fa-file"></i> Importar base de datos</a>
                         </li>
                         <li><a href="/inventario/descargarBDD"><i class="fa fa-download"></i> Descargar base de datos</a>
-                        </li>
+                        </li> -->
                         <li><a href="/inventario/configuracionGeneral"><i class="fa fa-gear"></i> Configuración
                                 general</a></li>
                     </ul>
-                </li> -->
+                </li>
                 <!-- Fin de sub-menu de opciones -->
             </ul>
         </nav>

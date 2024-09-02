@@ -58,7 +58,6 @@
                                             <th>Disponible</th>
                                             <th>Categoría</th>
                                             <th>Medida</th>
-                                            <th>IVA</th>
                                             <th>Opciones</th>
                                         </tr>
                                     </thead>
@@ -73,28 +72,11 @@
                                                 {% if fila.categoria %}
                                                 {{ fila.categoria.nombre }}
                                                 {%else%}
-                                                Sin categoría
+                                                <small class="text-danger">Sin categoría</small>
                                                 {%endif%}
                                             </td>
                                             <td>
-                                                {% if fila.medida == '1' %}
-                                                Unidad
-                                                {% elif fila.medida == '2' %}
-                                                Kilo
-                                                {% elif fila.medida == '3' %}
-                                                Litro
-                                                {% elif fila.medida == '4' %}
-                                                Otros
-                                                {%endif%}
-                                            </td>
-                                            <td>
-                                                {% if fila.tiene_iva == True %}
-                                                Si
-                                                {%endif%}
-
-                                                {% if fila.tiene_iva == False %}
-                                                No
-                                                {% endif %}
+                                                {{ fila.get_medida_display }}
                                             </td>
                                             <td>
                                                 <div class="btn-group">

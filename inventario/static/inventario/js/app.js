@@ -1090,12 +1090,10 @@ $(function() {
         Morris.Donut({
             element: 'dashboard-sales-breakdown-chart',
             data: [{ label: "Administradores", value: numeroAdministradores },
-                { label: "Usuarios", value: numeroUsuarios },
                 { label: "Super-administrador", value: 1 } ],
             resize: true,
             colors: [
                 tinycolor(config.chart.colorPrimary.toString()).lighten(10).toString(),
-                tinycolor(config.chart.colorPrimary.toString()).darken(8).toString(),
                 config.chart.colorPrimary.toString()
             ],
         });

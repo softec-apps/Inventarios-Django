@@ -55,7 +55,7 @@ class Opciones(models.Model):
     #id
     moneda = models.CharField(max_length=20, null=True)
     valor_iva = models.IntegerField(unique=True)
-    nombre_negocio = models.CharField(max_length=25,null=True)
+    nombre_negocio = models.CharField(max_length=25, null=True)
     mensaje_factura = models.TextField(null=True)
 
 #---------------------------------------------------------------------------------------
@@ -154,8 +154,8 @@ class Producto(models.Model):
         is_new = self.pk is None
         old_stock = Producto.objects.filter(pk=self.pk).values_list('disponible', flat=True).first() if not is_new else 0
         super().save(*args, **kwargs)
-        
-        if is_new or self.disponible > old_stock:
+
+        if is_new and self.disponible > old_stock:
             cantidad = self.disponible - old_stock if not is_new else self.disponible
             Kardex.registrar_movimiento(
                 producto=self,
@@ -183,7 +183,7 @@ class Kardex(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:  # Si es un nuevo registro
             ultimo_kardex = Kardex.objects.filter(producto=self.producto).order_by('-fecha', '-id').first()
-            
+
             if self.tipo_movimiento == 'ENTRADA':
                 self.saldo_cantidad = (ultimo_kardex.saldo_cantidad if ultimo_kardex else 0) + self.cantidad
                 self.saldo_valor_total = (ultimo_kardex.saldo_valor_total if ultimo_kardex else 0) + self.valor_total
