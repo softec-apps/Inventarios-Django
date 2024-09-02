@@ -93,9 +93,9 @@ def exportar_productos_csv(request):
     response['Content-Disposition'] = 'attachment; filename="productos.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Descripcion', 'Precio', 'Disponible', 'Medida', 'Categoria', 'IVA'])
+    writer.writerow(['ID', 'Descripcion', 'Precio', 'Disponible', 'Medida', 'Categoria'])
 
-    productos = Producto.objects.all().values_list('id', 'descripcion', 'precio', 'disponible', 'medida', 'categoria__nombre', 'tiene_iva')
+    productos = Producto.objects.all().values_list('id', 'descripcion', 'precio', 'disponible', 'medida', 'categoria__nombre')
     for producto in productos:
         writer.writerow(producto)
 
@@ -108,7 +108,7 @@ def exportar_productos_excel(request):
     ws = wb.active
     ws.title = 'Productos'
 
-    columns = ['ID', 'Descripción', 'Precio', 'Disponible', 'Medida', 'Categoría', 'Tiene IVA']
+    columns = ['ID', 'Descripción', 'Precio', 'Disponible', 'Medida', 'Categoría']
     ws.append(columns)
 
     for producto in productos:
@@ -118,8 +118,7 @@ def exportar_productos_excel(request):
             producto.precio,
             producto.disponible,
             producto.get_medida_display(),
-            producto.categoria.nombre,
-            'Si' if producto.tiene_iva else 'No'
+            producto.categoria.nombre
         ])
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -214,33 +213,31 @@ def exportar_pedidos_csv(request):
     response['Content-Disposition'] = 'attachment; filename="pedidos.csv"'
     
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Proveedor', 'Fecha', 'Sub Monto', 'Monto General', 'IVA', 'Presente'])
+    writer.writerow(['ID', 'Proveedor', 'Fecha', 'Sub Monto', 'Monto General', 'Recibido'])
     
-    pedidos = Pedido.objects.all().select_related('proveedor', 'iva')
+    pedidos = Pedido.objects.all().select_related('proveedor')
     for pedido in pedidos:
         writer.writerow([
             pedido.id, f"{pedido.proveedor.nombre} {pedido.proveedor.apellido}",
-            pedido.fecha, pedido.sub_monto, pedido.monto_general,
-            pedido.iva.valor_iva, pedido.presente
+            pedido.fecha, pedido.sub_monto, pedido.monto_general, 'Si' if pedido.presente else 'No'
         ])
     
     return response
 
 def exportar_pedidos_excel(request):
-    pedidos = Pedido.objects.all().select_related('proveedor', 'iva')
+    pedidos = Pedido.objects.all().select_related('proveedor')
     
     wb = Workbook()
     ws = wb.active
     ws.title = "Pedidos"
     
-    ws.append(['ID', 'Proveedor', 'Fecha', 'Sub Monto', 'Monto General', 'IVA', 'Presente'])
+    ws.append(['ID', 'Proveedor', 'Fecha', 'Sub Monto', 'Monto General', 'Recibido'])
     
     for pedido in pedidos:
         fecha_formateada = pedido.fecha.strftime('%d-%m-%Y')
         ws.append([
             pedido.id, f"{pedido.proveedor.nombre} {pedido.proveedor.apellido}",
-            fecha_formateada, pedido.sub_monto, pedido.monto_general,
-            pedido.iva.valor_iva, pedido.presente
+            fecha_formateada, pedido.sub_monto, pedido.monto_general, 'Si' if pedido.presente else 'No'
         ])
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -358,32 +355,31 @@ def exportar_descuentos_excel(request):
 
 def exportar_facturas_csv(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition']='attachment; filename="facturas.csv"'
+    response['Content-Disposition']='attachment; filename="ventas.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Cliente', 'Fecha','Sub Monto','Monto General','IVA'])
+    writer.writerow(['ID', 'Cliente', 'Fecha','Sub Monto','Monto General'])
 
-    facturas = Factura.objects.all().select_related('cliente','iva')
+    facturas = Factura.objects.all().select_related('cliente')
     for factura in facturas:
         writer.writerow([
             factura.id,
-            f"{factura.cliente.nombre}{factura.cliente.apellido}",
+            f"{factura.cliente.nombre} {factura.cliente.apellido}",
             factura.fecha,
             factura.sub_monto,
-            factura.monto_general,
-            factura.iva.valor_iva
+            factura.monto_general
         ])
 
     return response
 
 def exportar_facturas_excel(request):
-    facturas = Factura.objects.all().select_related('cliente','iva')
+    facturas = Factura.objects.all().select_related('cliente')
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Facturas"
+    ws.title = "Ventas"
 
-    columns = ['ID', 'Cliente', 'Fecha', 'Sub Monto', 'Monto general', 'IVA']
+    columns = ['ID', 'Cliente', 'Fecha', 'Sub Monto', 'Monto general']
     ws.append(columns)
 
     for factura in facturas:
@@ -393,12 +389,11 @@ def exportar_facturas_excel(request):
             f"{factura.cliente.nombre} {factura.cliente.apellido}",
             fecha_formateada,
             factura.sub_monto,
-            factura.monto_general,
-            factura.iva.valor_iva
+            factura.monto_general
         ])
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=facturas.xlsx'
+    response['Content-Disposition'] = 'attachment; filename=ventas.xlsx'
 
     wb.save(response)
     return response

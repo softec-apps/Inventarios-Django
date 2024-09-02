@@ -49,7 +49,6 @@
                                             <th>Sub-Total</th>
                                             <th>Descuento</th>
                                             <th>Total</th>
-                                            <th>IVA</th>
                                             <th>Opciones</th>
                                         </tr>
                                     </thead>
@@ -62,7 +61,6 @@
                                             <td>$ {{ fila.sub_monto }}</td>
                                             <td>$ {{ fila.descuento_total }}</td>
                                             <td>$ {{ fila.monto_general }}</td>
-                                            <td>{{ fila.iva.valor_iva }}</td>
                                             <td>
 
                                                 <div class="btn-group">
@@ -73,15 +71,15 @@
 
                                                     <div class="dropdown-menu">
                                                         <a class="dropdown-item"
-                                                            href="/inventario/verFactura/{{ fila.id}}">Editar/Ver
+                                                            href="/inventario/verVenta/{{ fila.id}}">Editar/Ver
                                                             Venta</a>
                                                         <div class="dropdown-divider"></div>
                                                         <a class="dropdown-item"
-                                                            href="/inventario/generarFactura/{{ fila.id}}">Generar
+                                                            href="/inventario/generarVenta/{{ fila.id}}">Generar
                                                             reporte (CSV)</a>
                                                         <div class="dropdown-divider"></div>
                                                         <a class="dropdown-item"
-                                                            href="/inventario/generarFacturaPDF/{{ fila.id}}">Generar
+                                                            href="/inventario/generarVentaPDF/{{ fila.id}}">Generar
                                                             reporte (PDF)</a>
                                                     </div>
                                                 </div>
@@ -96,7 +94,7 @@
                                             <th>Fecha</th>
                                             <th>Sub-Total</th>
                                             <th>Total</th>
-                                            <th>IVA</th>
+                                            <th>Descuento</th>
                                             <th>Opciones</th>
                                         </tr>
                                     </tfoot>

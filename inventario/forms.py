@@ -107,16 +107,14 @@ class ProductoFormulario(forms.ModelForm):
 
     class Meta:
         model = Producto
-        fields = ['descripcion', 'precio', 'categoria', 'disponible', 'medida', 'tiene_iva']
+        fields = ['descripcion', 'precio', 'categoria', 'disponible', 'medida']
         labels = {
             'descripcion': 'Nombre',
-            'tiene_iva': 'Incluye IVA?',
             'medida': 'Unidad de medida'
         }
         widgets = {
             'descripcion': forms.TextInput(attrs={'placeholder': 'Nombre del producto', 'id': 'descripcion', 'class': 'form-control'}),
             'medida': forms.Select(attrs={'class': 'form-control', 'id': 'medida'}),
-            'tiene_iva': forms.CheckboxInput(attrs={'class': 'checkbox rounded', 'id': 'tiene_iva'}),
         }
 
 class ImportarProductosFormulario(forms.Form):
@@ -542,19 +540,19 @@ class ImportarBDDFormulario(forms.Form):
         )
 
 class OpcionesFormulario(forms.Form):
-    moneda = forms.CharField(
-        label = 'Moneda a emplear en el sistema',
-        max_length=20,
-        widget = forms.TextInput(
-        attrs={'placeholder': 'Inserte la abreviatura de la moneda que quiere usar (Ejemplo: $)',
-        'id':'moneda','class':'form-control'}),
-        )
+    # moneda = forms.CharField(
+    #     label = 'Moneda a emplear en el sistema',
+    #     max_length=20,
+    #     widget = forms.TextInput(
+    #     attrs={'placeholder': 'Inserte la abreviatura de la moneda que quiere usar (Ejemplo: $)',
+    #     'id':'moneda','class':'form-control'}),
+    #     )
 
-    valor_iva = forms.DecimalField(
-        label="Valor del IVA",
-        min_value=0,widget=forms.NumberInput(
-            attrs={'placeholder': 'Introduzca el IVA actual',
-            'class':'form-control','id':'valor_iva'}))
+    # valor_iva = forms.DecimalField(
+    #     label="Valor del IVA",
+    #     min_value=0,widget=forms.NumberInput(
+    #         attrs={'placeholder': 'Introduzca el IVA actual',
+    #         'class':'form-control','id':'valor_iva'}))
 
     mensaje_factura = forms.CharField(
         label = 'Mensaje personal que va en las facturas',
@@ -572,8 +570,8 @@ class OpcionesFormulario(forms.Form):
             'placeholder':'Coloque el nombre actual del negocio'}),
         )
 
-    imagen = forms.FileField(required=False,widget = forms.FileInput(
-        attrs={'class':'custom-file-input','id':'customFile'}))
+    # imagen = forms.FileField(required=False,widget = forms.FileInput(
+    #     attrs={'class':'custom-file-input','id':'customFile'}))
 
 
 class KardexForm(forms.ModelForm):

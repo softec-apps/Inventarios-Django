@@ -10,8 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-from pathlib import Path
-
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -32,7 +30,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = str_to_bool(os.getenv('DEBUG', 'True'))
+DEBUG = str_to_bool(os.getenv('DEBUG_MODE'))
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
@@ -134,5 +132,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_MODEL = 'inventario.Usuario' # modelo de usuario
 
-handler404 = 'inventario.views.custom_404' # vista personalizada para el error 404
-handler500 = 'inventario.views.custom_500' # vista personalizada para el error 500
+handler404 = 'inventario.views.error_404' # vista personalizada para el error 404
+handler500 = 'inventario.views.error_500' # vista personalizada para el error 500

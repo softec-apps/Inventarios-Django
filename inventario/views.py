@@ -2,16 +2,17 @@ from os import path, makedirs
 #renderiza las vistas al usuario
 from django.shortcuts import render
 # para redirigir a otras paginas
-from django.http import HttpResponseRedirect, HttpResponse,FileResponse
+from django.http import HttpResponseRedirect, HttpResponse
 #el formulario de login
 from .forms import *
 # clase para crear vistas basadas en sub-clases
 from django.views import View
-from django.views.generic import TemplateView
 #autentificacion de usuario e inicio de sesion
 from django.contrib.auth import authenticate, login, logout
 #verifica si el usuario esta logeado
 from django.contrib.auth.mixins import LoginRequiredMixin
+#Settings to get the url to logo2
+from django.conf import settings
 
 #modelos
 from .models import *
@@ -535,10 +536,10 @@ class AgregarProducto(LoginRequiredMixin, View):
             descripcion = form.cleaned_data['descripcion']
             precio = form.cleaned_data['precio']
             categoria = form.cleaned_data['categoria']
-            tiene_iva = form.cleaned_data['tiene_iva']
             disponible = form.cleaned_data['disponible']
+            unidad_medida = form.cleaned_data['medida']
 
-            prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,tiene_iva=tiene_iva,disponible=disponible)
+            prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,medida=unidad_medida,tiene_iva=False,disponible=disponible)
             prod.save()
 
             form = ProductoFormulario()
@@ -642,36 +643,36 @@ class EditarProducto(LoginRequiredMixin, View):
                 descripcion = form.cleaned_data['descripcion']
                 precio = form.cleaned_data['precio']
                 categoria = form.cleaned_data['categoria']
-                tiene_iva = form.cleaned_data['tiene_iva']
+                unidad_medida = form.cleaned_data['medida']
                 disponible_nuevo = form.cleaned_data['disponible']
 
                 prod = Producto.objects.select_for_update().get(id=p)
                 stock_anterior = prod.disponible
-                
+
                 prod.descripcion = descripcion
                 prod.precio = precio
                 prod.categoria = categoria
-                prod.tiene_iva = tiene_iva
-                
-                # Actualizar el campo 'disponible' sumando el nuevo valor al existente
-                Producto.objects.filter(id=p).update(disponible=F('disponible') + disponible_nuevo)
-                
-                # Refrescar la instancia del producto después de la actualización
-                prod.refresh_from_db()
+                prod.medida = unidad_medida
+
+                # Actualizar los datos del producto
+                prod.save()
 
                 # Registrar el movimiento en el Kardex
-                if disponible_nuevo != 0:
-                    tipo_movimiento = 'ENTRADA' if disponible_nuevo > 0 else 'SALIDA'
+                if disponible_nuevo >=0 and disponible_nuevo != stock_anterior:
+                    tipo_movimiento = 'ENTRADA' if disponible_nuevo > stock_anterior else 'SALIDA'
                     Kardex.registrar_movimiento(
                         producto=prod,
                         tipo_movimiento=tipo_movimiento,
-                        cantidad=abs(disponible_nuevo),
+                        cantidad=abs(stock_anterior - disponible_nuevo),
                         valor_unitario=prod.precio,
                         detalle='Actualización de stock'
                     )
-            
+
+            message = f'Actualizado exitosamente el producto de ID ' + str(p)
+            if disponible_nuevo != stock_anterior:
+                message += f', Stock anterior: {stock_anterior}, Nuevo stock: {prod.disponible}'
             form = ProductoFormulario(instance=prod)
-            messages.success(request, f'Actualizado exitosamente el producto de ID {p}. Stock anterior: {stock_anterior}, Nuevo stock: {prod.disponible}')
+            messages.success(request, message)
             request.session['productoProcesado'] = 'editado'
             return HttpResponseRedirect(f"/inventario/editarProducto/{prod.id}")
         else:
@@ -985,7 +986,7 @@ class EmitirFactura(LoginRequiredMixin, View):
                 request.session['form_details'] = productos
                 request.session['id_client'] = cliente
                 request.session['id_descuento'] = descuento
-                return HttpResponseRedirect("detallesDeFactura")
+                return HttpResponseRedirect("detallesDeVenta")
             except KeyError:
                 # Renderizar la página de error 404 personalizada si falta alguna clave
                 return render(request, 'inventario/error/404.html', status=404)
@@ -1122,12 +1123,12 @@ class DetallesFactura(LoginRequiredMixin, View):
                 )
 
             messages.success(request, 'Factura de ID %s insertada exitosamente.' % id_factura.id)
-            return HttpResponseRedirect("/inventario/emitirFactura")
+            return HttpResponseRedirect("/inventario/emitirVenta")
         else:
             # Si el formset no es válido, se podría manejar el error aquí
             # Por ejemplo, redirigir de vuelta al formulario con un mensaje de error
             messages.error(request, 'Error al procesar la factura. Por favor, revise los datos.')
-            return HttpResponseRedirect("/inventario/emitirFactura")
+            return HttpResponseRedirect("/inventario/emitirVenta")
 #Fin de vista-----------------------------------------------------------------------------------#
 
 
@@ -1142,7 +1143,7 @@ class ListarFacturas(LoginRequiredMixin, View):
         #Crea el paginador
 
         contexto = {'tabla': facturas}
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = complementarContexto(contexto,request.user)
 
         return render(request, 'inventario/factura/listarFacturas.html', contexto)        
 
@@ -1158,7 +1159,7 @@ class VerFactura(LoginRequiredMixin, View):
         factura = Factura.objects.get(id=p)
         detalles = DetalleFactura.objects.filter(id_factura_id=p)
         contexto = {'factura':factura, 'detalles':detalles}
-        contexto = complementarContexto(contexto,request.user)     
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/factura/verFactura.html', contexto)
 #Fin de vista--------------------------------------------------------------------------------------#   
 
@@ -1172,9 +1173,9 @@ class GenerarFactura(LoginRequiredMixin, View):
         import csv
 
         factura = Factura.objects.get(id=p)
-        detalles = DetalleFactura.objects.filter(id_factura_id=p) 
+        detalles = DetalleFactura.objects.filter(id_factura_id=p)
 
-        nombre_factura = "factura_%s.csv" % (factura.id)
+        nombre_factura = "venta_%s.csv" % (factura.id)
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="%s"' % nombre_factura
@@ -1205,27 +1206,31 @@ class GenerarFacturaPDF(LoginRequiredMixin, View):
 
         factura = Factura.objects.get(id=p)
         general = Opciones.objects.get(id=1)
-        detalles = DetalleFactura.objects.filter(id_factura_id=p)          
+        detalles = DetalleFactura.objects.filter(id_factura_id=p)
+
+        # Genera la URL completa del logo
+        logo_url = request.build_absolute_uri(settings.STATIC_URL + 'inventario/assets/logo/logo.png')
 
         data = {
-             'fecha': factura.fecha, 
-             'monto_general': factura.monto_general,
+            'fecha': factura.fecha,
+            'monto_general': factura.monto_general,
             'nombre_cliente': factura.cliente.nombre + " " + factura.cliente.apellido,
             'cedula_cliente': factura.cliente.cedula,
             'id_reporte': factura.id,
             'iva': factura.iva.valor_iva,
             'detalles': detalles,
             'modo': 'factura',
-            'general':general
+            'general':general,
+            'logo_url': logo_url
         }
 
-        nombre_factura = "factura_%s.pdf" % (factura.id)
+        nombre_factura = "venta_%s.pdf" % (factura.id)
 
         pdf = render_to_pdf('inventario/PDF/prueba.html', data)
         response = HttpResponse(pdf,content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="%s"' % nombre_factura
 
-        return response  
+        return response
 
         #Fin de vista--------------------------------------------------------------------------------------#
 
@@ -1467,7 +1472,7 @@ class ListarPedidos(LoginRequiredMixin, View):
         #Saca una lista de todos los clientes de la BDD
         pedidos = Pedido.objects.all()
         contexto = {'tabla': pedidos}
-        contexto = complementarContexto(contexto,request.user)         
+        contexto = complementarContexto(contexto,request.user)
 
         return render(request, 'inventario/pedido/listarPedidos.html',contexto) 
 
@@ -1653,17 +1658,20 @@ class GenerarPedidoPDF(LoginRequiredMixin, View):
         general = Opciones.objects.get(id=1)
         detalles = DetallePedido.objects.filter(id_pedido_id=p)
 
+        # Genera la URL completa del logo
+        logo_url = request.build_absolute_uri(settings.STATIC_URL + 'inventario/assets/logo/logo.png')
 
         data = {
-             'fecha': pedido.fecha, 
-             'monto_general': pedido.monto_general,
-            'nombre_proveedor': pedido.proveedor.nombre + " " + pedido.proveedor.apellido,
+            'fecha': pedido.fecha,
+            'monto_general': pedido.monto_general,
+            'nombre_proveedor': f'{pedido.proveedor.nombre} {pedido.proveedor.apellido}',
             'cedula_proveedor': pedido.proveedor.cedula,
             'id_reporte': pedido.id,
             'iva': pedido.iva.valor_iva,
             'detalles': detalles,
             'modo' : 'pedido',
-            'general': general
+            'general': general,
+            'logo_url': logo_url
         }
 
         nombre_pedido = "pedido_%s.pdf" % (pedido.id)
@@ -1672,14 +1680,14 @@ class GenerarPedidoPDF(LoginRequiredMixin, View):
         response = HttpResponse(pdf,content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="%s"' % nombre_pedido
 
-        return response 
+        return response
         #Fin de vista--------------------------------------------------------------------------------------#
 
 
 #Crea un nuevo usuario--------------------------------------------------------------#
 class CrearUsuario(LoginRequiredMixin, View):
     login_url = '/inventario/login'
-    redirect_field_name = None    
+    redirect_field_name = None
 
     def get(self, request):
         if request.user.is_superuser:
@@ -1854,16 +1862,16 @@ class ConfiguracionGeneral(LoginRequiredMixin, View):
     def get(self, request):
         conf = Opciones.objects.get(id=1)
         form = OpcionesFormulario()
-        
+
         #Envia al usuario el formulario para que lo llene
 
-        form['moneda'].field.widget.attrs['value']  = conf.moneda
-        form['valor_iva'].field.widget.attrs['value']  = conf.valor_iva
+        # form['moneda'].field.widget.attrs['value']  = conf.moneda
+        # form['valor_iva'].field.widget.attrs['value']  = conf.valor_iva
         form['mensaje_factura'].field.widget.attrs['value']  = conf.mensaje_factura
         form['nombre_negocio'].field.widget.attrs['value']  = conf.nombre_negocio
 
-        contexto = {'form':form}    
-        contexto = complementarContexto(contexto,request.user) 
+        contexto = {'form':form}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/opciones/configuracion.html', contexto)
 
     def post(self,request):
@@ -1873,26 +1881,26 @@ class ConfiguracionGeneral(LoginRequiredMixin, View):
 
         if form.is_valid():
             # Procesa y asigna los datos con form.cleaned_data como se requiere
-            moneda = form.cleaned_data['moneda']
-            valor_iva = form.cleaned_data['valor_iva']
+            # moneda = form.cleaned_data['moneda']
+            # valor_iva = form.cleaned_data['valor_iva']
             mensaje_factura = form.cleaned_data['mensaje_factura']
             nombre_negocio = form.cleaned_data['nombre_negocio']
-            imagen = request.FILES.get('imagen',False)
+            # imagen = request.FILES.get('imagen',False)
 
             #Si se subio un logo se sobreescribira en la carpeta ubicada
             #--en la siguiente ruta
-            if imagen:
-                manejarArchivo(imagen,'inventario/static/inventario/assets/logo/logo2.png')
+            # if imagen:
+            #     manejarArchivo(imagen,'inventario/static/inventario/assets/logo/logo2.png')
 
             conf = Opciones.objects.get(id=1)
-            conf.moneda = moneda
-            conf.valor_iva = valor_iva
+            # conf.moneda = moneda
+            # conf.valor_iva = valor_iva
             conf.mensaje_factura = mensaje_factura
             conf.nombre_negocio = nombre_negocio
             conf.save()
 
 
-            messages.success(request, 'Configuracion actualizada exitosamente!')          
+            messages.success(request, 'Configuración actualizada exitosamente!')
             return HttpResponseRedirect("/inventario/configuracionGeneral")
         else:
             form = OpcionesFormulario(instance=conf)
