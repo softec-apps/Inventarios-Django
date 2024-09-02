@@ -19,6 +19,18 @@
           <div class="card-block">
             <div class="card-title-block">
               <h3 class="title">Movimientos</h3>
+              <div class="export-buttons">
+                <a href="{% url 'inventario:exportar_kardex_producto_csv' producto_id=producto.id %}">
+                    <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
+                        <i class="fas fa-file-csv"></i>
+                    </button>
+                </a>
+                <a href="{% url 'inventario:exportar_kardex_producto_excel' producto_id=producto.id %}" title="Exportar Excel">
+                    <button id="exportExcel" class="btn btn-success">
+                        <i class="fas fa-file-excel"></i>
+                    </button>
+                </a>
+              </div>
             </div>
             <div class="mb-3">
               <a href="{% url 'inventario:resumen_kardex' producto.id %}" class="btn btn-primary">Ver Resumen</a>
