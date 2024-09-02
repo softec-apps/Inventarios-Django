@@ -169,7 +169,7 @@ class Perfil(LoginRequiredMixin, View):
             form['first_name'].field.widget.attrs['value']  = perf.first_name
             form['last_name'].field.widget.attrs['value']  = perf.last_name
             form['email'].field.widget.attrs['value']  = perf.email
-            form['level'].field.widget.attrs['value']  = perf.nivel
+            # form['level'].field.widget.attrs['value']  = perf.nivel
 
             #Envía al usuario el formulario para que lo llene
             contexto = {'form':form,'modo':request.session.get('perfilProcesado'),'editar':'perfil',
@@ -223,11 +223,11 @@ class Perfil(LoginRequiredMixin, View):
 
             if form.is_valid():
                 perf = Usuario.objects.get(id=p)
-                # Procesa y asigna los datos con form.cleaned_data como se requiere
-                if p != 1:
-                    level = form.cleaned_data['level']
-                    perf.nivel = level
-                    perf.is_superuser = level
+                # # Procesa y asigna los datos con form.cleaned_data como se requiere
+                # if p != 1:
+                #     level = form.cleaned_data['level']
+                #     perf.nivel = level
+                #     perf.is_superuser = level
 
                 username = form.cleaned_data['username']
                 first_name = form.cleaned_data['first_name']
@@ -1693,8 +1693,8 @@ class CrearUsuario(LoginRequiredMixin, View):
         if request.user.is_superuser:
             form = NuevoUsuarioFormulario()
             #Envia al usuario el formulario para que lo llene
-            contexto = {'form':form , 'modo':request.session.get('usuarioCreado')}   
-            contexto = complementarContexto(contexto,request.user)  
+            contexto = {'form':form , 'modo':request.session.get('usuarioCreado')}
+            contexto = complementarContexto(contexto,request.user)
             return render(request, 'inventario/usuario/crearUsuario.html', contexto)
         else:
             messages.error(request, 'No tiene los permisos para crear un usuario nuevo')
@@ -1709,7 +1709,7 @@ class CrearUsuario(LoginRequiredMixin, View):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             rep_password = form.cleaned_data['rep_password']
-            level = form.cleaned_data['level']
+            # level = form.cleaned_data['level']
 
             error = 0
 
@@ -1733,15 +1733,15 @@ class CrearUsuario(LoginRequiredMixin, View):
 
             else:
                 error = 1
-                messages.error(request, "El correo '%s' ya existe. eliga otro!" % email)                    
+                messages.error(request, "El correo '%s' ya existe. elija otro!" % email)
 
             if(error == 0):
-                if level == '0':
-                    nuevoUsuario = Usuario.objects.create_user(username=username,password=password,email=email)
-                    nivel = 0
-                elif level == '1':
-                    nuevoUsuario = Usuario.objects.create_superuser(username=username,password=password,email=email)
-                    nivel = 1
+                # if level == '0':
+                nuevoUsuario = Usuario.objects.create_user(username=username,password=password,email=email)
+                nivel = 0
+                # elif level == '1':
+                #     nuevoUsuario = Usuario.objects.create_superuser(username=username,password=password,email=email)
+                #     nivel = 1
 
                 nuevoUsuario.first_name = first_name
                 nuevoUsuario.last_name = last_name
@@ -1750,31 +1750,29 @@ class CrearUsuario(LoginRequiredMixin, View):
 
                 messages.success(request, 'Usuario creado exitosamente')
                 return HttpResponseRedirect('/inventario/crearUsuario')
-
             else:
                 return HttpResponseRedirect('/inventario/crearUsuario')
-                        
-                   
-
-
-
+        else:
+            # Si el formulario no es válido, renderiza la página con los errores del formulario
+            messages.error(request, 'Error al crear el usuario')
+            return render(request, 'inventario/usuario/crearUsuario.html', {'form': form})
 #Fin de vista----------------------------------------------------------------------
 
 
 #Lista todos los usuarios actuales--------------------------------------------------------------#
 class ListarUsuarios(LoginRequiredMixin, View):
     login_url = '/inventario/login'
-    redirect_field_name = None    
+    redirect_field_name = None
 
     def get(self, request):
         usuarios = Usuario.objects.all()
         #Envia al usuario el formulario para que lo llene
-        contexto = {'tabla':usuarios}   
-        contexto = complementarContexto(contexto,request.user)  
+        contexto = {'tabla':usuarios}
+        contexto = complementarContexto(contexto,request.user)
         return render(request, 'inventario/usuario/listarUsuarios.html', contexto)
 
     def post(self, request):
-        pass   
+        pass
 
 #Fin de vista----------------------------------------------------------------------
 

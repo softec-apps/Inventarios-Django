@@ -428,7 +428,7 @@ class UsuarioFormulario(forms.Form):
         label = 'Nombre',
         max_length =100,
         widget = forms.TextInput(attrs={'placeholder': 'Inserte un nombre',
-        'id':'first_name','class':'form-control','value':''}),            
+        'id':'first_name','class':'form-control','value':''}),
         )
 
     last_name = forms.CharField(
@@ -444,14 +444,14 @@ class UsuarioFormulario(forms.Form):
         'id':'email','class':'form-control','type':'email','value':''} )
         )
 
-    level =  forms.CharField(
-        required=False,
-        label="Nivel de acceso",
-        max_length=2,
-        widget=forms.Select(choices=niveles,attrs={'placeholder': 'El nivel de acceso',
-        'id':'level','class':'form-control','value':''}
-        )
-        )
+    # level =  forms.CharField(
+    #     required=False,
+    #     label="Nivel de acceso",
+    #     max_length=2,
+    #     widget=forms.Select(choices=niveles,attrs={'placeholder': 'El nivel de acceso',
+    #     'id':'level','class':'form-control','value':''}
+    #     )
+    #     )
 
 class NuevoUsuarioFormulario(forms.Form):
     niveles =  [ ('1','Administrador'),('0','Usuario') ]
@@ -467,7 +467,7 @@ class NuevoUsuarioFormulario(forms.Form):
         label = 'Nombre',
         max_length =100,
         widget = forms.TextInput(attrs={'placeholder': 'Inserte un nombre',
-        'id':'first_name','class':'form-control','value':''}),            
+        'id':'first_name','class':'form-control','value':''}),
         )
 
     last_name = forms.CharField(
@@ -481,29 +481,29 @@ class NuevoUsuarioFormulario(forms.Form):
         max_length=100,
         widget = forms.TextInput(attrs={'placeholder': 'Inserte un correo valido',
         'id':'email','class':'form-control','type':'email','value':''} )
-        )    
+        )
 
     password = forms.CharField(
         label = 'Clave',
         max_length=100,
         widget = forms.TextInput(attrs={'placeholder': 'Inserte una clave',
         'id':'password','class':'form-control','type':'password','value':''} )
-        )  
+        )
 
     rep_password = forms.CharField(
         label = 'Repetir clave',
         max_length=100,
         widget = forms.TextInput(attrs={'placeholder': 'Repita la clave de arriba',
         'id':'rep_password','class':'form-control','type':'password','value':''} )
-        )  
+        )
 
-    level =  forms.CharField(
-        label="Nivel de acceso",
-        max_length=2,
-        widget=forms.Select(choices=niveles,attrs={'placeholder': 'El nivel de acceso',
-        'id':'level','class':'form-control','value':''}
-        )
-        )
+    # level =  forms.CharField(
+    #     label="Nivel de acceso",
+    #     max_length=2,
+    #     widget=forms.Select(choices=niveles,attrs={'placeholder': 'El nivel de acceso',
+    #     'id':'level','class':'form-control','value':''}
+    #     )
+    #     )
 
 
 class ClaveFormulario(forms.Form):

@@ -148,25 +148,25 @@
                             <li><a href="/inventario/crearUsuario"><i class="fa fa-plus"></i> Crear usuario</a></li>
                         </ul>
                     </li>
-                {% endif %}
-                <!-- Fin de sub-menu de usuarios -->
+                    <!-- Fin de sub-menu de usuarios -->
 
-                <!-- Sub-menu de opciones -->
-                <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
-                    <a href="">
-                        <i class="fa fa-cog"></i> Opciones
-                        <i class="fa arrow"></i>
-                    </a>
-                    <ul class="sidebar-nav">
-                        <!-- <li><a href="/inventario/importarBDD"><i class="fa fa-file"></i> Importar base de datos</a>
-                        </li>
-                        <li><a href="/inventario/descargarBDD"><i class="fa fa-download"></i> Descargar base de datos</a>
-                        </li> -->
-                        <li><a href="/inventario/configuracionGeneral"><i class="fa fa-gear"></i> Configuración
-                                general</a></li>
-                    </ul>
-                </li>
-                <!-- Fin de sub-menu de opciones -->
+                    <!-- Sub-menu de opciones -->
+                    <li class="{% if 'opciones'|in_list:request %}active open{% endif %}">
+                        <a href="">
+                            <i class="fa fa-cog"></i> Opciones
+                            <i class="fa arrow"></i>
+                        </a>
+                        <ul class="sidebar-nav">
+                            <!-- <li><a href="/inventario/importarBDD"><i class="fa fa-file"></i> Importar base de datos</a>
+                            </li>
+                            <li><a href="/inventario/descargarBDD"><i class="fa fa-download"></i> Descargar base de datos</a>
+                            </li> -->
+                            <li><a href="/inventario/configuracionGeneral"><i class="fa fa-gear"></i> Configuración
+                                    general</a></li>
+                        </ul>
+                    </li>
+                    <!-- Fin de sub-menu de opciones -->
+                {% endif %}
             </ul>
         </nav>
     </div>

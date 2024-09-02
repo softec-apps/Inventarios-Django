@@ -13,7 +13,7 @@ sections={
     'clientes': ['listarClientes', 'agregarCliente', 'editarCliente'],
     'descuentos': ['listarDescuentos', 'agregarDescuento', 'editarDescuento'],
     'ventas': ['emitirVenta', 'detallesDeVenta', 'listarVentas', 'verVenta'],
-    'usuarios': ['crearUsuario', 'listarUsuarios'],
+    'usuarios': ['crearUsuario', 'listarUsuarios', 'perfil'],
     'opciones': ['configuracionGeneral']
 }
 
