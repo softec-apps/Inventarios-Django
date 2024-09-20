@@ -541,7 +541,7 @@ class AgregarProducto(LoginRequiredMixin, View):
             tipos = form.cleaned_data['tipos']
             marcas = form.cleaned_data['marcas']
 
-            prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,medida=unidad_medida,tiene_iva=False,disponible=disponible,tipos=tipos, marcas=marcas)
+            prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,medida=unidad_medida,tiene_iva=False,disponible=disponible,tipos=tipos,marcas=marcas)
             prod.save()
 
             form = ProductoFormulario()
@@ -647,6 +647,8 @@ class EditarProducto(LoginRequiredMixin, View):
                 categoria = form.cleaned_data['categoria']
                 unidad_medida = form.cleaned_data['medida']
                 disponible_nuevo = form.cleaned_data['disponible']
+                tipos = form.cleaned_data['tipos']
+                marcas = form.cleaned_data['marcas']
 
                 prod = Producto.objects.select_for_update().get(id=p)
                 stock_anterior = prod.disponible
@@ -655,6 +657,8 @@ class EditarProducto(LoginRequiredMixin, View):
                 prod.precio = precio
                 prod.categoria = categoria
                 prod.medida = unidad_medida
+                prod.tipos = tipos
+                prod.marcas = marcas
 
                 # Actualizar los datos del producto
                 prod.save()
