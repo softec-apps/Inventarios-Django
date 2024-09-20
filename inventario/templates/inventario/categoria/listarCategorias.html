@@ -33,18 +33,6 @@
                         <div class="card-block">
                             <div class="card-title-block">
                                 <h3 class="title">Categorías</h3>
-                                <div class="export-buttons">
-                                    <a href="{% url 'inventario:exportar_categorias_csv' %}">
-                                        <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
-                                            <i class="fas fa-file-csv"></i>
-                                        </button>
-                                    </a>
-                                    <a href="{% url 'inventario:exportar_categorias_excel' %}" title="Exportar Excel">
-                                        <button id="exportExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </a>
-                                </div>
                             </div>
                             <section class="example">
                                 <div class="table-responsive">
@@ -53,7 +41,7 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Nombre categoría</th>
-                                                <th>Opciones</th>
+                                                <th class="exclude">Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -61,15 +49,13 @@
                                             <tr>
                                                 <td>{{ fila.id }}</td>
                                                 <td>{{ fila.nombre }}</td>
-                                                <td>
-
+                                                <td class="exclude">
                                                     <div class="btn-group">
-
                                                         <button type="button" class="btn btn-info dropdown-toggle"
                                                             data-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false"><i class="fa fa-wrench"></i></button>
 
-                                                        <div class="dropdown-menu">
+                                                        <div class="dropdown-menu options-menu">
                                                             <a class="dropdown-item"
                                                                 href="/inventario/editarCategoria/{{ fila.id}}">Editar/Ver
                                                                 categoría</a>
@@ -92,4 +78,11 @@
             </div>
     </section>
 </article>
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista de Categorías');
+    });
+</script>
+
 {% endblock %}

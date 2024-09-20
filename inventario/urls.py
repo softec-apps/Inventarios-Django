@@ -1,9 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from .funciones import *
 app_name = "inventario"
 
 urlpatterns = [
+    path('tinymce/', include('tinymce.urls')),
+
     path('login', views.Login.as_view(), name='login'),
     path('panel', views.Panel.as_view(), name='panel'),
     path('salir', views.Salir.as_view(), name='salir'),

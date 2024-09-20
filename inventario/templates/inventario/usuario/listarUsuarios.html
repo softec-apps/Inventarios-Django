@@ -57,18 +57,6 @@
                     <div class="card-block">
                         <div class="card-title-block">
                             <h3 class="title">Usuarios</h3>
-                            <div class="export-buttons">
-                                <a href="{% url 'inventario:exportar_usuarios_csv' %}" title="Exportar CSV">
-                                    <button id="exportCSV" class="btn btn-primary">
-                                        <i class="fas fa-file-csv"></i>
-                                    </button>
-                                </a>
-                                <a href="{% url 'inventario:exportar_usuarios_excel' %}" title="Exportar Excel">
-                                    <button id="exportExcel" class="btn btn-success">
-                                        <i class="fas fa-file-excel"></i>
-                                    </button>
-                                </a>
-                            </div>
                         </div>
                         <section class="example">
                             <div class="table-responsive">
@@ -79,7 +67,7 @@
                                             <th>Nombre completo</th>
                                             <th>Nombre de usuario</th>
                                             <th>Nivel de acceso</th>
-                                            <th>Opciones</th>
+                                            <th class="exclude">Opciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -128,4 +116,11 @@
         </div>
     </section>
 </article>
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista de Usuarios', 2);
+    });
+</script>
+
 {% endblock %}

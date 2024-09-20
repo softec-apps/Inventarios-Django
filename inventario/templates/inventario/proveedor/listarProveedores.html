@@ -33,18 +33,6 @@
                         <div class="card-block">
                             <div class="card-title-block">
                                 <h3 class="title">Proveedores</h3>
-                                <div class="export-buttons">
-                                    <a href="{% url 'inventario:exportar_proveedores_csv' %}">
-                                        <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
-                                            <i class="fas fa-file-csv"></i>
-                                        </button>
-                                    </a>
-                                    <a href="{% url 'inventario:exportar_proveedores_excel' %}" title="Exportar Excel">
-                                        <button id="exportExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </a>
-                                </div>
                             </div>
                             <section class="example">
                                 <div class="table-responsive">
@@ -52,23 +40,51 @@
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Cédula</th>
                                                 <th>Nombre completo</th>
+                                                <th class="noVis">Tipo ID</th>
+                                                <th>Cédula</th>
+                                                <th>RUC</th>
+                                                <th>Ciudad</th>
+                                                <th class="noVis">Dirección</th>
                                                 <th>Teléfono</th>
                                                 <th>Correo</th>
-                                                <th>Opciones</th>
+                                                <th class="noVis">Teléfono 2</th>
+                                                <th class="noVis">Correo 2</th>
+                                                <th class="exclude">Información</th>
+                                                <th class="exclude">Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for fila in tabla %}
                                             <tr>
                                                 <td>{{ fila.id }}</td>
+                                                <td>{{ fila.nombre }} {{ fila.apellido }}</td>
+                                                <td>{{ fila.get_tipoCedula_display }}</td>
                                                 <td>
                                                     <p>{{ fila.cedula }}</p>
                                                 </td>
-                                                <td>{{ fila.nombre }} {{ fila.apellido }}</td>
+                                                <td>{{ fila.ruc }}</td>
+                                                <td>{{ fila.ciudad }}</td>
+                                                <td>{{ fila.direccion }}</td>
                                                 <td>{{ fila.telefono }}</td>
                                                 <td>{{ fila.correo }}</td>
+                                                <td>
+                                                    {% if fila.telefono2 %}
+                                                        {{ fila.telefono2 }}
+                                                    {% else %}
+                                                        <small class="text-danger">Sin datos</small>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if fila.correo2 %}
+                                                        {{ fila.correo2 }}
+                                                    {% else %}
+                                                        <small class="text-danger">Sin datos</small>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-info" onclick="mostrarInformacion('{{ fila.informacion|escapejs }}')">Ver más</button>
+                                                </td>
                                                 <td>
 
                                                     <div class="btn-group">
@@ -100,4 +116,35 @@
             </div>
     </section>
 </article>
+
+<div class="modal fade" id="modalInformacion" tabindex="-1" role="dialog" aria-labelledby="modalInformacionLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalInformacionLabel">Información del Proveedor</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Aquí se insertará la información del proveedor -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista Proveedores', 2);
+    });
+</script>
+
+<script>
+    function mostrarInformacion(informacion) {
+        $('#modalInformacion .modal-body').html(informacion);
+        $('#modalInformacion').modal('show');
+    }
+</script>
+
 {% endblock %}

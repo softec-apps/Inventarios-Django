@@ -85,6 +85,8 @@ class Producto(models.Model):
     medida = models.CharField(max_length=20, choices=decisiones, default='1')
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
     tiene_iva = models.BooleanField(null=True)
+    tipos = models.CharField(max_length=500, blank=True, null=True)
+    marcas = models.CharField(max_length=500, blank=True, null=True)
 
     @classmethod
     def numeroRegistrados(self):
@@ -150,9 +152,22 @@ class Producto(models.Model):
             self.disponible -= cantidad
         self.save()
 
+    def get_tipos(self):
+        return self.tipos.split(',')
+
+    def get_marcas(self):
+        return self.marcas.split(',')
+
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         old_stock = Producto.objects.filter(pk=self.pk).values_list('disponible', flat=True).first() if not is_new else 0
+
+        # Convierte las listas en una cadena delimitada por comas antes de guardar
+        if isinstance(self.tipos, list):
+            self.tipos = ','.join(self.tipos)
+        if isinstance(self.marcas, list):
+            self.marcas = ','.join(self.marcas)
+
         super().save(*args, **kwargs)
 
         if is_new and self.disponible > old_stock:
@@ -318,6 +333,7 @@ class DetalleFactura(models.Model):
 class Proveedor(PersonaBase):
     #id
     ruc = models.CharField(max_length=13, unique=True)
+    informacion = models.TextField(null=True, blank=True)
 
     @classmethod
     def cedulasRegistradas(self):

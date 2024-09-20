@@ -76,6 +76,7 @@
 							<div class="card card-block">
 								<form role="form" method="POST" onsubmit="return validarTodo('proveedor')">
 									{% csrf_token %}
+									{{ form.media }}
 
 									<!----------------   CAMPO DE RUC  ---------------------->
 
@@ -146,6 +147,17 @@
 											{{form.direccion.label}}
 										</label>
 										{{form.direccion}}
+									</div>
+
+									<!-----------------   FIN DE CAMPOS ---------------------------------->
+
+									<!-----------------   CAMPO DE LA INFORMACIÓN DEL CLIENTE ------------------>
+
+									<div class="form-group">
+										<label for="{{ form.informacion.name }}">
+											{{form.informacion.label}}
+										</label>
+										{{form.informacion}}
 									</div>
 
 									<!-----------------   FIN DE CAMPOS ---------------------------------->
