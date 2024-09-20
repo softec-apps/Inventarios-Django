@@ -33,18 +33,6 @@
                         <div class="card-block">
                             <div class="card-title-block">
                                 <h3 class="title">Descuentos</h3>
-                                <div class="export-buttons">
-                                    <a href="{% url 'inventario:exportar_descuentos_csv' %}">
-                                        <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
-                                            <i class="fas fa-file-csv"></i>
-                                        </button>
-                                    </a>
-                                    <a href="{% url 'inventario:exportar_descuentos_excel' %}" title="Exportar Excel">
-                                        <button id="exportExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </a>
-                                </div>
                             </div>
                             <section class="example">
                                 <div class="table-responsive">
@@ -54,7 +42,7 @@
                                                 <th>ID</th>
                                                 <th>Nombre descuento</th>
                                                 <th>Valor</th>
-                                                <th>Opciones</th>
+                                                <th class="exclude">Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -62,7 +50,7 @@
                                             <tr>
                                                 <td>{{ fila.id }}</td>
                                                 <td>{{ fila.nombre }}</td>
-                                                <td>{{ fila.valor }}</td>
+                                                <td>{{ fila.valor }} %</td>
                                                 <td>
 
                                                     <div class="btn-group">
@@ -94,4 +82,11 @@
             </div>
     </section>
 </article>
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista de Descuentos', 2);
+    });
+</script>
+
 {% endblock %}

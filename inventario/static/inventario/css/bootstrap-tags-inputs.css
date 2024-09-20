@@ -1,0 +1,36 @@
+.bootstrap-tagsinput {
+    width: 100%;
+    min-height: 38px;
+    line-height: 22px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.bootstrap-tagsinput .tag {
+    background-color: #007bff;
+    /* Color de fondo del tag */
+    color: white;
+    /* Color del texto del tag */
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-right: 2px;
+    font-size: 0.875rem;
+}
+
+.bootstrap-tagsinput .tag [data-role="remove"] {
+    margin-left: 5px;
+    color: #fff;
+    /* Color del icono de eliminación */
+}
+
+.bootstrap-tagsinput input {
+    width: auto !important;
+    height: auto !important;
+    line-height: 22px;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    box-shadow: none;
+}

@@ -26,18 +26,6 @@
                         <div class="card-block">
                             <div class="card-title-block">
                                 <h3 class="title">Pedidos</h3>
-                                <div class="export-buttons">
-                                    <a href="{% url 'inventario:exportar_pedidos_csv' %}">
-                                        <button id="exportCSV" class="btn btn-primary" title="Exportar CSV">
-                                            <i class="fas fa-file-csv"></i>
-                                        </button>
-                                    </a>
-                                    <a href="{% url 'inventario:exportar_pedidos_excel' %}" title="Exportar Excel">
-                                        <button id="exportExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </a>
-                                </div>
                             </div>
                             <section class="example">
                                 <div class="table-responsive">
@@ -50,7 +38,7 @@
                                                 <th>Sub-Total</th>
                                                 <th>Total</th>
                                                 <th>Recibido</th>
-                                                <th>Opciones</th>
+                                                <th class="exclude">Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -59,8 +47,8 @@
                                                 <td>{{ fila.id}}</td>
                                                 <td>{{ fila.proveedor.cedula }}</td>
                                                 <td>{{ fila.fecha }}</td>
-                                                <td>{{ fila.sub_monto }}</td>
-                                                <td>{{ fila.monto_general }}</td>
+                                                <td>$ {{ fila.sub_monto }}</td>
+                                                <td>$ {{ fila.monto_general }}</td>
                                                 {% if fila.presente == 1%}
                                                 <td align="center" style="color: green;"> <em class="fa fa-check"></em>
                                                 </td>
@@ -101,4 +89,11 @@
             </div>
     </section>
 </article>
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista de Pedidos', 2);
+    });
+</script>
+
 {% endblock %}

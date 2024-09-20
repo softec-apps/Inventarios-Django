@@ -52,23 +52,39 @@
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Cédula</th>
                                                 <th>Nombre completo</th>
+                                                <th class="noVis">Tipo ID</th>
+                                                <th>Cédula</th>
+                                                <th class="noVis">Fecha Nacimiento</th>
+                                                <th>Dirección</th>
                                                 <th>Teléfono</th>
                                                 <th>Correo</th>
-                                                <th>Opciones</th>
+                                                <th class="noVis">Teléfono 2</th>
+                                                <th class="noVis">Correo 2</th>
+                                                <th class="exclude">Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for fila in tabla %}
                                             <tr>
                                                 <td>{{ fila.id }}</td>
+                                                <td>{{ fila.nombre }} {{ fila.apellido }}</td>
+                                                <td>{{ fila.get_tipoCedula_display }}</td>
                                                 <td>
                                                     <p>{{ fila.cedula }}</p>
                                                 </td>
-                                                <td>{{ fila.nombre }} {{ fila.apellido }}</td>
+                                                <td>
+                                                    {% if fila.nacimiento %}
+                                                        {{ fila.nacimiento }}
+                                                    {% else %}
+                                                        <small class="text-danger">N/A</small>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ fila.direccion }}</td>
                                                 <td>{{ fila.telefono }}</td>
                                                 <td>{{ fila.correo }}</td>
+                                                <td>{{ fila.telefono2 }}</td>
+                                                <td>{{ fila.correo2 }}</td>
                                                 <td>
                                                     <div class="btn-group">
 
@@ -98,4 +114,11 @@
             </div>
     </section>
 </article>
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista de Clientes', 2);
+    });
+</script>
+
 {% endblock %}

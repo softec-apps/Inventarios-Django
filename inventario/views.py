@@ -538,8 +538,10 @@ class AgregarProducto(LoginRequiredMixin, View):
             categoria = form.cleaned_data['categoria']
             disponible = form.cleaned_data['disponible']
             unidad_medida = form.cleaned_data['medida']
+            tipos = form.cleaned_data['tipos']
+            marcas = form.cleaned_data['marcas']
 
-            prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,medida=unidad_medida,tiene_iva=False,disponible=disponible)
+            prod = Producto(descripcion=descripcion,precio=precio,categoria=categoria,medida=unidad_medida,tiene_iva=False,disponible=disponible,tipos=tipos, marcas=marcas)
             prod.save()
 
             form = ProductoFormulario()

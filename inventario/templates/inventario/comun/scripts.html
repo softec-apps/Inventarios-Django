@@ -10,27 +10,50 @@
   </script>
 
   <script src='{% static "inventario/js/bower_components/jquery/src/jquery.js" %}'></script>
-  <script src='{% static "inventario/js/bower_components/datatables.net/js/jquery.dataTables.js" %}'></script>
-  <script src='{% static "inventario/js/bower_components/datatables.net-bs/js/dataTables.bootstrap4.js" %}'></script>
+
+  <!-- DataTables -->
+  <!-- <script src='{% static "inventario/js/bower_components/datatables.net/js/jquery.dataTables.js" %}'></script>
+  <script src='{% static "inventario/js/bower_components/datatables.net-bs/js/dataTables.bootstrap4.js" %}'></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/2.1.6/js/dataTables.bootstrap4.js"></script>
+  <!-- DataTables Buttons -->
+  <script src="https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.bootstrap4.js"></script>
+  <!-- DataTables Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.html5.min.js"></script>
+  <!-- DataTables PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.html5.min.js"></script>
+  <!-- DataTables ColVis -->
+  <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.colVis.min.js"></script>
+  <!-- DataTables FixedColumns -->
+  <script src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
+
+  <!-- DataTables custom initialization -->
+  <script src='{% static "inventario/js/initializeDataTable.js" %}'></script>
 
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+  <!-- Bootstrap tags inputs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+
   <script>
+    $('[data-toggle="tooltip"]').tooltip()
 
-    $(function () {
-      $('#example1').DataTable()
-      $('#example2').DataTable({
-        'paging': true,
-        'lengthChange': true,
-        'searching': true,
-        'ordering': true,
-        'info': true,
-        'autoWidth': false,
-        //"scrollY"     : 0,
-        "scrollCollapse": false
-
-      })
-    })
-
-
+    // $(function () {
+    //   $('#example1').DataTable()
+    //   $('#example2').DataTable({
+    //     'paging': true,
+    //     'lengthChange': true,
+    //     'searching': true,
+    //     'ordering': true,
+    //     'info': true,
+    //     'autoWidth': false,
+    //     //"scrollY"     : 0,
+    //     "scrollCollapse": false
+    //   })
+    // })
   </script>

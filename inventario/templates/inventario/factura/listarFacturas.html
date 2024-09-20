@@ -49,7 +49,7 @@
                                             <th>Sub-Total</th>
                                             <th>Descuento</th>
                                             <th>Total</th>
-                                            <th>Opciones</th>
+                                            <th class="exclude">Opciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -93,8 +93,8 @@
                                             <th>ID del cliente</th>
                                             <th>Fecha</th>
                                             <th>Sub-Total</th>
-                                            <th>Total</th>
                                             <th>Descuento</th>
+                                            <th>Total</th>
                                             <th>Opciones</th>
                                         </tr>
                                     </tfoot>
@@ -107,4 +107,11 @@
         </div>
     </section>
 </article>
+
+<script type="module">
+    $().ready(function() {
+        initializeDataTable('#example2', 'Lista de Ventas', 3);
+    });
+</script>
+
 {% endblock %}

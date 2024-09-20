@@ -3,8 +3,9 @@ from .models import Categoria, Producto, Cliente, Proveedor, Descuento
 
 #Para el uso en el Kardex
 from .models import Kardex
-
 from django.forms import ModelChoiceField
+
+from tinymce.widgets import TinyMCE
 
 class MisProductos(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -104,10 +105,30 @@ class ProductoFormulario(forms.ModelForm):
         label='Categoría',
         widget=forms.Select(attrs={'id': 'categoria', 'class': 'form-control'}),
     )
+    tipos = forms.CharField(
+        required=False,
+        label='Tipos',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Añadir tipos',
+            'class': 'form-control',
+            'id': 'tipos',
+            'data-role': 'tagsinput'
+        })
+    )
+    marcas = forms.CharField(
+        required=False,
+        label='Marcas',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Añadir marcas',
+            'class': 'form-control',
+            'id': 'marcas',
+            'data-role': 'tagsinput'
+        })
+    )
 
     class Meta:
         model = Producto
-        fields = ['descripcion', 'precio', 'categoria', 'disponible', 'medida']
+        fields = ['descripcion', 'precio', 'categoria', 'disponible', 'medida', 'tipos', 'marcas']
         labels = {
             'descripcion': 'Nombre',
             'medida': 'Unidad de medida'
@@ -382,7 +403,7 @@ class ProveedorFormulario(forms.ModelForm):
 
     class Meta:
         model = Proveedor
-        fields = ['ruc','tipoCedula','cedula','nombre','apellido','ciudad','direccion','telefono','correo','telefono2','correo2']
+        fields = ['ruc','tipoCedula','cedula','nombre','apellido','ciudad','direccion','informacion','telefono','correo','telefono2','correo2']
         labels = {
             'ruc': 'RUC del proveedor',
             'cedula': 'Cédula del proveedor',
@@ -390,6 +411,7 @@ class ProveedorFormulario(forms.ModelForm):
             'apellido': 'Apellido del proveedor',
             'ciudad': 'Ciudad del proveedor',
             'direccion': 'Dirección del proveedor',
+            'informacion': 'Información sobre el proveedor',
             'telefono': 'Numero telefónico del proveedor',
             'correo': 'Correo electrónico del proveedor',
             'telefono2': 'Segundo numero telefónico',
@@ -406,6 +428,14 @@ class ProveedorFormulario(forms.ModelForm):
             'apellido': forms.TextInput(attrs={'class':'form-control','id':'apellido','placeholder':'El apellido del proveedor'}),
             'ciudad': forms.TextInput(attrs={'class':'form-control','id':'ciudad','placeholder':'La ciudad del proveedor'} ),
             'direccion': forms.TextInput(attrs={'class':'form-control','id':'direccion','placeholder':'Dirección del proveedor'}),
+            'informacion': TinyMCE(mce_attrs={
+                'height': 200,  # Altura en píxeles
+                'width': '100%',  # Anchura al 100%
+                'placeholder': '¿Qué clase de arroz ofrece?',
+                'menubar': False,  # Opcional: para quitar la barra de menú
+                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist',
+                'statusbar': False
+            }),
             'nacimiento':forms.DateInput(format=('%d-%m-%Y'),attrs={'id':'hasta','class':'form-control','type':'date'} ),
             'telefono':forms.TextInput(attrs={'id':'telefono','class':'form-control',
             'placeholder':'El teléfono del proveedor'} ),
