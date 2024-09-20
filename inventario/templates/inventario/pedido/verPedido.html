@@ -62,7 +62,7 @@
               </div>
             </div>
             <div class="card-block">
-              <p>{{ pedido.sub_monto }}</p>
+              <p>$ {{ pedido.sub_monto }}</p>
             </div>
           </div>
         </div>
@@ -75,12 +75,12 @@
               </div>
             </div>
             <div class="card-block">
-              <p>{{ pedido.monto_general }}</p>
+              <p>$ {{ pedido.monto_general }}</p>
             </div>
           </div>
         </div>
 
-        <!-- <div class="col-xl-4">
+        <div class="col-xl-4">
           <div class="card card-primary">
             <div class="card-header">
               <div class="header-block">
@@ -88,10 +88,10 @@
               </div>
             </div>
             <div class="card-block">
-              <p>{{ pedido.iva.valor_iva }}%</p>
+              <p>0 %</p>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <div class="col-xl-4">
           <div class="card card-primary">
@@ -134,13 +134,13 @@
                         <tr>
                           <td>{{ producto.id_producto.descripcion }}</td>
                           <td>{{ producto.cantidad }}</td>
-                          <td>{{ producto.sub_total }}</td>
-                          <td>{{ producto.total }}</td>
+                          <td>$ {{ producto.sub_total }}</td>
+                          <td>$ {{ producto.total }}</td>
                         </tr>
                       {% endfor %}
                     </tbody>
                   </table>
-                  <tfooter>Total: {{ pedido.monto_general }}</tfooter>
+                  <tfooter>Total: $ {{ pedido.monto_general }}</tfooter>
                 </div>
               </section>
             </div>

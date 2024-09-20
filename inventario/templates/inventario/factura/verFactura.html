@@ -49,7 +49,7 @@
               </div>
             </div>
             <div class="card-block">
-              <p>{{ factura.sub_monto }}</p>
+              <p>$ {{ factura.sub_monto }}</p>
             </div>
           </div>
         </div>
@@ -62,12 +62,12 @@
               </div>
             </div>
             <div class="card-block">
-              <p>{{ factura.monto_general }}</p>
+              <p>$ {{ factura.monto_general }}</p>
             </div>
           </div>
         </div>
 
-        <!-- <div class="col-xl-4">
+        <div class="col-xl-4">
           <div class="card card-primary">
             <div class="card-header">
               <div class="header-block">
@@ -75,10 +75,10 @@
               </div>
             </div>
             <div class="card-block">
-              <p>{{ factura.iva.valor_iva }}%</p>
+              <p>0%</p>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <div class="col-md-12">
           <div class="card">
@@ -102,13 +102,13 @@
                         <tr>
                           <td>{{ producto.id_producto.descripcion }}</td>
                           <td>{{ producto.cantidad }}</td>
-                          <td>{{ producto.sub_total }}</td>
-                          <td>{{ producto.total }}</td>
+                          <td>$ {{ producto.sub_total }}</td>
+                          <td>$ {{ producto.total }}</td>
                         </tr>
                       {% endfor %}
                     </tbody>
                   </table>
-                  <tfooter>Total: {{ factura.monto_general }}</tfooter>
+                  <tfooter>Total: $ {{ factura.monto_general }}</tfooter>
                 </div>
               </section>
             </div>
