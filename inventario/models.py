@@ -78,7 +78,7 @@ class Categoria(models.Model):
 class Producto(models.Model):
     #id
     # ruc_proveedor = models.CharField(max_length=13, unique=True)
-    decisiones =  [('1','sacos'),('2','kg'),('3','lb')]
+    decisiones =  [('1','sacos'),('2','kg'),('3','lb'),['4','arrobas']]
     descripcion = models.CharField(max_length=40)
     precio = models.DecimalField(max_digits=9,decimal_places=2)
     disponible = models.IntegerField(null=True)
